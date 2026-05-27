@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data — large files; commit only processed CSVs, not raw video
+data/raw/*.avi
+data/raw/*.mp4
+data/raw/*.tif
+data/raw/*.tiff
+
+# OS
+.DS_Store
+Thumbs.db
+
+# LyX
+*.lyx~
+auto/
+
+# Outputs that get regenerated
+report/figures/*.png
+report/figures/*.pdf
