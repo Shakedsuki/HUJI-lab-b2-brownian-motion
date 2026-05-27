@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="he" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brownian Motion — Colloquium Prep</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f4f0;--surface:#fff;--surface2:#f9f8f4;--border:#e0ddd5;
+  --text:#1a1a18;--text2:#666;--text3:#aaa;--green:#2a9d6f;
+  --progress-bg:#ddd;
+  --req-bg:#fde8e8;--req-text:#b03030;
+  --opt-bg:#efefef;--opt-text:#888;
+  --hbg:#f7f6f2;--hborder:#e5e2d8;--htext:#3a3830;
+  --tbg:#e8e6e0;
+  --warn-bg:#fff8e6;--warn-text:#7a5500;--warn-border:#f0d080;
+}
+body.dark{
+  --bg:#1c1c1a;--surface:#252522;--surface2:#2e2e2a;--border:#3a3a35;
+  --text:#e8e6e0;--text2:#888;--text3:#555;--green:#2daa78;
+  --progress-bg:#333;
+  --req-bg:#3d1a1a;--req-text:#e07070;
+  --opt-bg:#2a2a28;--opt-text:#777;
+  --hbg:#1e1e1b;--hborder:#333;--htext:#c8c4b8;
+  --tbg:#333;
+  --warn-bg:#2a2000;--warn-text:#d4a800;--warn-border:#5a4000;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:2rem 1rem;transition:background .2s,color .2s}
+.container{max-width:680px;margin:0 auto}
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.25rem}
+h1{font-size:18px;font-weight:500}
+.subtitle{font-size:13px;color:var(--text2);margin-top:2px}
+.theme-btn{background:var(--tbg);border:0.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap;flex-shrink:0;margin-top:2px;transition:background .15s}
+.theme-btn:hover{background:var(--border)}
+.progress-wrap{margin-bottom:1.5rem}
+.progress-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:5px}
+.progress-bar{height:5px;border-radius:3px;background:var(--progress-bg);overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;background:var(--green);transition:width .3s ease}
+.section-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin:1.5rem 0 .5rem}
+.task{border-radius:10px;border:0.5px solid var(--border);background:var(--surface);margin-bottom:7px;overflow:hidden}
+.task-header{display:flex;align-items:flex-start;gap:12px;padding:11px 14px;cursor:pointer;transition:background .12s;user-select:none}
+.task-header:hover{background:var(--surface2)}
+.task.done .task-header{opacity:.45}
+.task.done .task-title{text-decoration:line-through;color:var(--text2)}
+.check{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--text3);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.task.done .check{background:var(--green);border-color:var(--green)}
+.cm{display:none;width:4px;height:8px;border:1.5px solid #fff;border-top:none;border-left:none;transform:rotate(45deg) translateY(-1px)}
+.task.done .cm{display:block}
+.task-body{flex:1;min-width:0}
+.task-title{font-size:14px;color:var(--text);line-height:1.4}
+.task-sub{font-size:12px;color:var(--text2);margin-top:3px;line-height:1.5}
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;margin-left:7px;vertical-align:2px;letter-spacing:.03em}
+.badge-r{background:var(--req-bg);color:var(--req-text)}
+.badge-o{background:var(--opt-bg);color:var(--opt-text)}
+.xbtn{font-size:11px;color:var(--green);cursor:pointer;display:inline-block;background:none;border:none;padding:0;font-family:inherit;margin-top:3px}
+.xbtn:hover{text-decoration:underline}
+/* question blocks */
+.qblock{display:none;border-top:0.5px solid var(--border)}
+.qblock.open{display:block}
+.qi{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:0.5px solid var(--border);cursor:pointer;transition:background .1s}
+.qi:last-child{border-bottom:none}
+.qi:hover{background:var(--surface2)}
+.qi.done{opacity:.5}
+.qi.done .qt{text-decoration:line-through;color:var(--text2)}
+.qc{width:15px;height:15px;border-radius:3px;border:1.5px solid var(--text3);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.qi.done .qc{background:var(--green);border-color:var(--green)}
+.qcm{display:none;width:3px;height:7px;border:1.5px solid #fff;border-top:none;border-left:none;transform:rotate(45deg) translateY(-1px)}
+.qi.done .qcm{display:block}
+.qt{font-size:13px;color:var(--htext);line-height:1.6;direction:rtl;font-family:"Segoe UI","Arial Hebrew","David",sans-serif;background:var(--hbg);padding:6px 10px;border-radius:6px;border:0.5px solid var(--hborder)}
+.qn{font-size:11px;color:var(--text3);margin-top:3px;font-style:italic}
+/* study panel */
+.study-panel{display:none;border-top:0.5px solid var(--border);padding:16px 14px}
+.study-panel.open{display:block}
+.sp-sec{margin-bottom:18px}
+.sp-sec:last-of-type{margin-bottom:0}
+.sp-title{font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--green);margin-bottom:8px}
+.sp-p{font-size:13px;color:var(--text);line-height:1.75;margin-bottom:6px}
+.sp-p:last-child{margin-bottom:0}
+.sp-math{font-size:13px;line-height:2;margin:6px 0;color:var(--text)}
+.sp-list{list-style:none;padding:0;margin:6px 0 0}
+.sp-list li{font-size:12px;color:var(--text2);padding:2px 0 2px 16px;position:relative;line-height:1.55}
+.sp-list li::before{content:"→";position:absolute;left:0;color:var(--text3)}
+.flag{font-size:11px;background:var(--warn-bg);color:var(--warn-text);border:0.5px solid var(--warn-border);padding:4px 9px;border-radius:5px;display:inline-block;margin-top:6px}
+.exp-box{background:var(--hbg);border:0.5px solid var(--hborder);border-left:3px solid var(--green);border-radius:0 7px 7px 0;padding:10px 12px;margin:10px 0 4px;font-size:12px;color:var(--text);line-height:1.65}
+.exp-label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:5px}
+.sp-divider{border:none;border-top:0.5px solid var(--border);margin:14px 0}
+.sc-label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.understood-btn{display:block;width:100%;margin-top:16px;padding:9px;border-radius:8px;border:1px solid var(--green);background:transparent;color:var(--green);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .12s}
+.understood-btn:hover{background:var(--green);color:#fff}
+.katex{font-size:1em!important}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div>
+      <h1>Brownian Motion — Colloquium Prep</h1>
+      <div class="subtitle">Lab B2 · Shaked &amp; Nir · Instructor: Shlomo Winberg</div>
+    </div>
+    <button class="theme-btn" onclick="toggleDark()" id="theme-btn">☾ Dark mode</button>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span id="prog-label">0 tasks complete</span>
+      <span id="prog-pct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="pbar" style="width:0%"></div></div>
+  </div>
+
+  <!-- READINGS -->
+  <div class="section-label">readings</div>
+
+  <div class="task" id="t1">
+    <div class="task-header" onclick="toggleTask('t1')">
+      <div class="check"><div class="cm"></div></div>
+      <div class="task-body">
+        <div class="task-title">Read Hebrew article — first 5 pages<span class="badge badge-r">required</span></div>
+        <div class="task-sub">"תנועה בראונית ומהלכים אקראיים", Tehuda 2007 · general background on Brownian motion &amp; random walks</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="task" id="t2">
+    <div class="task-header" onclick="toggleTask('t2')">
+      <div class="check"><div class="cm"></div></div>
+      <div class="task-body">
+        <div class="task-title">Read English paper (Jia et al.)<span class="badge badge-r">required</span></div>
+        <div class="task-sub">"The time, size, viscosity, and temperature dependence…" · primary reference; covers most colloquium questions</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="task" id="t3">
+    <div class="task-header" onclick="toggleTask('t3')">
+      <div class="check"><div class="cm"></div></div>
+      <div class="task-body">
+        <div class="task-title">Read ergodic hypothesis paragraph<span class="badge badge-r">required</span></div>
+        <div class="task-sub">"ההנחה הארגודית" — attached excerpt from statistical physics summary (Shteirman)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MATH & CONCEPTS -->
+  <div class="section-label">math &amp; concepts</div>
+
+  <!-- T4: Stats basics -->
+  <div class="task" id="t4">
+    <div class="task-header" onclick="toggleTask('t4')">
+      <div class="check"><div class="cm"></div></div>
+      <div class="task-body">
+        <div class="task-title">Stats basics: random variable, expectation, variance, normal distribution<span class="badge badge-r">required</span></div>
+        <div class="task-sub">Foundational for MSD analysis &nbsp;·&nbsp; <button class="xbtn" id="sbtn-t4" onclick="event.stopPropagation();toggleStudy('t4')">study ▾</button></div>
+      </div>
+    </div>
+    <div class="study-panel" id="study-t4">
+
+      <div class="sp-sec">
+        <div class="sp-title">random variable</div>
+        <p class="sp-p">A quantity whose value is determined by a random process. In this experiment, the displacement of a particle over time interval \(t\) — written \(\Delta x\) or \(\Delta r\) — is a random variable. It takes a different value every observation, even under identical conditions.</p>
+      </div>
+
+      <div class="sp-sec">
+        <div class="sp-title">expectation &nbsp;\(E[X]\)</div>
+        <p class="sp-p">The probability-weighted average over all possible outcomes:</p>
+        <div class="sp-math">\[ E[X] = \sum_i x_i\, p_i \quad \text{(discrete)}, \qquad E[X] = \int x\, f(x)\, dx \quad \text{(continuous)} \]</div>
+        <p class="sp-p">For Brownian motion: \(E[\Delta x] = 0\) — no preferred direction. The average displacement is zero, which is why we must square before averaging.</p>
+      </div>
+
+      <div class="sp-sec">
+        <div class="sp-title">variance &nbsp;\(\mathrm{Var}(X) = E[X^2] - E[X]^2\)</div>
+        <p class="sp-p">Measures spread around the mean. Since \(E[\Delta x] = 0\):</p>
+        <div class="sp-math">\[ \mathrm{Var}(\Delta x) = E[(\Delta x)^2] - 0^2 = \langle(\Delta x)^2\rangle \]</div>
+        <p class="sp-p"><strong>This is exactly the MSD.</strong> Computing the variance of the displacement distribution is the experiment.</p>
+      </div>
+
+      <div class="sp-sec">
+        <div class="sp-title">normal (Gaussian) distribution &nbsp;\(\mathcal{N}(\mu,\sigma^2)\)</div>
+        <div class="sp-math">\[ f(x) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right) \]</div>
+        <p class="sp-p">Brownian displacement along one axis: \(\Delta x \sim \mathcal{N}(0,\,2Dt)\), so \(\sigma^2 = 2Dt\). The distribution broadens as \(\sqrt{t}\) — the hallmark of diffusion.</p>
+      </div>
+
+      <div class="exp-box">
+        <div class="exp-label">connection to this experiment</div>
+        In 2D: \(\langle r^2\rangle = \langle(\Delta x)^2\rangle + \langle(\Delta y)^2\rangle = 4Dt\). The MSD is the variance of the displacement. Plot \(\langle r^2\rangle\) vs \(t\) → slope \(= 4D\) → extract \(k_B\) via \(D = k_BT/(6\pi\eta r)\).
+      </div>
+
+      <hr class="sp-divider">
+      <div class="sc-label">self-check — booklet Q1 (equipartition part)</div>
+      <div class="qi" id="qsc1" onclick="toggleQ('qsc1')" style="border-radius:7px;border:0.5px solid var(--hborder);">
+        <div class="qc"><div class="qcm"></div></div>
+        <div>
+          <div class="qt">איזו הנחה מאפשרת לקשר בין האנרגיה הקינטית לאנרגיה התרמית במערכת?</div>
+          <div class="qn">Answer: equipartition — \(\frac{1}{2}m\langle v_x^2\rangle = \frac{1}{2}k_BT\). This injects \(k_BT\) into the Langevin derivation and ultimately into the MSD slope.</div>
+        </div>
+      </div>
+
+      <button class="understood-btn" onclick="markUnderstood('t4')">mark as understood ✓</button>
+    </div>
+  </div>
+
+  <!-- T5: Random walk video -->
+  <div class="task" id="t5">
+    <div class="task-header" onclick="toggleTask('t5')">
+      <div class="check"><div class="cm"></div></div>
+      <div class="task-body">
+        <div class="task-title">Watch random walk video<span class="badge badge-r">required</span></div>
+        <div class="task-sub"><a href="https://www.youtube.com/watch?v=stgYW6M5o4k" target="_blank">youtube.com/watch?v=stgYW6M5o4k</a> · conceptual grasp only, no details needed</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- T6: Stokes + equipartition + ergodic -->
+  <div class="task" id="t6">
+    <div class="task-header" onclick="toggleTask('t6')">
+      <div class="check"><div class="cm"></div></div>
+      <div class="task-body">
+        <div class="task-title">Understand Stokes' law, equipartition theorem, ergodic hypothesis<span class="badge badge-r">required</span></div>
+        <div class="task-sub">Know what assumptions each principle requires &nbsp;·&nbsp; <button class="xbtn" id="sbtn-t6" onclick="event.stopPropagation();toggleStudy('t6')">study ▾</button></div>
+      </div>
+    </div>
+    <div class="study-panel" id="study-t6">
+
+      <div class="sp-sec">
+        <div class="sp-title">stokes' law — viscous drag</div>
+        <p class="sp-p">The drag force on a sphere of radius \(r\) moving at velocity \(v\) through fluid of dynamic viscosity \(\eta\):</p>
+        <div class="sp-math">\[ F_\text{drag} = \underbrace{6\pi\eta r}_{\gamma}\cdot v \qquad \Longrightarrow \qquad \gamma = 6\pi\eta r \]</div>
+        <p class="sp-p"><strong>Viscosity \(\eta\):</strong> resistance of a fluid to shear deformation. SI units: Pa·s. Practical unit: cP (centipoise). Water at 20°C: \(\eta \approx 1\,\text{cP} = 10^{-3}\,\text{Pa·s}\).</p>
+        <p class="sp-p"><strong>Assumptions required:</strong></p>
+        <ul class="sp-list">
+          <li>Reynolds number \(Re = \rho v r/\eta \ll 1\) — viscous forces dominate inertia. For 1 µm sphere at µm/s in water: \(Re \sim 10^{-6}\) ✓</li>
+          <li>Spherical particle (the factor of \(r\), not \(r^2\) or \(r^3\), comes from solving the Stokes flow equations for a sphere)</li>
+          <li>Particle far from walls — proximity to coverslip increases effective drag</li>
+          <li>Newtonian, incompressible fluid</li>
+        </ul>
+      </div>
+
+      <div class="sp-sec">
+        <div class="sp-title">equipartition theorem</div>
+        <p class="sp-p">Each quadratic degree of freedom in thermal equilibrium carries average energy \(\tfrac{1}{2}k_BT\). Applied to particle velocity per axis:</p>
+        <div class="sp-math">\[ \frac{1}{2}m\langle v_x^2\rangle = \frac{1}{2}k_BT \quad\Longrightarrow\quad \langle v_x^2\rangle = \frac{k_BT}{m} \]</div>
+        <p class="sp-p">In the Langevin derivation this is the step that introduces \(k_BT\) — it links the bath temperature to the particle's kinetic energy, giving the MSD its temperature dependence.</p>
+        <p class="sp-p"><strong>Why mass drops out:</strong> In the long-time limit \(t \gg m/\gamma\), the inertial term vanishes. For a 1 µm sphere in water, \(m/\gamma \approx 10^{-7}\,\text{s}\) — inaccessibly short. The final result \(\langle x^2\rangle = 2Dt\) with \(D = k_BT/\gamma\) contains no \(m\).</p>
+      </div>
+
+      <div class="sp-sec">
+        <div class="sp-title">ergodic hypothesis</div>
+        <p class="sp-p">For an ergodic system, the time average of an observable equals the ensemble average:</p>
+        <div class="sp-math">\[ \lim_{T\to\infty}\frac{1}{T}\int_0^T f\!\left(x(t)\right)dt \;=\; \langle f(x)\rangle_\text{ensemble} \]</div>
+        <p class="sp-p"><strong>Practical consequence:</strong> instead of tracking \(N\) particles simultaneously for time \(t\), track 1 particle for time \(N\cdot t\) and get equivalent statistics. This justifies single-particle long-trajectory measurements.</p>
+        <span class="flag">⚠ this is an assumption, not a proven theorem for this system</span>
+        <p class="sp-p" style="margin-top:8px">For equilibrium Brownian motion it is empirically well-justified. Flag it as an assumption in the colloquium — Shlomo specifically listed it.</p>
+      </div>
+
+      <div class="exp-box">
+        <div class="exp-label">connection to this experiment</div>
+        The Stokes-Einstein equation \(D = k_BT/(6\pi\eta r)\) combines all three: \(k_BT\) from equipartition, \(\gamma = 6\pi\eta r\) from Stokes, and ergodicity to justify the measurement method. From the slope of \(\langle r^2\rangle\) vs \(t\) at known \(r\) and \(\eta(T)\), you extract \(k_B\).
+      </div>
+
+      <hr class="sp-divider">
+      <div class="sc-label">self-check — booklet Q1 (partial), Q2, Q3, Q7</div>
+
+      <div class="qi" id="qsc2" onclick="toggleQ('qsc2')" style="border-radius:7px 7px 0 0;border:0.5px solid var(--hborder);border-bottom:none;">
+        <div class="qc"><div class="qcm"></div></div>
+        <div>
+          <div class="qt">מהו חוק סטוקס לצמיגות? מהי צמיגות? מה יחידותיה ומשמעותה? אילו הנחות הנחנו לגבי החלקיק במערכת בכך שאנו עושים שימוש בחוק סטוקס?</div>
+          <div class="qn">Q2 — see Stokes section above</div>
+        </div>
+      </div>
+      <div class="qi" id="qsc3" onclick="toggleQ('qsc3')" style="border-radius:0;border:0.5px solid var(--hborder);border-bottom:none;">
+        <div class="qc"><div class="qcm"></div></div>
+        <div>
+          <div class="qt">האם מסת החלקיק מופיעה בביטוי? הסבירו.</div>
+          <div class="qn">Q3 — mass drops out because \(t \gg m/\gamma \approx 10^{-7}\,\text{s}\) at any observable timescale</div>
+        </div>
+      </div>
+      <div class="qi" id="qsc4" onclick="toggleQ('qsc4')" style="border-radius:0;border:0.5px solid var(--hborder);border-bottom:none;">
+        <div class="qc"><div class="qcm"></div></div>
+        <div>
+          <div class="qt">איזו הנחה מאפשרת לקשר בין האנרגיה הקינטית לאנרגיה התרמית במערכת?</div>
+          <div class="qn">Q1 (equipartition part) — \(\tfrac{1}{2}m\langle v_x^2\rangle = \tfrac{1}{2}k_BT\)</div>
+        </div>
+      </div>
+      <div class="qi" id="qsc5" onclick="toggleQ('qsc5')" style="border-radius:0 0 7px 7px;border:0.5px solid var(--hborder);">
+        <div class="qc"><div class="qcm"></div></div>
+        <div>
+          <div class="qt">מהי ההנחה הארגודית? כיצד היא מאפשרת לפשט את המדידות?</div>
+          <div class="qn">Q7 — time average = ensemble average → one long trajectory substitutes for many particles</div>
+        </div>
+      </div>
+
+      <button class="understood-btn" onclick="markUnderstood('t6')">mark as understood ✓</button>
+    </div>
+  </div>
+
+  <!-- BOOKLET THEORY QUESTIONS -->
+  <div class="section-label">lab booklet — theoretical questions (שאלות הכנה)</div>
+  <div class="task" id="tq-block">
+    <div class="task-header" style="cursor:default;">
+      <div class="task-body">
+        <div class="task-title">Theory questions from booklet<span class="badge badge-r">required</span></div>
+        <div class="task-sub"><span id="q-summary">0 of 9 answered</span> &nbsp;·&nbsp; <button class="xbtn" onclick="toggleQuestions()">show questions ▾</button></div>
+      </div>
+    </div>
+    <div class="qblock" id="questions-block">
+      <div class="qi" id="q1" onclick="toggleQ('q1')"><div class="qc"><div class="qcm"></div></div><div><div class="qt">עבור חלקיק כדורי הנמצא בנוזל דו ממדי: כיצד מגיעים ממשוואת כוחות (לנג'ווין) למשוואה המתארת את תלות ממוצע ריבוע ההעתק (⟨r²⟩) בטמפרטורה, זמן, צמיגות החומר וגודל החלקיק? אילו הנחות מניחים? איזו הנחה מאפשרת לקשר בין האנרגיה הקינטית לאנרגיה התרמית במערכת?</div><div class="qn">Langevin → MSD derivation · equipartition</div></div></div>
+      <div class="qi" id="q2" onclick="toggleQ('q2')"><div class="qc"><div class="qcm"></div></div><div><div class="qt">מהו חוק סטוקס לצמיגות? מהי צמיגות? מה יחידותיה ומשמעותה? אילו הנחות הנחנו לגבי החלקיק במערכת בכך שאנו עושים שימוש בחוק סטוקס?</div><div class="qn">Stokes drag · viscosity units · assumptions (Re ≪ 1, spherical, far from walls)</div></div></div>
+      <div class="qi" id="q3" onclick="toggleQ('q3')"><div class="qc"><div class="qcm"></div></div><div><div class="qt">האם מסת החלקיק מופיעה בביטוי? הסבירו.</div><div class="qn">Mass drops out in the overdamped limit — t ≫ m/γ</div></div></div>
+      <div class="qi" id="q4" onclick="toggleQ('q4')"><div class="qc"><div class="qcm"></div></div><div><div class="qt">מהו מקדם הדיפוזיה ואיך הוא קשור לתנועת חלקיק כדורי בזורם (משוואת סטוקס-איינשטיין)?</div><div class="qn">D = k_B T / (6πηr)</div></div></div>
+      <div class="qi" id="q5" onclick="toggleQ('q5')"><div class="qc"><div class="qcm"></div></div><div><div class="qt">לאילו הבדלים היינו מצפים במקרה שהחלקיק איננו כדורי? היכן הנחנו תלות בגיאומטריית החלקיק?</div><div class="qn">Non-spherical → different drag tensor; γ = 6πηr is sphere-specific</div></div></div>
+      <div class="qi" id="q6" onclick="toggleQ('q6')"><div class="qc"><div class="qcm"></div></div><div><div class="qt">על פני אילו פרקי זמן אתם מציעים לבצע את המדידה? מה יגביל את הזמן הקצר ביותר? מה יגביל את הזמן הארוך ביותר?</div><div class="qn">Lower: momentum relaxation time m/γ · Upper: particle drifts out of frame or loses focus</div></div></div>
+      <div class="qi" id="q7" onclick="toggleQ('q7')"><div class="qc"><div class="qcm"></div></div><div><div class="qt">מהי ההנחה הארגודית? כיצד היא מאפשרת לפשט את המדידות?</div><div class="qn">Time average = ensemble average — single long trajectory substitutes for many particles</div></div></div>
+      <div class="qi" id="q8" onclick="toggleQ('q8')"><div class="qc"><div class="qcm"></div></div><div><div class="qt">כיצד תצפו בחלקיקים שגודלם מיקרונים אחדים במיקרוסקופ? כיצד פועלת מיקרוסקופיית dark field?</div><div class="qn">Oblique illumination — only scattered light reaches objective; background is dark</div></div></div>
+      <div class="qi" id="q9" onclick="toggleQ('q9')"><div class="qc"><div class="qcm"></div></div><div><div class="qt">להעמקה נוספת: מדוע איבר החיכוך תלוי ברדיוס החלקיק ולא בחזקה אחרת של הרדיוס? (פיתוח זה נמצא במאמר הארוך החל מעמוד 65: חיכוך סטוקס — בזרימה אחידה)</div><div class="qn">Optional — Stokes flow derivation shows γ ∝ r from flow symmetry around a sphere</div></div></div>
+    </div>
+  </div>
+
+  <!-- BOOKLET EXPERIMENTAL QUESTIONS -->
+  <div class="section-label">lab booklet — experimental procedure questions</div>
+  <div class="task" id="tq-exp-block">
+    <div class="task-header" style="cursor:default;">
+      <div class="task-body">
+        <div class="task-title">Experimental procedure questions<span class="badge badge-r">required</span></div>
+        <div class="task-sub"><span id="qe-summary">0 of 5 answered</span> &nbsp;·&nbsp; <button class="xbtn" onclick="toggleExpQuestions()">show questions ▾</button></div>
+      </div>
+    </div>
+    <div class="qblock" id="exp-questions-block">
+      <div class="qi" id="qe1" onclick="toggleQ('qe1')"><div class="qc"><div class="qcm"></div></div><div><div class="qt">כיצד תנתחו את ממוצע ריבוע ההעתק? כמה חלקיקים שונים נדרשים לקבלת תוצאה איכותית? התייחסו להנחה הארגודית.</div><div class="qn">MSD analysis · particle count · ergodic justification</div></div></div>
+      <div class="qi" id="qe2" onclick="toggleQ('qe2')"><div class="qc"><div class="qcm"></div></div><div><div class="qt">האם החלקיקים חופשיים לנוע בציר Z (בניצב ללוחית המיקרוסקופ)? כיצד זה ישפיע על המדידה?</div><div class="qn">z-confinement → 2D measurement; factor of 4Dt not 6Dt</div></div></div>
+      <div class="qi" id="qe3" onclick="toggleQ('qe3')"><div class="qc"><div class="qcm"></div></div><div><div class="qt">כיצד תוודאו שהמערכת איזוטרופית, כלומר שאין סחיפה לכיוון מסוים? מה ניתן לעשות בניתוח הנתונים כדי להתמודד עם סחף? איך תראה התלות של ⟨r²⟩ בזמן במקרה של סחיפה?</div><div class="qn">Drift → ⟨r²⟩ ~ (v·t)² + 4Dt; subtract mean displacement per frame</div></div></div>
+      <div class="qi" id="qe4" onclick="toggleQ('qe4')"><div class="qc"><div class="qcm"></div></div><div><div class="qt">קבלו את התלות של ⟨r²⟩ בזמן עבור מספר חלקיקים בגדלים שונים. בדקו את התלות בגודל ביחס לצפוי תיאורטית.</div><div class="qn">Slope ∝ 1/r — verify inverse-slope vs. radius is linear</div></div></div>
+      <div class="qi" id="qe5" onclick="toggleQ('qe5')"><div class="qc"><div class="qcm"></div></div><div><div class="qt">כיצד ניתן להשתמש במדידת התלות בצמיגות לחישוב קבוע בולצמן?</div><div class="qn">From slope = 2k_BT/(3πηa): k_B = slope · 3πηa / (2T)</div></div></div>
+    </div>
+  </div>
+
+  <!-- PREPARATION -->
+  <div class="section-label">preparation</div>
+
+  <div class="task" id="t9">
+    <div class="task-header" onclick="toggleTask('t9')">
+      <div class="check"><div class="cm"></div></div>
+      <div class="task-body">
+        <div class="task-title">Prepare summary notes to bring to colloquium<span class="badge badge-r">required</span></div>
+        <div class="task-sub">Key points, basic derivations, assumptions — Shlomo specifically invited this</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="task" id="t10">
+    <div class="task-header" onclick="toggleTask('t10')">
+      <div class="check"><div class="cm"></div></div>
+      <div class="task-body">
+        <div class="task-title">Browse Notion lab guide<span class="badge badge-o">optional</span></div>
+        <div class="task-sub"><a href="https://einav.notion.site/Brownian-Motion-Lab-Guide-bd4ad5916db34151b70161b20dec0461" target="_blank">einav.notion.site/…</a> · incl. Einstein 1905 translation</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const TASK_IDS = ['t1','t2','t3','t4','t5','t6','t9','t10'];
+const Q_IDS    = ['q1','q2','q3','q4','q5','q6','q7','q8','q9'];
+const QE_IDS   = ['qe1','qe2','qe3','qe4','qe5'];
+const QSC_IDS  = ['qsc1','qsc2','qsc3','qsc4','qsc5'];
+
+let state = JSON.parse(localStorage.getItem('bm_tracker_v4') || '{}');
+
+TASK_IDS.forEach(id => { if (state[id]) document.getElementById(id).classList.add('done'); });
+[...Q_IDS, ...QE_IDS, ...QSC_IDS].forEach(id => {
+  const el = document.getElementById(id);
+  if (el && state[id]) el.classList.add('done');
+});
+
+let dark = localStorage.getItem('bm_dark') === '1';
+applyTheme();
+
+function toggleDark() { dark = !dark; localStorage.setItem('bm_dark', dark ? '1' : '0'); applyTheme(); }
+function applyTheme() {
+  document.body.classList.toggle('dark', dark);
+  document.getElementById('theme-btn').textContent = dark ? '☀ Light mode' : '☾ Dark mode';
+}
+
+function toggleTask(id) {
+  state[id] = !state[id];
+  document.getElementById(id).classList.toggle('done', state[id]);
+  save(); updateProgress();
+}
+
+function toggleQ(id) {
+  state[id] = !state[id];
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('done', state[id]);
+  save(); updateProgress();
+}
+
+function toggleStudy(id) {
+  const panel = document.getElementById('study-' + id);
+  const btn   = document.getElementById('sbtn-' + id);
+  const open  = panel.classList.toggle('open');
+  btn.textContent = open ? 'hide ▴' : 'study ▾';
+}
+
+function markUnderstood(id) {
+  state[id] = true;
+  document.getElementById(id).classList.add('done');
+  document.getElementById('study-' + id).classList.remove('open');
+  document.getElementById('sbtn-' + id).textContent = 'study ▾';
+  save(); updateProgress();
+}
+
+function toggleQuestions() {
+  const open = document.getElementById('questions-block').classList.toggle('open');
+  document.querySelector('#tq-block .xbtn').textContent = open ? 'hide questions ▴' : 'show questions ▾';
+}
+function toggleExpQuestions() {
+  const open = document.getElementById('exp-questions-block').classList.toggle('open');
+  document.querySelector('#tq-exp-block .xbtn').textContent = open ? 'hide questions ▴' : 'show questions ▾';
+}
+
+function save() { localStorage.setItem('bm_tracker_v4', JSON.stringify(state)); }
+
+function updateProgress() {
+  const all = [
+    ...TASK_IDS.filter(id => state[id]),
+    ...Q_IDS.filter(id => state[id]),
+    ...QE_IDS.filter(id => state[id]),
+    ...QSC_IDS.filter(id => state[id])
+  ];
+  const total = TASK_IDS.length + Q_IDS.length + QE_IDS.length + QSC_IDS.length;
+  const done  = all.length;
+  const pct   = Math.round(done / total * 100);
+  document.getElementById('pbar').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = done + ' of ' + total + ' tasks complete';
+  document.getElementById('prog-pct').textContent   = pct + '%';
+  document.getElementById('q-summary').textContent  = Q_IDS.filter(id => state[id]).length  + ' of ' + Q_IDS.length  + ' answered';
+  document.getElementById('qe-summary').textContent = QE_IDS.filter(id => state[id]).length + ' of ' + QE_IDS.length + ' answered';
+}
+
+updateProgress();
+
+renderMathInElement(document.body, {
+  delimiters: [
+    {left: "\\(", right: "\\)", display: false},
+    {left: "\\[", right: "\\]", display: true}
+  ],
+  throwOnError: false
+});
+</script>
+</body>
+</html>
