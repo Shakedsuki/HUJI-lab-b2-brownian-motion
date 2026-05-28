@@ -8,11 +8,12 @@ venv/
 # Jupyter
 .ipynb_checkpoints/
 
-# Data — large files; commit only processed CSVs, not raw video
-data/raw/*.avi
-data/raw/*.mp4
-data/raw/*.tif
-data/raw/*.tiff
+# Raw video — large; kept out of git. Videos live inside each week's own
+# videos/ folder (self-contained weeks), e.g. experiments/week1-*/videos/.
+experiments/**/videos/*.avi
+experiments/**/videos/*.mp4
+experiments/**/videos/*.tif
+experiments/**/videos/*.tiff
 
 # OS
 .DS_Store
@@ -21,7 +22,3 @@ Thumbs.db
 # LyX
 *.lyx~
 auto/
-
-# Outputs that get regenerated
-report/figures/*.png
-report/figures/*.pdf

@@ -4,5 +4,8 @@ pandas
 matplotlib
 trackpy          # particle tracking (Crocker-Grier)
 pims             # image sequence I/O for trackpy
+imageio[pyav]    # robust AVI/MP4 frame reading (uEye videos)
+tifffile         # TIFF stack reading
+opencv-python    # fallback video reader for awkward codecs
 tqdm
 jupyterlab
