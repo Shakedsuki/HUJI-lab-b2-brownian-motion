@@ -1,0 +1,8 @@
+{
+  "_note": "Spatial calibration measured once from the ruler video; reused by every week via paths.load_scale(). Fill um_per_px after running calibrate_scale.py and verifying the ruler period.",
+  "um_per_px": null,
+  "period_px": null,
+  "period_um": null,
+  "source_video": "measurent_0.1mm_focused.avi",
+  "objective": "40x"
+}

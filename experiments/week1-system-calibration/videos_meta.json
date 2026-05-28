@@ -1,0 +1,119 @@
+{
+  "measurent_0.1mm.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 2.159,
+    "fps_avg": 2.159,
+    "nb_frames": 57,
+    "duration_s": 26.401112,
+    "codec": "mjpeg"
+  },
+  "measurent_0.1mm_focused.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.377,
+    "fps_avg": 9.377,
+    "nb_frames": 73,
+    "duration_s": 7.785006,
+    "codec": "mjpeg"
+  },
+  "run1.avi": {
+    "width": 2560,
+    "height": 1920,
+    "fps_nominal": 4.401,
+    "fps_avg": 4.401,
+    "nb_frames": 602,
+    "duration_s": 136.787094,
+    "codec": "mjpeg"
+  },
+  "run10_aimed_for_5C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.304,
+    "fps_avg": 9.304,
+    "nb_frames": 1350,
+    "duration_s": 145.098882,
+    "codec": "mjpeg"
+  },
+  "run2.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.298,
+    "fps_avg": 9.298,
+    "nb_frames": 1630,
+    "duration_s": 175.306518,
+    "codec": "mjpeg"
+  },
+  "run3.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.304,
+    "fps_avg": 9.304,
+    "nb_frames": 1225,
+    "duration_s": 131.663801,
+    "codec": "mjpeg"
+  },
+  "run4.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.303,
+    "fps_avg": 9.303,
+    "nb_frames": 1421,
+    "duration_s": 152.746426,
+    "codec": "mjpeg"
+  },
+  "run5.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.299,
+    "fps_avg": 9.299,
+    "nb_frames": 1118,
+    "duration_s": 120.227982,
+    "codec": "mjpeg"
+  },
+  "run6.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.298,
+    "fps_avg": 9.298,
+    "nb_frames": 1897,
+    "duration_s": 204.02237,
+    "codec": "mjpeg"
+  },
+  "run7_aimed_for_15C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.3,
+    "fps_avg": 9.3,
+    "nb_frames": 1135,
+    "duration_s": 122.043011,
+    "codec": "mjpeg"
+  },
+  "run8_aimed_for_15C_.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.303,
+    "fps_avg": 9.303,
+    "nb_frames": 1145,
+    "duration_s": 123.078577,
+    "codec": "mjpeg"
+  },
+  "run9_aimed_for_5C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.297,
+    "fps_avg": 9.297,
+    "nb_frames": 1675,
+    "duration_s": 180.165645,
+    "codec": "mjpeg"
+  },
+  "test.avi": {
+    "width": 2560,
+    "height": 1920,
+    "fps_nominal": 4.439,
+    "fps_avg": 4.439,
+    "nb_frames": 45,
+    "duration_s": 10.137418,
+    "codec": "mjpeg"
+  }
+}

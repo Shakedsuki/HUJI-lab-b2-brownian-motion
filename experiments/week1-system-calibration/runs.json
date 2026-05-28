@@ -1,0 +1,23 @@
+{
+  "_schema": "per-run physics metadata; null = not yet measured. Do not fabricate. Acquisition facts (res/fps/frames) live in videos_meta.json.",
+  "_modes": {
+    "1632x1224 @ ~9.30 fps": "run2..run10 + calibration videos (the analyzable set; um_per_px = 0.144 from calibration/scale.json)",
+    "2560x1920 @ ~4.40 fps": "run1, test.avi (exploratory; no ruler at this resolution -> no valid scale)"
+  },
+  "runs": {
+    "run2":  { "video": "run2.avi",  "aimed_T_C": "room", "measured_T_C": null, "eta_cP": null, "radius_um": null, "status": "raw" },
+    "run3":  { "video": "run3.avi",  "aimed_T_C": "room", "measured_T_C": null, "eta_cP": null, "radius_um": null, "status": "raw" },
+    "run4":  { "video": "run4.avi",  "aimed_T_C": "room", "measured_T_C": null, "eta_cP": null, "radius_um": null, "status": "raw" },
+    "run5":  { "video": "run5.avi",  "aimed_T_C": "room", "measured_T_C": null, "eta_cP": null, "radius_um": null, "status": "raw" },
+    "run6":  { "video": "run6.avi",  "aimed_T_C": "room", "measured_T_C": null, "eta_cP": null, "radius_um": null, "status": "raw" },
+    "run7":  { "video": "run7_aimed_for_15C.avi", "aimed_T_C": 15, "measured_T_C": null, "eta_cP": null, "radius_um": null, "status": "raw" },
+    "run8":  { "video": "run8_aimed_for_15C_.avi", "aimed_T_C": 15, "measured_T_C": null, "eta_cP": null, "radius_um": null, "status": "raw" },
+    "run9":  { "video": "run9_aimed_for_5C.avi",  "aimed_T_C": 5,  "measured_T_C": null, "eta_cP": null, "radius_um": null, "status": "raw" },
+    "run10": { "video": "run10_aimed_for_5C.avi", "aimed_T_C": 5,  "measured_T_C": null, "eta_cP": null, "radius_um": null, "status": "raw" }
+  },
+  "_excluded": {
+    "run1.avi": "2560x1920 @ 4.40 fps exploratory capture; no ruler at this resolution",
+    "test.avi": "2560x1920 test recording; not a measurement run",
+    "15C_room_same_run6.avi": "252-byte truncated file (was removed)"
+  }
+}
