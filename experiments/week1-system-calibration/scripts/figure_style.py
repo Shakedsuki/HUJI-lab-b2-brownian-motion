@@ -30,9 +30,15 @@ def set_style():
     })
 
 
-def savefig(name, fig=None, **kwargs):
-    """Save into this week's figures/ dir and return the path."""
-    os.makedirs(_paths.FIGURES_DIR, exist_ok=True)
-    path = os.path.join(_paths.FIGURES_DIR, name)
+def savefig(name, fig=None, outdir=None, **kwargs):
+    """Save a figure and return its path.
+
+    Per-run plots pass outdir=measurements/<run>/figures so each run's figures
+    live inside the run folder (measurements/run3/figures/plot1.png); cross-run
+    figures (e.g. the aggregate) omit outdir -> this week's top-level figures/.
+    """
+    d = outdir if outdir is not None else _paths.FIGURES_DIR
+    os.makedirs(d, exist_ok=True)
+    path = os.path.join(d, name)
     (fig or plt).savefig(path, bbox_inches="tight", **kwargs)
     return path

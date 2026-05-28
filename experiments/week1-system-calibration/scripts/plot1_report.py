@@ -55,22 +55,50 @@ def tamsd(sub, mpp, dt, max_lag):
     return np.array(lags), np.array(msd)
 
 
-def pick_clean(msd_csv, n):
-    """Auto-pick n clean beads spanning the D range."""
-    m = pd.read_csv(msd_csv)
-    gates = [
-        dict(nf=400, cv=0.10, ec=0.20, ic=0.05),   # strict
-        dict(nf=200, cv=0.15, ec=0.25, ic=0.10),   # relaxed fallback
-    ]
-    for g in gates:
+def pick_clean(cdir, n):
+    """Auto-pick n clean SINGLE spheres spanning the radius range.
+
+    Restricts to human-labelled singles (labels.csv perfect/singlet) when
+    available -- the trustworthy, appearance-based curation that Plot 2 uses --
+    then applies only size-UNCONFOUNDED quality gates (track length, focus
+    stability, fit intercept). The old ecc gate is intentionally dropped: small
+    dim singles read high apparent eccentricity from intensity noise, so an ecc
+    cut wrongly rejects good small beads and favours the large low-ecc doublets
+    (this is why Plot 1 used to feature a bead Plot 2 calls a doublet). Beads are
+    spread across RADIUS so their differing slopes preview Plot 2; returned small
+    -> large.
+    """
+    m = pd.read_csv(os.path.join(cdir, "msd.csv"))
+    rpath = os.path.join(cdir, "radius.csv")
+    lpath = os.path.join(cdir, "labels.csv")
+    if os.path.exists(rpath):
+        rad = pd.read_csv(rpath)
+        rc = [c for c in ["particle", "r_um", "circ_resid_frac", "inlier_frac"] if c in rad.columns]
+        m = m.merge(rad[rc], on="particle", how="left")
+    if os.path.exists(lpath):
+        lab = pd.read_csv(lpath)
+        keep = lab[lab["type"].isin(["perfect", "singlet"])]["particle"]
+        m = m[m["particle"].isin(keep)]
+    elif "circ_resid_frac" in m:                    # objective single-sphere proxy
+        m = m[(m["circ_resid_frac"] < 0.10) & (m.get("inlier_frac", 1) > 0.70)]
+    # One permissive quality bar (track length + focus stability) builds the
+    # candidate pool; we then SPAN radius across it. Gates are size-unconfounded
+    # and intercept is loose: small beads carry a larger localisation offset and
+    # the 4Dt+c fit absorbs it, so excluding them would strand Plot 1 at the
+    # large (slow) end and hide the size dependence it exists to show. Spanning
+    # by construction (not "first gate that yields n") prevents the clean LARGE
+    # beads from monopolising all three slots.
+    for g in [dict(nf=300, cv=0.30, ic=0.40), dict(nf=150, cv=0.45, ic=0.70)]:
         c = m[(m.n_frames >= g["nf"]) & (m.size_cv < g["cv"]) &
-              (m.ecc_med < g["ec"]) & (m.intercept_um2.abs() < g["ic"])]
+              (m.intercept_um2.abs() < g["ic"])]
         if len(c) >= n:
             break
-    if len(c) == 0:
-        c = m.sort_values("n_frames", ascending=False).head(n)
-    c = c.sort_values("D_um2_s")
-    # spread across D: take min, max, and evenly spaced in between
+    if len(c) < n:
+        c = m.sort_values("n_frames", ascending=False).head(max(n, 1))
+    if "r_um" in c and c["r_um"].notna().any():
+        c = c.sort_values("r_um")                       # small radius first
+    else:
+        c = c.sort_values("D_um2_s", ascending=False)   # high D == small first
     idx = np.linspace(0, len(c) - 1, n).astype(int)
     return c.iloc[idx]["particle"].astype(int).tolist()
 
@@ -100,18 +128,34 @@ def main():
     fps = _paths.fps_of(meta_video) or 9.30
     dt = 1.0 / fps
 
+    # radius lookup so curves are labelled by ACTUAL size (small=smallest r)
+    r_of = {}
+    rpath = os.path.join(cdir, "radius.csv")
+    if os.path.exists(rpath):
+        rr = pd.read_csv(rpath)
+        r_of = {int(p): float(r) for p, r in zip(rr["particle"], rr["r_um"]) if pd.notna(r)}
+
     beads = args.beads
     if not beads:
         if not os.path.exists(mcsv):
             sys.exit("no msd.csv to auto-pick beads; run msd_fit.py or pass --beads")
-        beads = pick_clean(mcsv, args.n_show)
-    print(f"[plot1] {stem}: mpp={mpp} um/px, fps={fps:.3f}; beads {beads}")
+        beads = pick_clean(cdir, args.n_show)
+    elif r_of:
+        beads = sorted(beads, key=lambda p: r_of.get(p, np.inf))   # small -> large
+    print(f"[plot1] {stem}: mpp={mpp} um/px, fps={fps:.3f}; beads {beads} "
+          f"(r={[round(r_of.get(b, float('nan')), 2) for b in beads]} um)")
 
     traj = pd.read_csv(tcsv)
     figure_style.set_style()
     fig, ax = plt.subplots(1, 2, figsize=(11, 4.4))
     colors = ["C0", "C1", "C3", "C2", "C4", "C5"]
-    labels = ["small bead", "medium bead", "large bead"] + [f"bead {b}" for b in beads[3:]]
+    size_words = ["small", "medium", "large"]
+
+    def bead_label(k, pid):
+        r = r_of.get(pid, np.nan)
+        base = size_words[k] + " bead" if (args.n_show == 3 and k < 3) else f"bead {pid}"
+        return base + (f" ($r$={r:.2f} $\\mu$m)" if np.isfinite(r) else "")
+
     guide = None
 
     for k, pid in enumerate(beads):
@@ -124,7 +168,7 @@ def main():
         (sl, ic), cov = np.polyfit(lags[fm], msd[fm], 1, cov=True)
         D, Derr = sl / 4.0, float(np.sqrt(cov[0, 0])) / 4.0
         col = colors[k % len(colors)]
-        lab = labels[k] if k < len(labels) else f"bead {pid}"
+        lab = bead_label(k, pid)
         ax[0].plot(lags, msd, "o", ms=3, color=col, alpha=0.6)
         xs = np.linspace(0, lags[fm].max(), 50)
         ax[0].plot(xs, sl * xs + ic, "-", color=col, lw=1.8,
@@ -147,8 +191,7 @@ def main():
     ax[1].legend(fontsize=8)
 
     fig.tight_layout()
-    name = f"plot1_report_{stem}{'_' + args.tag if args.tag else ''}.png"
-    path = figure_style.savefig(name, fig=fig)
+    path = figure_style.savefig("plot1.png", fig=fig, outdir=os.path.join(cdir, "figures"))
     plt.close(fig)
     print(f"[plot1] wrote {path}")
 
