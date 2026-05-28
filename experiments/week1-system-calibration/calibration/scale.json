@@ -1,8 +1,13 @@
 {
-  "_note": "Spatial calibration measured once from the ruler video; reused by every week via paths.load_scale(). Fill um_per_px after running calibrate_scale.py and verifying the ruler period.",
-  "um_per_px": null,
-  "period_px": null,
-  "period_um": null,
+  "_note": "Spatial calibration for the 1632x1224 mode (run2-run10). Measured by hand from the median ruler profile: two grid lines (0.1 mm = 100 um apart) at x ~= 350 and x ~= 1045 px -> 695 px per 100 um. The FFT auto-value was a harmonic artifact and is NOT used.",
+  "um_per_px": 0.1439,
+  "um_per_px_unc": 0.003,
+  "period_px": 695,
+  "period_um": 100,
+  "axis": "x",
   "source_video": "measurent_0.1mm_focused.avi",
-  "objective": "40x"
+  "resolution": "1632x1224",
+  "applies_to": "run2..run10 (1632x1224 mode only; NOT run1/test at 2560x1920)",
+  "objective": "40x",
+  "method": "manual two-point on median ruler profile"
 }

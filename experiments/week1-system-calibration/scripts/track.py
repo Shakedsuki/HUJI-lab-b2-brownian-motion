@@ -126,12 +126,14 @@ def main():
         plt.savefig(os.path.join(tdir, "mass_hist.png"), dpi=120, bbox_inches="tight")
         plt.close()
 
-        # sub-pixel bias: decimal part of positions should be ~flat. U/peak shape
-        # => diameter too small. Diagnostic for choosing --diameter.
+        # sub-pixel bias: the decimal part of x,y positions should be ~flat.
+        # A U-shape or central peak => --diameter is too small. (Version-
+        # independent: we histogram x%1 and y%1 ourselves rather than rely on
+        # tp.subpx_bias, whose signature varies across trackpy releases.)
         fig, ax = plt.subplots(1, 2, figsize=(8, 3))
-        tp.subpx_bias(f, ax=ax) if hasattr(tp, "subpx_bias") else [
-            ax[0].hist(f["x"] % 1, bins=20), ax[1].hist(f["y"] % 1, bins=20)]
-        fig.suptitle("sub-pixel bias (should be flat; peaked => raise --diameter)")
+        ax[0].hist(f["x"] % 1, bins=20); ax[0].set_title("x mod 1")
+        ax[1].hist(f["y"] % 1, bins=20); ax[1].set_title("y mod 1")
+        fig.suptitle("sub-pixel bias (flat = good; peaked/U => raise --diameter)")
         fig.savefig(os.path.join(tdir, "subpx_bias.png"), dpi=120, bbox_inches="tight")
         plt.close(fig)
 
@@ -139,11 +141,26 @@ def main():
         print("       send these back; then re-run without --tune to track the clip.")
         return
 
-    # ---------------- FULL: batch -> link -> filter -> drift ---------------
-    print(f"[track] {stem}: locating features (this reads the whole clip)...")
+    # ---------------- FULL: locate (streaming) -> link -> filter -> drift --
+    # tp.batch wants an indexable sequence; we instead locate frame-by-frame
+    # from the generator so only ONE frame is in RAM at a time (the long runs
+    # are ~1600-1900 frames of 1632x1224 -> a full list would be 3-4 GB).
+    import pandas as pd
+    print(f"[track] {stem}: locating features frame-by-frame (streaming)...")
     tp.quiet()
-    feats = tp.batch(gray_frames(path, args.max_frames), args.diameter,
-                     minmass=args.minmass, invert=args.invert, processes=1)
+    parts = []
+    n_done = 0
+    for i, frame in enumerate(gray_frames(path, args.max_frames)):
+        f = tp.locate(frame, args.diameter, minmass=args.minmass, invert=args.invert)
+        if len(f):
+            f["frame"] = i
+            parts.append(f)
+        n_done = i + 1
+        if n_done % 100 == 0:
+            print(f"    ...located {n_done} frames")
+    if not parts:
+        sys.exit("No features found in any frame \u2014 check --minmass/--diameter.")
+    feats = pd.concat(parts, ignore_index=True)
     print(f"[track] {len(feats)} detections over "
           f"{feats['frame'].nunique()} frames; linking...")
 
