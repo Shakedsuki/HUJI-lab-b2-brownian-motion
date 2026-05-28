@@ -86,12 +86,20 @@ def main():
     ap.add_argument("--diameter", type=int, default=11, help="trackpy feature diameter (ODD px)")
     ap.add_argument("--minmass", type=float, default=None, help="min integrated brightness")
     ap.add_argument("--invert", action="store_true", help="track DARK features instead of bright")
+    ap.add_argument("--percentile", type=float, default=64,
+                    help="intensity percentile for candidate maxima (default 64). "
+                         "Raise to ~90 on bright/low-contrast frames: far fewer junk "
+                         "candidates get characterized -> much faster + cleaner.")
     ap.add_argument("--search", type=float, default=15, help="link search range (px/frame)")
     ap.add_argument("--memory", type=int, default=3, help="frames a particle may vanish")
     ap.add_argument("--stub", type=int, default=50, help="drop tracks shorter than this many frames")
     ap.add_argument("--max-frames", type=int, default=None)
     ap.add_argument("--tune", action="store_true", help="locate one frame only; save diagnostics")
     ap.add_argument("--frame", type=int, default=0, help="frame index for --tune")
+    ap.add_argument("--tag", default=None,
+                    help="write to measurements/<stem>/<tag>/ instead of "
+                         "measurements/<stem>/, so different configs don't "
+                         "overwrite each other (e.g. --tag d21m600).")
     args = ap.parse_args()
 
     import trackpy as tp
@@ -99,6 +107,8 @@ def main():
     path = _paths.video(args.video)
     stem = os.path.splitext(os.path.basename(path))[0]
     out = _paths.clip_dir(stem)
+    if args.tag:
+        out = os.path.join(out, args.tag)
     os.makedirs(out, exist_ok=True)
 
     if args.diameter % 2 == 0:
@@ -107,7 +117,8 @@ def main():
     # ---------------- TUNE: locate on one frame, save diagnostics ----------
     if args.tune:
         frame = nth_frame(path, args.frame)
-        f = tp.locate(frame, args.diameter, minmass=args.minmass, invert=args.invert)
+        f = tp.locate(frame, args.diameter, minmass=args.minmass,
+                      invert=args.invert, percentile=args.percentile)
         tdir = os.path.join(out, "tune")
         os.makedirs(tdir, exist_ok=True)
         print(f"[tune] {stem} frame {args.frame}: {len(f)} features "
@@ -126,6 +137,27 @@ def main():
         plt.savefig(os.path.join(tdir, "mass_hist.png"), dpi=120, bbox_inches="tight")
         plt.close()
 
+        # --- doublet check: eccentricity separates round singles (ecc ~ 0) from
+        # elongated pairs (high ecc). Save the full per-feature table + an
+        # ecc-coloured overlay so doublets can be verified BEFORE a full track.
+        f.to_csv(os.path.join(tdir, "features.csv"), index=False)
+        if "ecc" in f:
+            plt.figure(figsize=(6, 4))
+            plt.hist(f["ecc"], bins=40)
+            plt.xlabel("eccentricity (0 = round single; high tail = doublets)")
+            plt.ylabel("count")
+            plt.title("a separated high-ecc tail = doublets we can filter")
+            plt.savefig(os.path.join(tdir, "ecc_hist.png"), dpi=120, bbox_inches="tight")
+            plt.close()
+
+            plt.figure(figsize=(10, 7.5))
+            plt.imshow(frame, cmap="gray")
+            sc = plt.scatter(f["x"], f["y"], c=f["ecc"], s=30, cmap="autumn_r")
+            plt.colorbar(sc, label="ecc (bright = doublet-like)")
+            plt.title(f"{stem} f{args.frame}: detections coloured by eccentricity")
+            plt.savefig(os.path.join(tdir, "ecc_overlay.png"), dpi=130, bbox_inches="tight")
+            plt.close()
+
         # sub-pixel bias: the decimal part of x,y positions should be ~flat.
         # A U-shape or central peak => --diameter is too small. (Version-
         # independent: we histogram x%1 and y%1 ourselves rather than rely on
@@ -137,7 +169,8 @@ def main():
         fig.savefig(os.path.join(tdir, "subpx_bias.png"), dpi=120, bbox_inches="tight")
         plt.close(fig)
 
-        print(f"[tune] saved annotated.png, mass_hist.png, subpx_bias.png -> {tdir}")
+        print(f"[tune] saved annotated.png, mass_hist.png, ecc_hist.png, "
+              f"ecc_overlay.png, features.csv, subpx_bias.png -> {tdir}")
         print("       send these back; then re-run without --tune to track the clip.")
         return
 
@@ -151,7 +184,8 @@ def main():
     parts = []
     n_done = 0
     for i, frame in enumerate(gray_frames(path, args.max_frames)):
-        f = tp.locate(frame, args.diameter, minmass=args.minmass, invert=args.invert)
+        f = tp.locate(frame, args.diameter, minmass=args.minmass,
+                      invert=args.invert, percentile=args.percentile)
         if len(f):
             f["frame"] = i
             parts.append(f)
