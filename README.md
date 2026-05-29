@@ -8,10 +8,11 @@
 
 ## Overview
 
-Experimental study of the Brownian motion of micron-scale polymer microspheres
-in water, tracked via optical microscopy. The experiment measures the mean
-squared displacement (MSD) versus time, particle size, and temperature, and uses
-the Stokes-Einstein relation to extract Boltzmann's constant.
+Experimental study of the Brownian motion of polyethylene microspheres in water
+and water/glycerol mixtures, tracked via optical microscopy. The experiment
+measures the mean squared displacement (MSD) as a function of time, particle
+size, viscosity, and temperature, and uses the Stokes-Einstein relation to
+extract Boltzmann's constant.
 
 **Core relation:**
 
@@ -70,6 +71,6 @@ pip install -r requirements.txt
 
 ## Key references
 
-1. Jia et al., *Am. J. Phys.* **75**, 111 (2007) — primary technical reference
-2. Andelman & Diamant, *Tehuda* **26**(3) (2007) — background reading (Hebrew)
-3. Lab booklet: *חוברת מעבדה תנועה בראונית 2023*
+1. Jia et al., _Am. J. Phys._ **75**, 111 (2007) — primary technical reference
+2. Andelman & Diamant, _Tehuda_ **26**(3) (2007) — background reading (Hebrew)
+3. Lab booklet: _חוברת מעבדה תנועה בראונית 2023_
