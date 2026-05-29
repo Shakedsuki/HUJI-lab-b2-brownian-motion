@@ -23,6 +23,8 @@ Thumbs.db
 *.lyx~
 auto/
 
-# v2 pipeline generated outputs + caches (regenerable; not source)
-experiments/*/measurements/*/pipeline/
+# v2 pipeline: commit result figures + CSVs; ignore caches, dev-tune montages,
+# and the early-tag working snapshot (all regenerable).
 *.npy
+experiments/*/measurements/*/pipeline/*_tune/
+experiments/*/measurements/*/pipeline/early_tag/
