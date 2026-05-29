@@ -22,3 +22,7 @@ Thumbs.db
 # LyX
 *.lyx~
 auto/
+
+# v2 pipeline generated outputs + caches (regenerable; not source)
+experiments/*/measurements/*/pipeline/
+*.npy

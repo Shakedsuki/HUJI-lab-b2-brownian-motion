@@ -8,7 +8,7 @@
 
 ## Overview
 
-Experimental study of the Brownian motion of polystyrene microspheres in water
+Experimental study of the Brownian motion of polyethylene microspheres in water
 and water/glycerol mixtures, tracked via optical microscopy. The experiment
 measures the mean squared displacement (MSD) as a function of time, particle
 size, viscosity, and temperature, and uses the Stokes-Einstein relation to

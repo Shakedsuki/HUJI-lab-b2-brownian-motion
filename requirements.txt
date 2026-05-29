@@ -9,3 +9,4 @@ tifffile         # TIFF stack reading
 opencv-python    # fallback video reader for awkward codecs
 tqdm
 jupyterlab
+scikit-learn     # supervised curation gate-tuning + classifier (pipeline/learn.py)
