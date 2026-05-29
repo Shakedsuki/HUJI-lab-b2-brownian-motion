@@ -1,0 +1,19 @@
+BATCH SUMMARY  (run2 discarded; T for run7-10 is AIMED 15/5 C, not measured -> cold-run k_B provisional)
+accepted k_B = 1.3806e-23 J/K
+
+ROOM-TEMP (run3,4,5,6): k_B = 1.7641e-23 (1.278x accepted), n_free=21/102, +/-1.60e-24; all-singles contrast 0.847x   <- HEADLINE
+    per-run beads: {'run3': 27, 'run4': 29, 'run5': 28, 'run6': 18}
+    per-run free medians (xacc): run3 1.29, run4 1.28, run5 0.86 (low outlier), run6 1.34
+ALL RUNS: k_B = 1.7851e-23 (1.293x accepted), n_free=27/182, +/-1.39e-24; all-singles contrast 0.926x
+    NOTE: room-dominated -- only 6/27 free beads come from cold runs, and they span
+    mixed T/eta, so this is NOT an independent result (pooled_kb_all.png intentionally
+    NOT committed: its D-vs-1/r panel mixes 5/15/25 C against a 25 C reference line).
+
+TEMPERATURE SERIES: INCONCLUSIVE -- too few free (sub-r*) beads at cold T.
+    15 C: 0 usable -- run7 + run8 gave 1 free bead each (2 total, below the n>=3 floor) -> no point.
+    5  C: 4 free beads (run9=1, run10=3) -> 1.702x, but n too small AND above room temp,
+          i.e. small-n noise + radius over-read, not a real temperature trend.
+    Caveats: T is AIMED not measured; run10 had a mid-clip detection dropout (frame ~700:
+    17 features vs ~100) and supplies 3 of the 4 cold free beads.
+    => k_B invariance vs T is NOT demonstrated; cold runs need re-acquisition with a
+       measured thermocouple T (and more small beads). temperature_series.png NOT committed.

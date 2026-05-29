@@ -1,0 +1,4 @@
+run6: k_B median = 1.8545e-23 J/K (1.343 x accepted)
+n_free=4/18, T=25.0C, eta=0.890cP, r*=1.14um
+total unc = 3.619e-24 (0.262 x); stat=2.50e-24 T=9.72e-25 cut=1.51e-25 bias=2.42e-24
+Theil-Sen=nan (nanx), naive-LS=1.8824e-23 (1.363x)
