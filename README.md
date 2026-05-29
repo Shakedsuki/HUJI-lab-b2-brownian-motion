@@ -8,11 +8,10 @@
 
 ## Overview
 
-Experimental study of the Brownian motion of polystyrene microspheres in water
-and water/glycerol mixtures, tracked via optical microscopy. The experiment
-measures the mean squared displacement (MSD) as a function of time, particle
-size, viscosity, and temperature, and uses the Stokes-Einstein relation to
-extract Boltzmann's constant.
+Experimental study of the Brownian motion of micron-scale polymer microspheres
+in water, tracked via optical microscopy. The experiment measures the mean
+squared displacement (MSD) versus time, particle size, and temperature, and uses
+the Stokes-Einstein relation to extract Boltzmann's constant.
 
 **Core relation:**
 
@@ -28,47 +27,36 @@ where `D = k_BT / 6πηa` is the diffusion coefficient (Stokes-Einstein).
 
 ```
 brownian-motion/
-├── docs/                       # Reference material, lab notes
-├── simulations/                # Physics simulations & visualisations
-│   ├── langevin_animation.py   # Animated Langevin + Stokes drag demo
-│   └── __init__.py
+├── docs/                                # colloquium tracker, reference notes
+├── experiments/
+│   └── week1-system-calibration/
+│       ├── scripts/                     # the analysis pipeline (see below)
+│       ├── calibration/                 # µm/px scale (scale.json) + check image
+│       ├── measurements/<run>/          # trajectory/msd/radius/labels CSVs
+│       │   └── figures/                 # that run's plot1.png, plot2.png
+│       ├── figures/                     # cross-run aggregate
+│       ├── runs.json, videos_meta.json  # per-run physics + acquisition metadata
+│       └── videos/                      # raw .avi (gitignored)
 ├── requirements.txt
 └── README.md
 ```
 
-> **data/** and **analysis/** directories will be added once measurements begin.
-
 ---
 
-## Simulations
-
-### `simulations/langevin_animation.py`
-
-Real-time 2D animation of a single Brownian particle governed by the Langevin
-equation:
+## Pipeline (`experiments/week1-system-calibration/scripts/`)
 
 ```
-m dv/dt  =  -γv  +  F(t)        (Langevin, Eq. 1 — Jia et al. 2007)
-γ        =  6πηa                 (Stokes drag, Eq. 2)
+track.py        video → trajectory.csv      (locate → link → drift-subtract)
+msd_fit.py      trajectory → msd.csv        (per-bead MSD → D = slope/4)
+measure_radius.py  trajectory+video → radius.csv  (outer-edge circle fit)
+label_beads.py  (optional) manual single/doublet labels; else curation is objective
+plot1_report.py per-run MSD-vs-t demo  →  measurements/<run>/figures/plot1.png
+plot2_report.py per-run D-vs-1/r → k_B  →  measurements/<run>/figures/plot2.png
+aggregate.py    pool runs → combined k_B + error budget → figures/aggregate_*.png
 ```
 
-**What it shows:**
-
-- Live particle trajectory with fading trail
-- Three force vectors updating each frame:
-  - 🟡 velocity **v**
-  - 🔴 Stokes drag **−γv** (always opposite to velocity)
-  - 🟢 random thermal force **F(t)**
-- MSD vs time panel, compared to theoretical `4Dt` (orange dashed)
-
-**Run:**
-
-```bash
-python simulations/langevin_animation.py
-
-# optional flags
-python simulations/langevin_animation.py --backend Qt5Agg --steps 6000 --fps 60
-```
+Shared helpers: `physics.py` (constants, viscosity, Stokes-Einstein),
+`_paths.py` (per-week path resolver), `figure_style.py` (consistent figures).
 
 ---
 

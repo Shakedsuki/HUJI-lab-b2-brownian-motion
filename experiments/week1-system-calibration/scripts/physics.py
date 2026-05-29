@@ -9,6 +9,23 @@ MSD (2D proj.):     <r^2> = 4 D t                  [m^2]
 """
 
 K_B = 1.380649e-23   # Boltzmann constant [J/K]
+G = 9.80665          # standard gravity [m/s^2]
+
+
+def sedimentation_r_star_um(T_C, delta_rho=50.0):
+    """Free-diffusion radius limit r* [um]: where gravitational length == radius.
+
+    Stokes-Einstein assumes UNBOUNDED 3-D diffusion. Denser beads sediment to the
+    coverslip and then feel wall (Faxen) drag -> measured D too low -> k_B biased
+    low for large beads. A bead stays a free diffuser only while its gravitational
+    length l_g exceeds its own radius:
+        l_g(r) = k_B T / (Delta_rho g (4/3) pi r^3) > r
+        => free while  r < r* = [ k_B T / ((4/3) pi Delta_rho g) ]^(1/4).
+    Depends ONLY on bead size + density (NO k_B input -> not circular). Polystyrene
+    Delta_rho ~ 50 kg/m^3 -> r* ~ 1.19 um. `delta_rho` in kg/m^3.
+    """
+    kT = K_B * (T_C + 273.15)
+    return (kT / ((4.0 / 3.0) * 3.141592653589793 * delta_rho * G)) ** 0.25 * 1e6
 
 
 def water_viscosity_cP(T_C):
