@@ -50,33 +50,14 @@ RUN_COLORS = {                    # stable per-run colours for the scatter
 }
 
 
-def main():
-    ap = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--runs", nargs="+", default=["run3", "run4", "run6"])
-    ap.add_argument("--T", type=float, default=25.0, help="temperature [C]")
-    ap.add_argument("--eta", type=float, default=None,
-                    help="viscosity [cP] (default: water at T)")
-    ap.add_argument("--delta-rho", type=float, default=50.0,
-                    help="|bead-fluid| density mismatch [kg/m^3] for the r* "
-                         "reference line")
-    ap.add_argument("--r-star", type=float, default=None,
-                    help="override the sedimentation-scale reference r* [um]")
-    ap.add_argument("--exclude-hindered", action="store_true",
-                    help="drop wall-hindered beads (r > r*) from the fit; by "
-                         "default every clean bead is kept as data")
-    ap.add_argument("--mad-k", type=float, default=3.5,
-                    help="robust D*r outlier cut in MAD units (mislink removal)")
-    ap.add_argument("--out", default=None)
-    args = ap.parse_args()
+def build_figure(runs, args, eta_cP, eta_Pa_s, r_star, pooled, out):
+    """Load, clean, fit and render one D-vs-1/r figure for the given run list.
 
-    eta_cP = args.eta if args.eta is not None else p2.water_viscosity_cP(args.T)
-    eta_Pa_s = eta_cP * 1e-3
-    r_star = (args.r_star if args.r_star is not None
-              else p2.sediment_r_star_um(args.T, args.delta_rho))
-
+    `pooled` only affects the title/labelling; the analysis is identical whether
+    `runs` holds one run (a single-run figure) or several (a pooled figure).
+    """
     # ---- pool the runs ----
-    df = pd.concat([p2.load_beads(r) for r in args.runs], ignore_index=True)
+    df = pd.concat([p2.load_beads(r) for r in runs], ignore_index=True)
     df["inv_r"] = 1.0 / df["r_um"]
     df["inv_r_err"] = df["r_err_um"] / df["r_um"] ** 2
 
@@ -128,18 +109,18 @@ def main():
     def kbx(s):
         return p2.kB_from_slope(s, args.T, eta_Pa_s) / p2.K_B_ACCEPTED
 
-    print(f"\npooled {args.runs}: T={args.T:.1f}C  eta={eta_cP:.3f}cP  "
-          f"r*={r_star:.2f}um  "
+    print(f"\n{'pooled ' if pooled else ''}{runs}: T={args.T:.1f}C  "
+          f"eta={eta_cP:.3f}cP  r*={r_star:.2f}um  "
           f"hindered={'excluded' if args.exclude_hindered else 'kept'}")
     print(f"beads: kept={len(df)} (dropped {n_drop} D*r mislink outliers)  "
           f"fit n={n}  hindered={len(hindered)}")
-    for r in args.runs:
+    for r in runs:
         g = free[free["run"] == r]
         if len(g):
             sr = float(np.median(g["D_um2_s"].values * g["r_um"].values))
             print(f"  {r}: n_free={len(g)}  median-slope={sr:.4f}  "
                   f"k_B={kbx(sr):.2f}x")
-    print(f"POOLED median slope = {slope:.5f} +/- {slope_err:.5f} um^3/s")
+    print(f"median slope = {slope:.5f} +/- {slope_err:.5f} um^3/s")
     print(f"  -> k_B = {kB:.4e} +/- {kB_err:.2e} J/K  "
           f"({kB/p2.K_B_ACCEPTED:.3f} x accepted)  [HEADLINE]")
     print(f"diagnostics: unweighted-LS k_B={kbx(slope_ols):.3f}x  "
@@ -151,7 +132,7 @@ def main():
 
     # run-coloured points, no per-point error bars (a single representative bar
     # is drawn in the corner instead, so the cloud reads cleanly)
-    for r in args.runs:
+    for r in runs:
         g = free[free["run"] == r]
         if not len(g):
             continue
@@ -171,7 +152,9 @@ def main():
     ax.set_ylabel(r"diffusion coefficient  $D$  [$\mu$m$^2$/s]")
     ax.set_xlim(left=0.0, right=free["inv_r"].max() * 1.08)
     ax.set_ylim(bottom=0.0, top=free["D_um2_s"].max() * 1.12)
-    ax.set_title("Stokes-Einstein (pooled room-temperature runs)")
+    title = ("Stokes-Einstein (pooled room-temperature runs)" if pooled
+             else f"Stokes-Einstein ({runs[0]})")
+    ax.set_title(title)
 
     # one representative error bar in the empty centre-left region
     xr, yr = ax.get_xlim(), ax.get_ylim()
@@ -197,13 +180,51 @@ def main():
     ax.legend(loc="lower right", fontsize=9)
     fig.tight_layout()
 
-    tag = "-".join(r.replace("run", "") for r in args.runs)
-    out = args.out or os.path.join(p2.ROOT, "figures",
-                                   f"plot2_pooled_runs{tag}.png")
     out = os.path.abspath(out)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     fig.savefig(out, bbox_inches="tight")
-    print(f"\nsaved -> {out}\n")
+    print(f"saved -> {out}")
+
+
+def main():
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--runs", nargs="+", default=["run3", "run4", "run6"])
+    ap.add_argument("--split", action="store_true",
+                    help="emit one figure per run instead of a single pooled "
+                         "figure (same clean design for each)")
+    ap.add_argument("--T", type=float, default=25.0, help="temperature [C]")
+    ap.add_argument("--eta", type=float, default=None,
+                    help="viscosity [cP] (default: water at T)")
+    ap.add_argument("--delta-rho", type=float, default=50.0,
+                    help="|bead-fluid| density mismatch [kg/m^3] for r*")
+    ap.add_argument("--r-star", type=float, default=None,
+                    help="override the sedimentation-scale reference r* [um]")
+    ap.add_argument("--exclude-hindered", action="store_true",
+                    help="drop wall-hindered beads (r > r*) from the fit; by "
+                         "default every clean bead is kept as data")
+    ap.add_argument("--mad-k", type=float, default=3.5,
+                    help="robust D*r outlier cut in MAD units (mislink removal)")
+    ap.add_argument("--out", default=None,
+                    help="output path (pooled mode only; ignored with --split)")
+    args = ap.parse_args()
+
+    eta_cP = args.eta if args.eta is not None else p2.water_viscosity_cP(args.T)
+    eta_Pa_s = eta_cP * 1e-3
+    r_star = (args.r_star if args.r_star is not None
+              else p2.sediment_r_star_um(args.T, args.delta_rho))
+
+    figdir = os.path.join(p2.ROOT, "figures")
+    if args.split:
+        for run in args.runs:
+            out = os.path.join(figdir, f"plot2_{run}.png")
+            build_figure([run], args, eta_cP, eta_Pa_s, r_star,
+                         pooled=False, out=out)
+    else:
+        tag = "-".join(r.replace("run", "") for r in args.runs)
+        out = args.out or os.path.join(figdir, f"plot2_pooled_runs{tag}.png")
+        build_figure(args.runs, args, eta_cP, eta_Pa_s, r_star,
+                     pooled=True, out=out)
 
 
 if __name__ == "__main__":
