@@ -156,7 +156,8 @@ def main():
         beads = [(p, p1.radius_lookup(radius, p)) for p in args.beads]
         beads.sort(key=lambda b: (np.inf if np.isnan(b[1]) else b[1]))
     else:
-        beads = p1.pick_three_beads(traj, radius, labels, msd, args.min_frames)
+        beads = p1.chosen_beads(args.run, traj, radius, labels, msd,
+                                args.min_frames)
 
     video = args.video or os.path.join(p1.ROOT, "videos",
                                        p1.VIDEO_KEY.get(args.run,

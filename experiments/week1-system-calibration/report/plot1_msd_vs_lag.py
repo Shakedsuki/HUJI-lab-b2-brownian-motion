@@ -211,6 +211,29 @@ def clean_particle_set(labels):
     return None
 
 
+BEADS_JSON = os.path.join(HERE, "fig1_beads.json")
+
+
+def chosen_beads(run, traj, radius, labels, msd, min_frames):
+    """Beads for a run's Figure-1 panel: a manual override if listed in
+    report/fig1_beads.json (visually confirmed single spheres), else the
+    automatic pick. Returns (particle, r_um) sorted small -> large.
+
+    The automatic roundness gates use whatever shape columns a run provides,
+    but those metrics are not comparable run-to-run and cannot always tell a
+    doublet from a single -- hence the human-checked override file.
+    """
+    if os.path.exists(BEADS_JSON):
+        with open(BEADS_JSON) as f:
+            override = json.load(f)
+        if run in override:
+            beads = [(int(p), radius_lookup(radius, int(p)))
+                     for p in override[run]]
+            beads.sort(key=lambda b: (np.inf if np.isnan(b[1]) else b[1]))
+            return beads
+    return pick_three_beads(traj, radius, labels, msd, min_frames)
+
+
 def pick_three_beads(traj, radius, labels, msd, min_frames):
     """Choose three clean single beads spanning the radius range.
 
@@ -379,7 +402,8 @@ def main():
         beads = [(p, radius_lookup(radius, p)) for p in args.beads]
         beads.sort(key=lambda b: (np.inf if np.isnan(b[1]) else b[1]))
     else:
-        beads = pick_three_beads(traj, radius, labels, msd, args.min_frames)
+        beads = chosen_beads(args.run, traj, radius, labels, msd,
+                             args.min_frames)
 
     colors = ["#1f77b4", "#2ca02c", "#d62728"]   # small / mid / large
     markers = ["o", "s", "^"]
