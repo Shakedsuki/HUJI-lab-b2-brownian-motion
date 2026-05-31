@@ -65,6 +65,8 @@ def main():
     ap.add_argument("--exclude-hindered", action="store_true",
                     help="drop wall-hindered beads (r > r*) from the fit; by "
                          "default every clean bead is kept as data")
+    ap.add_argument("--mad-k", type=float, default=3.5,
+                    help="robust D*r outlier cut in MAD units (mislink removal)")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
@@ -77,6 +79,17 @@ def main():
     df = pd.concat([p2.load_beads(r) for r in args.runs], ignore_index=True)
     df["inv_r"] = 1.0 / df["r_um"]
     df["inv_r_err"] = df["r_err_um"] / df["r_um"] ** 2
+
+    # Drop gross mislinks: under Stokes-Einstein D*r is ~constant, so a robust
+    # MAD cut on D*r removes the handful of beads whose tracked D is physically
+    # impossible (bad links / merges) without touching the genuine scatter.
+    k = (df["D_um2_s"] * df["r_um"]).values
+    med = np.median(k)
+    mad = np.median(np.abs(k - med))
+    n_raw = len(df)
+    if mad > 0:
+        df = df[np.abs(k - med) <= args.mad_k * mad].copy()
+    n_drop = n_raw - len(df)
 
     # By default ALL clean beads are part of the data and the fit; r* is kept
     # only as a reference line. --exclude-hindered restores the free-only fit.
@@ -118,8 +131,8 @@ def main():
     print(f"\npooled {args.runs}: T={args.T:.1f}C  eta={eta_cP:.3f}cP  "
           f"r*={r_star:.2f}um  "
           f"hindered={'excluded' if args.exclude_hindered else 'kept'}")
-    print(f"beads: total clean={len(df)}  free(fit)={n}  "
-          f"hindered={len(hindered)}")
+    print(f"beads: kept={len(df)} (dropped {n_drop} D*r mislink outliers)  "
+          f"fit n={n}  hindered={len(hindered)}")
     for r in args.runs:
         g = free[free["run"] == r]
         if len(g):
@@ -134,61 +147,53 @@ def main():
 
     # ---- figure ----
     p2.set_style()
-    fig, ax = plt.subplots(figsize=(7.0, 5.4))
+    fig, ax = plt.subplots(figsize=(7.2, 5.4))
 
+    # run-coloured points, no per-point error bars (a single representative bar
+    # is drawn in the corner instead, so the cloud reads cleanly)
     for r in args.runs:
         g = free[free["run"] == r]
         if not len(g):
             continue
-        ax.errorbar(g["inv_r"], g["D_um2_s"],
-                    xerr=g["inv_r_err"], yerr=g["D_err"],
-                    fmt="o", ms=5, capsize=2, lw=1,
-                    color=RUN_COLORS.get(r, "#444444"),
-                    ecolor=RUN_COLORS.get(r, "#444444"), alpha=0.9,
-                    label=f"{r} (n={len(g)})")
+        ax.plot(g["inv_r"], g["D_um2_s"], "o", ms=4, alpha=0.7,
+                color=RUN_COLORS.get(r, "#444444"), mec="none",
+                label=f"{r} (n={len(g)})")
 
-    if args.exclude_hindered and len(hindered):
-        ax.errorbar(hindered["inv_r"], hindered["D_um2_s"],
-                    xerr=hindered["inv_r_err"], yerr=hindered["D_err"],
-                    fmt="s", mfc="none", mec="#999999", ms=4, capsize=2,
-                    lw=0.8, ecolor="#dddddd",
-                    label=rf"wall-hindered $r>r^*$ (excl., n={len(hindered)})")
-
-    x_line = np.array([0.0, free["inv_r"].max() * 1.05])
     # headline: robust (per-bead median) through-origin line + SE band
-    ax.plot(x_line, slope * x_line, "-", color="#d62728", lw=1.9,
-            label=r"robust fit $D=(k_BT/6\pi\eta)(1/r)$")
+    x_line = np.array([0.0, free["inv_r"].max() * 1.05])
+    ax.plot(x_line, slope * x_line, "-", color="#d62728", lw=2.0, zorder=5,
+            label=r"robust fit  $D=(k_BT/6\pi\eta)\,(1/r)$")
     ax.fill_between(x_line, (slope - slope_err) * x_line,
                     (slope + slope_err) * x_line,
-                    color="#d62728", alpha=0.12)
-    # diagnostic: ordinary unweighted least-squares through origin
-    ax.plot(x_line, slope_ols * x_line, "--", color="#555555", lw=1.2,
-            label=f"unweighted LS ({kbx(slope_ols):.2f}$\\,k_B^{{\\rm acc}}$)")
-    # reference: sedimentation scale r* (1/r*), where wall hindrance sets in
-    if 0 < r_star:
-        ax.axvline(1.0 / r_star, color="0.6", ls=":", lw=1.1)
-        ax.text(1.0 / r_star, ax.get_ylim()[1] * 0.02,
-                rf"  $1/r^*$ ($r^*={r_star:.2f}\,\mu$m)", color="0.4",
-                fontsize=8, rotation=90, va="bottom", ha="left")
+                    color="#d62728", alpha=0.13, zorder=1)
 
     ax.set_xlabel(r"inverse radius  $1/r$  [$\mu$m$^{-1}$]")
     ax.set_ylabel(r"diffusion coefficient  $D$  [$\mu$m$^2$/s]")
-    ax.set_xlim(left=0)
-    ax.set_ylim(bottom=0)
-    ax.set_title("Stokes-Einstein, pooled room-temperature runs "
-                 f"({', '.join(args.runs)})")
+    ax.set_xlim(left=0.0, right=free["inv_r"].max() * 1.08)
+    ax.set_ylim(bottom=0.0, top=free["D_um2_s"].max() * 1.12)
+    ax.set_title("Stokes-Einstein (pooled room-temperature runs)")
+
+    # one representative error bar in the empty centre-left region
+    xr, yr = ax.get_xlim(), ax.get_ylim()
+    ex = float(np.median(free["inv_r_err"]))
+    ey = float(np.median(free["D_err"]))
+    ex0, ey0 = xr[1] * 0.24, yr[1] * 0.55
+    ax.errorbar([ex0], [ey0], xerr=ex, yerr=ey, fmt="o", ms=4,
+                color="0.35", ecolor="0.35", capsize=3, lw=1.1)
+    ax.text(ex0 + ex * 1.3, ey0, " typical\n uncertainty", color="0.35",
+            fontsize=8, ha="left", va="center")
 
     ratio = kB / p2.K_B_ACCEPTED
     txt = (rf"$k_B = ({kB*1e23:.2f}\pm{kB_err*1e23:.2f})\times10^{{-23}}$ J/K"
            "\n"
-           rf"$= {ratio:.2f}\,k_B^{{\rm acc}}$  (per-bead median, $n={len(free)}$)"
+           rf"$= {ratio:.2f}\,k_B^{{\rm accepted}}$   ($n={len(free)}$ beads)"
            "\n"
-           rf"robust slope $={slope:.4f}\,\mu$m$^3$/s"
+           rf"$T={args.T:.1f}\,^\circ$C,  $\eta={eta_cP:.3f}$ cP"
            "\n"
-           rf"$T={args.T:.1f}\,^\circ$C, $\eta={eta_cP:.3f}$ cP")
+           rf"(LS slope check: ${kbx(slope_ols):.2f}\,k_B^{{\rm acc}}$)")
     ax.text(0.04, 0.96, txt, transform=ax.transAxes, va="top", ha="left",
-            fontsize=9.5,
-            bbox=dict(boxstyle="round", fc="white", ec="0.7", alpha=0.9))
+            fontsize=10,
+            bbox=dict(boxstyle="round", fc="white", ec="0.7", alpha=0.92))
     ax.legend(loc="lower right", fontsize=9)
     fig.tight_layout()
 
