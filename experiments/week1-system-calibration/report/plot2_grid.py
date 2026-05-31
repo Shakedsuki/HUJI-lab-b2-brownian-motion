@@ -63,8 +63,6 @@ def main():
                       title=run, ylabel=(ax is axes[0, 0]))
         ax.legend(loc="lower right", fontsize=8)
 
-    fig.suptitle(rf"Stokes-Einstein  $D=(k_BT/6\pi\eta)\,(1/r)$  "
-                 rf"($T={args.T:.0f}\,^\circ$C, shared axes)", y=1.0)
     fig.tight_layout()
 
     tag = "-".join(r.replace("run", "") for r in args.runs)
