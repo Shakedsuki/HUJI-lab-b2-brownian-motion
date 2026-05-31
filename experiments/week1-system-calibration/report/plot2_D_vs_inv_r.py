@@ -47,6 +47,10 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt   # noqa: E402
 
+# Reuse the run-resolving / label-schema helpers from the plot1 script so every
+# run (root-level run3 labels or pipeline/ keep-flags) loads the same way.
+import plot1_msd_vs_lag as p1
+
 
 # --------------------------------------------------------------------------- #
 # Constants / paths
@@ -130,30 +134,37 @@ def fit_with_intercept(x, y, yerr):
 def load_beads(run):
     """Merge per-bead D (msd.csv) with radius (radius.csv), keep clean singles.
 
-    Returns a DataFrame with particle, r_um, r_err_um, D_um2_s, D_err.
+    Resolves a single coherent data directory per run (run root or pipeline/)
+    and accepts either label schema, exactly like the plot1 loader. Returns a
+    DataFrame with particle, run, r_um, r_err_um, D_um2_s, D_err.
     """
-    base = os.path.join(MEAS, run)
-    msd = pd.read_csv(os.path.join(base, "msd.csv"))
-    rad = pd.read_csv(os.path.join(base, "radius.csv"))
+    d = p1.coherent_dir(run)
+    msd = pd.read_csv(os.path.join(d, "msd.csv"))
+    rad = pd.read_csv(os.path.join(d, "radius.csv"))
 
     df = msd.merge(rad, on="particle", how="inner")
     df = df[df["r_um"].notna() & df["D_um2_s"].notna() & (df["D_um2_s"] > 0)]
 
-    labels_path = os.path.join(base, "labels.csv")
-    if os.path.exists(labels_path):
-        lab = pd.read_csv(labels_path)
-        clean = lab.loc[lab["type"].isin(CLEAN_LABELS), "particle"]
-        df = df[df["particle"].isin(clean)]
+    lp = os.path.join(d, "labels.csv")
+    if os.path.exists(lp):
+        clean = p1.clean_particle_set(pd.read_csv(lp))
+        if clean:
+            df = df[df["particle"].isin(clean)]
 
-    # A rough radius uncertainty from frame-to-frame scatter, if available.
-    if "r_px_frame_cv" in df.columns:
-        df["r_err_um"] = df["r_um"] * df["r_px_frame_cv"].clip(0, 0.5) \
-            / np.sqrt(df.get("n_meas", 1).clip(lower=1))
+    # A rough radius uncertainty from frame-to-frame scatter, when a CV column
+    # is present (root radius.csv -> r_px_frame_cv; pipeline radius.csv -> R_cv).
+    cv_col = next((c for c in ("r_px_frame_cv", "R_cv") if c in df.columns), None)
+    n_meas = df["n_meas"] if "n_meas" in df.columns else 1
+    if cv_col is not None:
+        df["r_err_um"] = (df["r_um"] * df[cv_col].clip(0, 0.5)
+                          / np.sqrt(np.clip(n_meas, 1, None)))
     else:
         df["r_err_um"] = 0.0
 
     if "D_err" not in df.columns:
         df["D_err"] = df["D_um2_s"] * 0.05
+
+    df["run"] = run
     return df.reset_index(drop=True)
 
 

@@ -118,8 +118,6 @@ def main():
     for ax in axes[:, 0]:
         ax.set_ylabel(r"MSD  $\langle r^2\rangle$  [$\mu$m$^2$]")
 
-    fig.suptitle(r"MSD vs lag time: $\langle r^2\rangle = 4D\tau + c$ "
-                 r"(three beads per run)", fontsize=13, y=1.0)
     fig.tight_layout()
 
     tag = "-".join(r.replace("run", "") for r in args.runs)
