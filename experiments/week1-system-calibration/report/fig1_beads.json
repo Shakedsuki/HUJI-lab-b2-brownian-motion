@@ -1,0 +1,4 @@
+{
+  "_comment": "Visually confirmed single-sphere beads for each run's Figure-1 panel (small, mid, large radius). Overrides the automatic pick, which cannot reliably reject doublets across runs. Edit after checking the bead_snapshots crops.",
+  "run6": [16, 7, 1]
+}

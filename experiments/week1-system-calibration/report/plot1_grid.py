@@ -44,7 +44,7 @@ def build_curves(run, min_frames, max_lag_s, fit_lag_s, beads=None):
         chosen = [(b, p1.radius_lookup(radius, b)) for b in beads]
         chosen.sort(key=lambda t: (np.inf if np.isnan(t[1]) else t[1]))
     else:
-        chosen = p1.pick_three_beads(traj, radius, labels, msd, min_frames)
+        chosen = p1.chosen_beads(run, traj, radius, labels, msd, min_frames)
 
     max_lag_frames = int(round(max_lag_s * fps))
     curves = []
