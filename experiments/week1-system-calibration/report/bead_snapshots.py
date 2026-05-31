@@ -188,6 +188,10 @@ def main():
         crop = img[y0:y0 + npx, x0:x0 + npx]
         crops.append(crop)
         infos.append((p, r_um, f))
+
+        # clean raw crop (no decorations) for the composite Fig.1 layouts
+        plt.imsave(os.path.join(outdir, f"bead_p{p}_raw.png"), crop,
+                   cmap="gray")
         print(f"  p{p}: r={r_um:.2f}um  frame={f}  "
               f"raw_xy=({cx:.0f},{cy:.0f})  crop={crop.shape}")
 
