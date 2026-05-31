@@ -50,13 +50,11 @@ RUN_COLORS = {                    # stable per-run colours for the scatter
 }
 
 
-def build_figure(runs, args, eta_cP, eta_Pa_s, r_star, pooled, out):
-    """Load, clean, fit and render one D-vs-1/r figure for the given run list.
+def analyze(runs, args, eta_cP, eta_Pa_s, r_star, pooled=True, verbose=True):
+    """Load, clean and fit the D-vs-1/r data for `runs`; return a result dict.
 
-    `pooled` only affects the title/labelling; the analysis is identical whether
-    `runs` holds one run (a single-run figure) or several (a pooled figure).
+    Same procedure whether `runs` holds one run or several.
     """
-    # ---- pool the runs ----
     df = pd.concat([p2.load_beads(r) for r in runs], ignore_index=True)
     df["inv_r"] = 1.0 / df["r_um"]
     df["inv_r_err"] = df["r_err_um"] / df["r_um"] ** 2
@@ -83,7 +81,6 @@ def build_figure(runs, args, eta_cP, eta_Pa_s, r_star, pooled, out):
     if len(free) < 2:
         raise SystemExit(f"need >=2 beads to fit, found {len(free)}")
 
-    # ---- pooled slope estimators ----
     # The formal D_err (from correlated MSD lags, varying with track length)
     # span ~2 orders of magnitude, so inverse-variance weighting is unreliable.
     # The robust headline is the per-bead median slope (= median of D_i*r_i, a
@@ -96,52 +93,61 @@ def build_figure(runs, args, eta_cP, eta_Pa_s, r_star, pooled, out):
 
     per_bead_slope = y / x                       # D_i * r_i, in um^3/s
     slope = float(np.median(per_bead_slope))     # robust headline slope
-    mad = np.median(np.abs(per_bead_slope - slope))
-    sigma = 1.4826 * mad                          # robust sigma
-    slope_err = 1.2533 * sigma / np.sqrt(n)       # SE of the median
+    s_mad = np.median(np.abs(per_bead_slope - slope))
+    slope_err = 1.2533 * (1.4826 * s_mad) / np.sqrt(n)    # SE of the median
     kB = p2.kB_from_slope(slope, args.T, eta_Pa_s)
     kB_err = p2.kB_from_slope(slope_err, args.T, eta_Pa_s)
 
     slope_ols = float(np.sum(x * y) / np.sum(x * x))      # unweighted thru-0
     slope_wls, _, chi2 = p2.fit_through_origin(x, y, ye)  # inverse-variance
 
-    # ---- report (incl. per-run robust slopes for comparison) ----
     def kbx(s):
         return p2.kB_from_slope(s, args.T, eta_Pa_s) / p2.K_B_ACCEPTED
 
-    print(f"\n{'pooled ' if pooled else ''}{runs}: T={args.T:.1f}C  "
-          f"eta={eta_cP:.3f}cP  r*={r_star:.2f}um  "
-          f"hindered={'excluded' if args.exclude_hindered else 'kept'}")
-    print(f"beads: kept={len(df)} (dropped {n_drop} D*r mislink outliers)  "
-          f"fit n={n}  hindered={len(hindered)}")
-    for r in runs:
+    res = dict(runs=runs, free=free, n=n, n_drop=n_drop,
+               n_hindered=len(hindered), slope=slope, slope_err=slope_err,
+               kB=kB, kB_err=kB_err, ratio=kB / p2.K_B_ACCEPTED,
+               ratio_ols=kbx(slope_ols), eta_cP=eta_cP, pooled=pooled)
+
+    if verbose:
+        print(f"\n{'pooled ' if pooled else ''}{runs}: T={args.T:.1f}C  "
+              f"eta={eta_cP:.3f}cP  r*={r_star:.2f}um  "
+              f"hindered={'excluded' if args.exclude_hindered else 'kept'}")
+        print(f"beads: kept={len(df)} (dropped {n_drop} D*r mislinks)  "
+              f"fit n={n}  hindered={len(hindered)}")
+        for r in runs:
+            g = free[free["run"] == r]
+            if len(g):
+                sr = float(np.median(g["D_um2_s"].values * g["r_um"].values))
+                print(f"  {r}: n={len(g)}  k_B={kbx(sr):.2f}x")
+        print(f"  -> k_B = {kB:.4e} +/- {kB_err:.2e} J/K "
+              f"({res['ratio']:.3f}x)  LS={res['ratio_ols']:.3f}x "
+              f"WLS={kbx(slope_wls):.3f}x (chi2={chi2:.0f})")
+    return res
+
+
+def draw_panel(ax, res, args, *, full=True, xmax=None, ymax=None,
+               title=None, ylabel=True):
+    """Render one D-vs-1/r panel from an analyze() result onto `ax`.
+
+    full=True  -> standalone figure (representative error bar, full stats box,
+                  legend). full=False -> compact grid panel (k_B label only).
+    """
+    free, slope, slope_err = res["free"], res["slope"], res["slope_err"]
+
+    for r in res["runs"]:
         g = free[free["run"] == r]
         if len(g):
-            sr = float(np.median(g["D_um2_s"].values * g["r_um"].values))
-            print(f"  {r}: n_free={len(g)}  median-slope={sr:.4f}  "
-                  f"k_B={kbx(sr):.2f}x")
-    print(f"median slope = {slope:.5f} +/- {slope_err:.5f} um^3/s")
-    print(f"  -> k_B = {kB:.4e} +/- {kB_err:.2e} J/K  "
-          f"({kB/p2.K_B_ACCEPTED:.3f} x accepted)  [HEADLINE]")
-    print(f"diagnostics: unweighted-LS k_B={kbx(slope_ols):.3f}x  "
-          f"weighted-LS k_B={kbx(slope_wls):.3f}x (chi2_red={chi2:.0f})")
+            ax.plot(g["inv_r"], g["D_um2_s"], "o", ms=4, alpha=0.7,
+                    color=RUN_COLORS.get(r, "#444444"), mec="none",
+                    label=f"{r} (n={len(g)})")
 
-    # ---- figure ----
-    p2.set_style()
-    fig, ax = plt.subplots(figsize=(7.2, 5.4))
+    xhi = xmax if xmax is not None else free["inv_r"].max() * 1.08
+    yhi = ymax if ymax is not None else free["D_um2_s"].max() * 1.12
+    ax.set_xlim(left=0.0, right=xhi)
+    ax.set_ylim(bottom=0.0, top=yhi)
 
-    # run-coloured points, no per-point error bars (a single representative bar
-    # is drawn in the corner instead, so the cloud reads cleanly)
-    for r in runs:
-        g = free[free["run"] == r]
-        if not len(g):
-            continue
-        ax.plot(g["inv_r"], g["D_um2_s"], "o", ms=4, alpha=0.7,
-                color=RUN_COLORS.get(r, "#444444"), mec="none",
-                label=f"{r} (n={len(g)})")
-
-    # headline: robust (per-bead median) through-origin line + SE band
-    x_line = np.array([0.0, free["inv_r"].max() * 1.05])
+    x_line = np.array([0.0, xhi])
     ax.plot(x_line, slope * x_line, "-", color="#d62728", lw=2.0, zorder=5,
             label=r"robust fit  $D=(k_BT/6\pi\eta)\,(1/r)$")
     ax.fill_between(x_line, (slope - slope_err) * x_line,
@@ -149,37 +155,49 @@ def build_figure(runs, args, eta_cP, eta_Pa_s, r_star, pooled, out):
                     color="#d62728", alpha=0.13, zorder=1)
 
     ax.set_xlabel(r"inverse radius  $1/r$  [$\mu$m$^{-1}$]")
-    ax.set_ylabel(r"diffusion coefficient  $D$  [$\mu$m$^2$/s]")
-    ax.set_xlim(left=0.0, right=free["inv_r"].max() * 1.08)
-    ax.set_ylim(bottom=0.0, top=free["D_um2_s"].max() * 1.12)
+    if ylabel:
+        ax.set_ylabel(r"diffusion coefficient  $D$  [$\mu$m$^2$/s]")
+    ax.set_title(title if title is not None else
+                 (f"Stokes-Einstein ({res['runs'][0]})"))
+
+    if full:
+        ex = float(np.median(free["inv_r_err"]))
+        ey = float(np.median(free["D_err"]))
+        ex0, ey0 = xhi * 0.24, yhi * 0.55
+        ax.errorbar([ex0], [ey0], xerr=ex, yerr=ey, fmt="o", ms=4,
+                    color="0.35", ecolor="0.35", capsize=3, lw=1.1)
+        ax.text(ex0 + ex * 1.3, ey0, " typical\n uncertainty", color="0.35",
+                fontsize=8, ha="left", va="center")
+        txt = (rf"$k_B = ({res['kB']*1e23:.2f}\pm{res['kB_err']*1e23:.2f})"
+               rf"\times10^{{-23}}$ J/K"
+               "\n"
+               rf"$= {res['ratio']:.2f}\,k_B^{{\rm accepted}}$   "
+               rf"($n={res['n']}$ beads)"
+               "\n"
+               rf"$T={args.T:.1f}\,^\circ$C,  $\eta={res['eta_cP']:.3f}$ cP"
+               "\n"
+               rf"(LS slope check: ${res['ratio_ols']:.2f}\,k_B^{{\rm acc}}$)")
+        ax.text(0.04, 0.96, txt, transform=ax.transAxes, va="top", ha="left",
+                fontsize=10,
+                bbox=dict(boxstyle="round", fc="white", ec="0.7", alpha=0.92))
+        ax.legend(loc="lower right", fontsize=9)
+    else:
+        ax.text(0.05, 0.95,
+                rf"$k_B={res['ratio']:.2f}\,k_B^{{\rm acc}}$" "\n"
+                rf"$n={res['n']}$", transform=ax.transAxes, va="top",
+                ha="left", fontsize=9.5,
+                bbox=dict(boxstyle="round", fc="white", ec="0.7", alpha=0.9))
+
+
+def build_figure(runs, args, eta_cP, eta_Pa_s, r_star, pooled, out):
+    """Single standalone D-vs-1/r figure for `runs` (pooled or one run)."""
+    res = analyze(runs, args, eta_cP, eta_Pa_s, r_star, pooled=pooled)
+    p2.set_style()
+    fig, ax = plt.subplots(figsize=(7.2, 5.4))
     title = ("Stokes-Einstein (pooled room-temperature runs)" if pooled
              else f"Stokes-Einstein ({runs[0]})")
-    ax.set_title(title)
-
-    # one representative error bar in the empty centre-left region
-    xr, yr = ax.get_xlim(), ax.get_ylim()
-    ex = float(np.median(free["inv_r_err"]))
-    ey = float(np.median(free["D_err"]))
-    ex0, ey0 = xr[1] * 0.24, yr[1] * 0.55
-    ax.errorbar([ex0], [ey0], xerr=ex, yerr=ey, fmt="o", ms=4,
-                color="0.35", ecolor="0.35", capsize=3, lw=1.1)
-    ax.text(ex0 + ex * 1.3, ey0, " typical\n uncertainty", color="0.35",
-            fontsize=8, ha="left", va="center")
-
-    ratio = kB / p2.K_B_ACCEPTED
-    txt = (rf"$k_B = ({kB*1e23:.2f}\pm{kB_err*1e23:.2f})\times10^{{-23}}$ J/K"
-           "\n"
-           rf"$= {ratio:.2f}\,k_B^{{\rm accepted}}$   ($n={len(free)}$ beads)"
-           "\n"
-           rf"$T={args.T:.1f}\,^\circ$C,  $\eta={eta_cP:.3f}$ cP"
-           "\n"
-           rf"(LS slope check: ${kbx(slope_ols):.2f}\,k_B^{{\rm acc}}$)")
-    ax.text(0.04, 0.96, txt, transform=ax.transAxes, va="top", ha="left",
-            fontsize=10,
-            bbox=dict(boxstyle="round", fc="white", ec="0.7", alpha=0.92))
-    ax.legend(loc="lower right", fontsize=9)
+    draw_panel(ax, res, args, full=True, title=title)
     fig.tight_layout()
-
     out = os.path.abspath(out)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     fig.savefig(out, bbox_inches="tight")
