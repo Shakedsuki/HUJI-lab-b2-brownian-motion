@@ -165,37 +165,87 @@ def fit_linear_msd(tau, msd, weights, t_max):
 # --------------------------------------------------------------------------- #
 # Bead selection
 # --------------------------------------------------------------------------- #
-def load_inputs(run: str):
+def coherent_dir(run: str):
+    """Directory whose trajectory/radius/labels share one particle-ID scheme.
+
+    run3 keeps the curated set at the run root; the other runs keep theirs in
+    pipeline/ (the root copies, where present, use a different/older linking).
+    Prefer the root, fall back to pipeline/. Labels are optional.
+    """
     base = os.path.join(MEAS, run)
-    traj = pd.read_csv(os.path.join(base, "trajectory.csv"))
-    radius = pd.read_csv(os.path.join(base, "radius.csv"))
+    cands = (base, os.path.join(base, "pipeline"))
+    for need in (("trajectory.csv", "radius.csv", "labels.csv"),
+                 ("trajectory.csv", "radius.csv")):
+        for d in cands:
+            if all(os.path.exists(os.path.join(d, f)) for f in need):
+                return d
+    raise SystemExit(f"{run}: no directory with trajectory.csv + radius.csv")
 
-    labels_path = os.path.join(base, "labels.csv")
-    if not os.path.exists(labels_path):
-        labels_path = os.path.join(base, "pipeline", "labels.csv")
-    labels = pd.read_csv(labels_path) if os.path.exists(labels_path) else None
-    return traj, radius, labels
+
+def load_inputs(run: str):
+    d = coherent_dir(run)
+    traj = pd.read_csv(os.path.join(d, "trajectory.csv"))
+    radius = pd.read_csv(os.path.join(d, "radius.csv"))
+    lp = os.path.join(d, "labels.csv")
+    labels = pd.read_csv(lp) if os.path.exists(lp) else None
+    mp = os.path.join(d, "msd.csv")
+    msd = pd.read_csv(mp) if os.path.exists(mp) else None
+    return traj, radius, labels, msd
 
 
-def pick_three_beads(traj, radius, labels, min_frames):
+def clean_particle_set(labels):
+    """Particle IDs flagged as clean single spheres, across label schemas.
+
+    run3-style labels carry a `type` column (perfect/singlet/...); the v2
+    pipeline labels carry `keep` (1) / `proposed` (single) instead.
+    """
+    if labels is None:
+        return None
+    cols = set(labels.columns)
+    if "type" in cols:
+        return set(labels.loc[labels["type"].isin(CLEAN_LABELS), "particle"])
+    if "keep" in cols:
+        return set(labels.loc[labels["keep"] == 1, "particle"])
+    if "proposed" in cols:
+        return set(labels.loc[labels["proposed"] == "single", "particle"])
+    return None
+
+
+def pick_three_beads(traj, radius, labels, msd, min_frames):
     """Choose three clean single beads spanning the radius range.
 
-    Restrict to long, well-measured, human-confirmed single spheres, then take
-    the small / median / large radius among them. Returns a list of (particle,
-    r_um) sorted small -> large.
+    Restrict to long, well-measured, human-confirmed single spheres, drop beads
+    whose D is grossly inconsistent with Stokes-Einstein (D*r far from the
+    sample median -- usually a mislink or a wall-stuck bead), then take the
+    small / median / large radius among the survivors. Returns a list of
+    (particle, r_um) sorted small -> large.
     """
     counts = traj.groupby("particle").size().rename("n_frames")
     cand = radius.merge(counts, on="particle", how="inner")
     cand = cand[cand["r_um"].notna() & (cand["n_frames"] >= min_frames)]
 
-    if labels is not None:
-        clean = labels.loc[labels["type"].isin(CLEAN_LABELS), "particle"]
+    clean = clean_particle_set(labels)
+    if clean:
         cand = cand[cand["particle"].isin(clean)]
 
     # Prefer round, in-focus beads if those quality columns are present.
     for col, thr in (("circ_resid_frac", 0.05), ("r_px_frame_cv", 0.10)):
         if col in cand.columns:
             keep = cand[cand[col] <= thr]
+            if len(keep) >= 3:
+                cand = keep
+
+    # Reject D-vs-r outliers (robust MAD cut on k = D*r), so an anomalously
+    # fast/slow bead can't masquerade as the representative small/mid/large one.
+    if msd is not None and "D_um2_s" in msd.columns:
+        cand = cand.merge(msd[["particle", "D_um2_s"]], on="particle",
+                          how="left")
+        cand = cand[cand["D_um2_s"].notna() & (cand["D_um2_s"] > 0)]
+        k = cand["D_um2_s"] * cand["r_um"]
+        med = k.median()
+        mad = (k - med).abs().median()
+        if mad > 0:
+            keep = cand[(k - med).abs() <= 3.5 * mad]
             if len(keep) >= 3:
                 cand = keep
 
@@ -323,13 +373,13 @@ def main():
     dt = 1.0 / fps
     px2um2 = um_per_px ** 2
 
-    traj, radius, labels = load_inputs(args.run)
+    traj, radius, labels, msd = load_inputs(args.run)
 
     if args.beads:
         beads = [(p, radius_lookup(radius, p)) for p in args.beads]
         beads.sort(key=lambda b: (np.inf if np.isnan(b[1]) else b[1]))
     else:
-        beads = pick_three_beads(traj, radius, labels, args.min_frames)
+        beads = pick_three_beads(traj, radius, labels, msd, args.min_frames)
 
     colors = ["#1f77b4", "#2ca02c", "#d62728"]   # small / mid / large
     markers = ["o", "s", "^"]
