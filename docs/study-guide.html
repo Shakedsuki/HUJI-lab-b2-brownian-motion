@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brownian Motion — Study Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --bg: #0e0e11;
+    --bg2: #16161a;
+    --bg3: #1e1e24;
+    --bg4: #26262e;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+    --text: #e8e6df;
+    --text2: #9e9b92;
+    --text3: #6a6760;
+    --accent: #6c8fcd;
+    --accent2: #4a6fa5;
+    --accent-glow: rgba(108,143,205,0.15);
+    --warm: #d4845a;
+    --warm2: #e8a87c;
+    --teal: #4a9b87;
+    --teal2: #6bbdaa;
+    --amber: #c9913d;
+    --amber2: #e0b060;
+    --purple: #8b72be;
+    --green: #5a9e6a;
+    --serif: 'Lora', Georgia, serif;
+    --sans: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  /* ── LAYOUT ── */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 240px;
+    height: 100vh;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 2rem 0;
+    overflow-y: auto;
+    z-index: 100;
+  }
+
+  .sidebar-logo {
+    padding: 0 1.5rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+  }
+
+  .sidebar-logo .label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 4px;
+  }
+
+  .sidebar-logo .title {
+    font-family: var(--serif);
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .nav-section {
+    padding: 0.25rem 0;
+  }
+
+  .nav-section-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 0.5rem 1.5rem 0.25rem;
+  }
+
+  .nav-link {
+    display: block;
+    padding: 0.45rem 1.5rem;
+    font-size: 13px;
+    color: var(--text2);
+    text-decoration: none;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+    line-height: 1.4;
+  }
+
+  .nav-link:hover {
+    color: var(--text);
+    background: var(--bg3);
+    border-left-color: var(--border2);
+  }
+
+  .nav-link.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: var(--accent-glow);
+  }
+
+  .main {
+    margin-left: 240px;
+    max-width: 820px;
+    padding: 4rem 3rem 8rem;
+  }
+
+  /* ── SECTIONS ── */
+  .chapter {
+    margin-bottom: 5rem;
+    padding-top: 1rem;
+  }
+
+  .chapter-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: 2.4rem;
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: 1.7rem;
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--text);
+    margin-bottom: 1rem;
+    margin-top: 3rem;
+  }
+
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.6rem;
+    margin-top: 2rem;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    color: var(--text2);
+    margin-bottom: 1.1rem;
+    font-size: 15.5px;
+  }
+
+  p strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* ── MATH BLOCKS ── */
+  .eq-block {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    color: var(--text);
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+
+  .eq-block .eq-label {
+    display: block;
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.5rem;
+    text-align: left;
+  }
+
+  .eq-block .eq-sub {
+    display: block;
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 0.6rem;
+    text-align: left;
+    line-height: 1.6;
+  }
+
+  .eq-block .eq-sub span {
+    display: inline-block;
+    margin-right: 1.5rem;
+    margin-top: 0.2rem;
+  }
+
+  /* ── CALLOUT BOXES ── */
+  .callout {
+    border-radius: var(--radius);
+    padding: 1.1rem 1.4rem;
+    margin: 1.5rem 0;
+    border: 1px solid;
+    font-size: 14.5px;
+  }
+
+  .callout-insight {
+    background: rgba(108,143,205,0.08);
+    border-color: rgba(108,143,205,0.3);
+  }
+
+  .callout-insight .callout-title {
+    color: var(--accent);
+  }
+
+  .callout-warning {
+    background: rgba(201,145,61,0.08);
+    border-color: rgba(201,145,61,0.3);
+  }
+
+  .callout-warning .callout-title {
+    color: var(--amber2);
+  }
+
+  .callout-physical {
+    background: rgba(74,155,135,0.08);
+    border-color: rgba(74,155,135,0.3);
+  }
+
+  .callout-physical .callout-title {
+    color: var(--teal2);
+  }
+
+  .callout-title {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+
+  .callout p {
+    margin: 0;
+    color: var(--text2);
+    line-height: 1.65;
+  }
+
+  /* ── SYMBOL TABLE ── */
+  .sym-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin: 1.25rem 0;
+  }
+
+  .sym-table th {
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 0.4rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sym-table td {
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    vertical-align: top;
+  }
+
+  .sym-table td:first-child {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent2);
+    white-space: nowrap;
+    width: 90px;
+  }
+
+  .sym-table td:nth-child(2) {
+    color: var(--text3);
+    width: 120px;
+    white-space: nowrap;
+  }
+
+  /* ── INTERACTIVE WIDGETS ── */
+  .widget {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .widget-title {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 1rem;
+  }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 0.75rem;
+  }
+
+  .slider-row label {
+    font-size: 13px;
+    color: var(--text2);
+    min-width: 120px;
+  }
+
+  .slider-row input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 3px;
+    background: var(--bg4);
+    border-radius: 2px;
+    outline: none;
+  }
+
+  .slider-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+  }
+
+  .slider-row .val {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    min-width: 60px;
+    text-align: right;
+  }
+
+  canvas {
+    background: var(--bg3);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+
+  /* ── PARTICLE CANVAS ── */
+  #particle-canvas {
+    width: 100%;
+    height: 280px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    cursor: pointer;
+  }
+
+  /* ── STEP COUNTER ── */
+  .step-display {
+    display: flex;
+    gap: 1.5rem;
+    margin: 1rem 0;
+  }
+
+  .stat-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    flex: 1;
+    text-align: center;
+  }
+
+  .stat-card .stat-label {
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-card .stat-value {
+    font-family: var(--mono);
+    font-size: 1.3rem;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 1rem 0 3rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4rem;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+
+  .hero-meta span {
+    font-size: 12px;
+    color: var(--text3);
+    padding: 4px 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+  }
+
+  /* ── DIVIDER ── */
+  hr.section-div {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 3rem 0;
+  }
+
+  /* ── INLINE CODE ── */
+  code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    color: var(--accent);
+    background: var(--bg3);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  /* ── KEY RESULT HIGHLIGHT ── */
+  .key-result {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem 2rem;
+    margin: 2rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .key-result::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--teal));
+  }
+
+  .key-result .kr-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .key-result p {
+    margin: 0;
+    font-size: 14.5px;
+  }
+
+  /* ── MSD CHART ── */
+  #msd-chart-wrap {
+    position: relative;
+    height: 280px;
+    margin-top: 1rem;
+  }
+
+  /* ── STEP FLOW ── */
+  .step-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 1.5rem 0;
+  }
+
+  .step-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-left: 1px solid var(--border);
+    padding-left: 1.5rem;
+    position: relative;
+    margin-left: 1rem;
+  }
+
+  .step-item::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 1.3rem;
+    width: 9px;
+    height: 9px;
+    background: var(--bg4);
+    border: 1px solid var(--border2);
+    border-radius: 50%;
+  }
+
+  .step-item .step-label {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.3rem;
+  }
+
+  .step-item p {
+    margin: 0;
+    font-size: 14.5px;
+  }
+
+  /* ── DRIFT DEMO ── */
+  #drift-canvas {
+    width: 100%;
+    height: 220px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg3);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 2rem 1.25rem 6rem; }
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--accent);
+    z-index: 999;
+    transition: width 0.1s;
+  }
+
+  /* ── TOOLTIP ── */
+  .tooltip-trigger {
+    border-bottom: 1px dashed var(--text3);
+    cursor: help;
+  }
+
+  /* btn */
+  .btn {
+    display: inline-block;
+    font-size: 12px;
+    padding: 6px 14px;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    background: var(--bg3);
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: var(--sans);
+  }
+
+  .btn:hover {
+    background: var(--bg4);
+    color: var(--text);
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+  }
+
+  sub { font-size: 0.75em; }
+  sup { font-size: 0.75em; }
+
+  .fraction {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: middle;
+    font-size: 0.85em;
+    line-height: 1.1;
+    margin: 0 2px;
+  }
+
+  .fraction .num { border-bottom: 1px solid currentColor; padding: 0 3px; }
+  .fraction .den { padding: 0 3px; }
+
+  /* subtle separator */
+  .chapter-sep {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 4rem 0;
+    color: var(--text3);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .chapter-sep::before, .chapter-sep::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="label">Lab B2 · HUJI · 2026</div>
+    <div class="title">Brownian Motion<br>Study Guide</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Foundations</div>
+    <a class="nav-link" href="#what-is-temp">What is temperature?</a>
+    <a class="nav-link" href="#boltzmann">Boltzmann's constant</a>
+    <a class="nav-link" href="#equipartition">Equipartition theorem</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">The Motion</div>
+    <a class="nav-link" href="#brownian">Brownian motion</a>
+    <a class="nav-link" href="#langevin">The Langevin equation</a>
+    <a class="nav-link" href="#random-walk">Random walks & MSD</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">The Physics</div>
+    <a class="nav-link" href="#diffusion">Diffusion coefficient D</a>
+    <a class="nav-link" href="#stokes">Stokes drag</a>
+    <a class="nav-link" href="#stokes-einstein">Stokes-Einstein relation</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">The Experiment</div>
+    <a class="nav-link" href="#measuring-d">Measuring D from data</a>
+    <a class="nav-link" href="#ergodic">Ergodic hypothesis</a>
+    <a class="nav-link" href="#drift">Drift — what it is & why</a>
+    <a class="nav-link" href="#getting-kb">Extracting k_B</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Extension: DLA</div>
+    <a class="nav-link" href="#dla-what">What is DLA?</a>
+    <a class="nav-link" href="#dla-physics">The physics: ions + field</a>
+    <a class="nav-link" href="#dla-fractal">Fractal geometry</a>
+    <a class="nav-link" href="#dla-peclet">Péclet number</a>
+    <a class="nav-link" href="#dla-connection">Connection to Brownian motion</a>
+    <a class="nav-link" href="#dla-experiment">The experiment</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Summary</div>
+    <a class="nav-link" href="#all-symbols">Symbol reference</a>
+    <a class="nav-link" href="#key-equations">Key equations</a>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="chapter-eyebrow">Complete Theory Guide</div>
+    <h1>From Temperature to Boltzmann's Constant</h1>
+    <p>This guide builds everything from scratch — no prior thermal physics assumed. By the end, you will understand exactly what you are measuring in the lab, why each equation is what it is, and what every result means physically.</p>
+    <div class="hero-meta">
+      <span>Polystyrene microspheres in water</span>
+      <span>40× bright-field microscopy</span>
+      <span>Stokes-Einstein relation</span>
+      <span>k_B extraction via MSD</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- CHAPTER 1: TEMPERATURE -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="chapter" id="what-is-temp">
+    <div class="chapter-eyebrow">Chapter 1 · Foundations</div>
+    <h2>What is temperature, really?</h2>
+
+    <p>Before anything else, we need to understand what temperature actually <em>is</em> — not what a thermometer reads, but what physical reality it describes.</p>
+
+    <p>Imagine a box of air. Inside the box are roughly 10<sup>22</sup> molecules, each one moving in a random direction at some speed. They collide with each other and with the walls constantly. At any given moment, the speeds are wildly different — some molecules are nearly at rest after a collision, others are moving very fast.</p>
+
+    <p><strong>Temperature is a single number that summarises the average kinetic energy of all those molecules.</strong> Nothing more, nothing less. A "hot" gas is one where the molecules are moving faster on average. A "cold" gas has slower molecules.</p>
+
+    <div class="callout callout-insight">
+      <div class="callout-title">Key insight</div>
+      <p>Temperature and energy are two descriptions of the same physical fact. Temperature is the macroscopic, human-readable version. Kinetic energy is the microscopic, per-molecule reality. They are not different phenomena — they are different languages for the same thing.</p>
+    </div>
+
+    <h3>The problem: two different units for the same thing</h3>
+
+    <p>Here is the puzzle. Energy is measured in Joules [J]. Temperature is measured in Kelvin [K]. These are completely different units, historically defined by completely different experimental procedures — Kelvin by the behaviour of gases, Joules by mechanics.</p>
+
+    <p>Yet they describe the same physical quantity. So there must be a conversion factor between them. That conversion factor is <strong>Boltzmann's constant, k<sub>B</sub></strong>.</p>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- CHAPTER 2: BOLTZMANN -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="chapter" id="boltzmann">
+    <div class="chapter-eyebrow">Chapter 2 · Foundations</div>
+    <h2>Boltzmann's constant k<sub>B</sub></h2>
+
+    <p>Boltzmann's constant converts between temperature (in Kelvin) and thermal energy (in Joules) at the level of a single particle:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Boltzmann's constant</span>
+      k<sub>B</sub> = 1.380649 × 10<sup>−23</sup> J/K
+      <span class="eq-sub">
+        <span>k<sub>B</sub> — Boltzmann's constant [J/K]</span>
+        <span>Exact value since 2019 SI redefinition</span>
+      </span>
+    </div>
+
+    <p>The number is tiny — on the order of 10<sup>−23</sup> — because a single molecule carries an almost unimaginably small amount of energy. At room temperature (T ≈ 300 K), the thermal energy per degree of freedom per molecule is:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Thermal energy scale at room temperature</span>
+      ½ k<sub>B</sub>T ≈ ½ × 1.38×10<sup>−23</sup> × 300 ≈ 2×10<sup>−21</sup> J
+      <span class="eq-sub">This is about 12 milli-electron-volts — tiny, but not zero.</span>
+    </div>
+
+    <h3>Why is k<sub>B</sub> so small?</h3>
+
+    <p>The Kelvin scale was defined long before anyone understood molecules. People agreed that water freezes at 273.15 K and boils at 373.15 K — based on human-scale observations. But one kelvin of temperature difference, experienced by a single molecule, corresponds to an absurdly small kinetic energy.</p>
+
+    <p>k<sub>B</sub> is the bridge between those two worlds. It is small because we happened to define temperature on a human scale rather than a molecular scale.</p>
+
+    <div class="callout callout-physical">
+      <div class="callout-title">Connection to the gas constant</div>
+      <p>You may have seen R = 8.314 J/(mol·K), the gas constant. This is just k<sub>B</sub> scaled up to one mole of particles: <strong>R = N<sub>A</sub> k<sub>B</sub></strong>, where N<sub>A</sub> = 6.022×10<sup>23</sup> mol<sup>−1</sup> is Avogadro's number. Same physics — different counting unit. Historically, Perrin measured k<sub>B</sub> via Brownian motion in 1908 and got N<sub>A</sub> = 6.4×10<sup>23</sup> — within 6% of the correct value. That's what you're replicating.</p>
+    </div>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- CHAPTER 3: EQUIPARTITION -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="chapter" id="equipartition">
+    <div class="chapter-eyebrow">Chapter 3 · Foundations</div>
+    <h2>The equipartition theorem</h2>
+
+    <p>Now that we have the conversion factor k<sub>B</sub>, we need a statement about <em>how much</em> energy each particle actually carries. That is the equipartition theorem.</p>
+
+    <p><strong>The theorem:</strong> In thermal equilibrium at temperature T, every quadratic degree of freedom in the energy carries a mean energy of ½k<sub>B</sub>T.</p>
+
+    <p>What is a "quadratic degree of freedom"? It is any term in the energy that is proportional to a coordinate or velocity <em>squared</em>. For a free particle moving in 3D, the kinetic energy is:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Kinetic energy in 3D</span>
+      E = ½mv<sub>x</sub>² + ½mv<sub>y</sub>² + ½mv<sub>z</sub>²
+      <span class="eq-sub">
+        <span>m — particle mass [kg]</span>
+        <span>v<sub>x</sub>, v<sub>y</sub>, v<sub>z</sub> — velocity components [m/s]</span>
+      </span>
+    </div>
+
+    <p>Each term is quadratic in a velocity. So by equipartition:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Equipartition theorem applied</span>
+      ⟨½mv<sub>x</sub>²⟩ = ½k<sub>B</sub>T &nbsp;&nbsp; (and same for y, z)
+      <span class="eq-sub">The angle brackets ⟨…⟩ mean "average over time" (or equivalently, over the ensemble).</span>
+    </div>
+
+    <p>This is a profound result. It says: <strong>the temperature T of a fluid sets the mean kinetic energy of every particle in it, regardless of mass, shape, or size.</strong> A water molecule and your 1 µm microsphere, both immersed in the same fluid at the same temperature, both have ½k<sub>B</sub>T of kinetic energy per direction.</p>
+
+    <h3>Why does the sphere move at all?</h3>
+
+    <p>This is exactly the answer. The water molecules in your sample cell are at room temperature T ≈ 295 K. By equipartition, each water molecule has mean kinetic energy ½k<sub>B</sub>T per direction. When they collide with the polystyrene sphere, they transfer momentum to it. The sphere therefore also ends up with mean kinetic energy ½k<sub>B</sub>T per direction — it is just another object in thermal equilibrium. That is why it moves. The motion is thermally driven.</p>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">Important: particle mass drops out</div>
+      <p>Since every particle has the same <em>energy</em> ½k<sub>B</sub>T regardless of mass, a heavier particle moves more slowly. The sphere is 10<sup>9</sup> times heavier than a water molecule, so it moves 10<sup>4.5</sup> times more slowly — but it still moves. This is why Brownian motion is visible under a microscope: the motion is slow enough to track, but it's real thermal energy causing it.</p>
+    </div>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- CHAPTER 4: BROWNIAN MOTION -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="chapter" id="brownian">
+    <div class="chapter-eyebrow">Chapter 4 · The Motion</div>
+    <h2>Brownian motion — what it is</h2>
+
+    <p>In 1827, botanist Robert Brown noticed that pollen grains suspended in water jittered under his microscope — a continuous, irregular, never-stopping dance. He first thought the grains were alive. Testing with inorganic dust particles revealed the same motion. The cause remained a mystery for 80 years.</p>
+
+    <p>Einstein solved it in 1905. His insight was this: <strong>the pollen grain is being bombarded from all sides by water molecules, and those bombardments are not perfectly balanced at any instant.</strong> The net random force from billions of asymmetric collisions per second sets the grain in motion.</p>
+
+    <p>At any time step, the net force has a random direction and magnitude — it could push the sphere slightly left, right, up, or down, with equal probability. Over time, the sphere traces out a jagged, irregular path with no preferred direction.</p>
+
+    <!-- INTERACTIVE PARTICLE DEMO -->
+    <div class="widget">
+      <div class="widget-title">Live simulation — single particle trajectory</div>
+      <canvas id="particle-canvas"></canvas>
+      <div class="step-display">
+        <div class="stat-card">
+          <div class="stat-label">Steps taken</div>
+          <div class="stat-value" id="step-count">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Distance from start</div>
+          <div class="stat-value" id="dist-now">0.0 µm</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">√(steps) × scale</div>
+          <div class="stat-value" id="expected-dist">0.0 µm</div>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn" onclick="resetParticle()">Reset</button>
+        <button class="btn" id="play-btn" onclick="togglePlay()">Pause</button>
+        <button class="btn" onclick="setSpeed(1)" id="speed1">1×</button>
+        <button class="btn" onclick="setSpeed(5)" id="speed5">5×</button>
+      </div>
+      <p style="margin-top: 0.75rem; font-size: 13px; color: var(--text3);">Notice: the distance from start (red dot) grows much slower than the total path length. The particle wanders — it does not travel in a straight line. Click Reset to start a new trajectory.</p>
+    </div>
+
+    <h3>Three key observations</h3>
+
+    <p><strong>1. The motion never stops.</strong> As long as T > 0, the water molecules are moving and collisions are happening. Brownian motion is perpetual — it is not friction-less motion, it is thermally-driven motion.</p>
+
+    <p><strong>2. No preferred direction.</strong> The average displacement ⟨Δr⟩ = 0. The particle goes left as often as right. The mean position does not drift (unless there is an external force or fluid flow — more on this when we discuss drift).</p>
+
+    <p><strong>3. The typical distance grows as √t.</strong> If you watch the particle for time t, the typical distance from its starting point scales as √t, not t. This is the hallmark of diffusion and random walks — we will derive it precisely in the next chapter.</p>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- CHAPTER 5: LANGEVIN -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="chapter" id="langevin">
+    <div class="chapter-eyebrow">Chapter 5 · The Motion</div>
+    <h2>The Langevin equation</h2>
+
+    <p>To get a quantitative description, we write Newton's second law for the sphere. Two forces act on it:</p>
+
+    <div class="step-flow">
+      <div class="step-item">
+        <div>
+          <div class="step-label">Force 1 — Drag</div>
+          <p>When the sphere moves at velocity v, the surrounding fluid resists with force F<sub>drag</sub> = −γv. The minus sign: drag always opposes motion. The drag coefficient γ = 6πηr (Stokes law — explained in Chapter 7). γ has units [kg/s].</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Force 2 — Random kicks</div>
+          <p>The net force from all the asymmetric molecular collisions at each instant. We call this F(t). It has zero mean (⟨F(t)⟩ = 0 — no preferred direction) and it changes on extremely short timescales (nanoseconds). It is uncorrelated in time: a kick at time t tells you nothing about the kick at time t+ε for any ε larger than the collision timescale.</p>
+        </div>
+      </div>
+    </div>
+
+    <p>Newton's second law F = ma gives:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">The Langevin equation</span>
+      m(dv/dt) = −γv + F(t)
+      <span class="eq-sub">
+        <span>m — sphere mass [kg]</span>
+        <span>v — velocity [m/s]</span>
+        <span>γ — drag coefficient [kg/s]</span>
+        <span>F(t) — random force [N], ⟨F(t)⟩ = 0</span>
+      </span>
+    </div>
+
+    <p>This is a <em>stochastic</em> differential equation — an equation of motion with a random term. It is the foundational equation of Brownian motion theory.</p>
+
+    <h3>The overdamped limit — why mass drops out</h3>
+
+    <p>Look at the timescale on which the sphere "remembers" its velocity. If you give the sphere a kick, how long before the drag erases that velocity? The answer is the momentum relaxation time:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Momentum relaxation timescale</span>
+      τ<sub>m</sub> = m/γ ≈ 10<sup>−7</sup> s (for a 1 µm sphere in water)
+      <span class="eq-sub">m ≈ 10<sup>−15</sup> kg for a 1 µm polystyrene sphere &nbsp;·&nbsp; γ ≈ 10<sup>−8</sup> kg/s in water</span>
+    </div>
+
+    <p>Your camera captures frames every ~0.1 s. Between two frames, the particle has been re-randomised approximately 10<sup>6</sup> times. The velocity at frame n tells you absolutely nothing about the velocity at frame n+1 — it has been completely scrambled.</p>
+
+    <p>This means the inertial term m(dv/dt) is completely negligible at the timescales you observe. The Langevin equation simplifies to:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Overdamped Langevin equation</span>
+      γ(dx/dt) = F(t) &nbsp; → &nbsp; dx = [F(t)/γ] dt
+      <span class="eq-sub">The particle position changes only due to the random kicks — inertia is irrelevant. Mass m has vanished entirely.</span>
+    </div>
+
+    <div class="callout callout-insight">
+      <div class="callout-title">Physical meaning</div>
+      <p>The sphere has no "coasting." At each instant it is either being pushed or being dragged. The overdamped regime is the reason that the Einstein relation D = k<sub>B</sub>T/γ holds — it is the regime where friction and diffusion are directly linked, with no inertial complications.</p>
+    </div>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- CHAPTER 6: RANDOM WALKS & MSD -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="chapter" id="random-walk">
+    <div class="chapter-eyebrow">Chapter 6 · The Motion</div>
+    <h2>Random walks and the MSD</h2>
+
+    <h3>The simplest model: 1D drunk walk</h3>
+
+    <p>Forget the physics for a moment. Imagine a person on a number line. Every second, they flip a coin: heads → step right (+ℓ), tails → step left (−ℓ). After N steps, where are they?</p>
+
+    <p>The total displacement is X = Δx<sub>1</sub> + Δx<sub>2</sub> + … + Δx<sub>N</sub>. Because each step is ±ℓ with equal probability, the mean is ⟨X⟩ = 0 — the person ends up, on average, back where they started. But of course they do not stay at zero! They wander.</p>
+
+    <h3>The right question: mean squared displacement</h3>
+
+    <p>Since ⟨X⟩ = 0 is useless, we ask: what is ⟨X²⟩? Squaring eliminates the sign:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">MSD derivation — 1D random walk</span>
+      ⟨X²⟩ = ⟨(Δx₁ + Δx₂ + … + Δx<sub>N</sub>)²⟩
+      = ⟨Σᵢ Δxᵢ²⟩ + ⟨Σᵢ≠ⱼ Δxᵢ Δxⱼ⟩
+      = Nℓ² + 0
+      <span class="eq-sub">Cross terms ⟨Δxᵢ Δxⱼ⟩ = ⟨Δxᵢ⟩⟨Δxⱼ⟩ = 0 because steps are independent. Each squared term ⟨Δxᵢ²⟩ = ℓ² because each step is exactly ±ℓ.</span>
+    </div>
+
+    <p>So ⟨X²⟩ = Nℓ². The MSD <strong>grows linearly with the number of steps</strong>. This is purely a consequence of step independence — no physics assumed yet.</p>
+
+    <h3>Converting to time: defining D</h3>
+
+    <p>N steps in time t means N = t/τ<sub>step</sub> where τ<sub>step</sub> is the time per step. We define the <strong>diffusion coefficient</strong> D by:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Definition of diffusion coefficient D</span>
+      D ≡ ℓ² / (2τ<sub>step</sub>) &nbsp;&nbsp; [m²/s]
+      <span class="eq-sub">D encodes both the step size (ℓ) and how frequently steps occur (τ<sub>step</sub>). Large D: big steps, or fast steps.</span>
+    </div>
+
+    <p>Then in 1D: ⟨x²⟩ = Nℓ² = (t/τ<sub>step</sub>) × 2Dτ<sub>step</sub> = 2Dt. Generalising to d dimensions (x and y are independent, so their MSDs add):</p>
+
+    <div class="eq-block">
+      <span class="eq-label">MSD — central result of diffusion theory</span>
+      ⟨r²⟩ = 2dDt
+      <span class="eq-sub">
+        <span>⟨r²⟩ — mean squared displacement [m²]</span>
+        <span>d — dimensionality (2 for your 2D tracking)</span>
+        <span>D — diffusion coefficient [m²/s]</span>
+        <span>t — lag time [s]</span>
+      </span>
+    </div>
+
+    <p>For your experiment: d = 2 (you track in the xy plane), so <strong>⟨r²⟩ = 4Dt</strong>. A plot of MSD vs. lag time should be a straight line through the origin. The slope is 4D.</p>
+
+    <!-- INTERACTIVE MSD PLOT -->
+    <div class="widget">
+      <div class="widget-title">Interactive — MSD vs lag time · adjust D and see the effect</div>
+      <div class="slider-row">
+        <label>Radius r</label>
+        <input type="range" min="0.3" max="3.0" step="0.1" value="1.0" id="r-slider" oninput="updateMSD()">
+        <span class="val" id="r-val">r = 1.0 µm</span>
+      </div>
+      <div class="slider-row">
+        <label>Temperature T</label>
+        <input type="range" min="270" max="320" step="1" value="295" id="T-slider" oninput="updateMSD()">
+        <span class="val" id="T-val">T = 295 K</span>
+      </div>
+      <div id="msd-chart-wrap">
+        <canvas id="msd-chart" role="img" aria-label="MSD vs lag time chart"></canvas>
+      </div>
+      <div class="step-display" style="margin-top:1rem">
+        <div class="stat-card">
+          <div class="stat-label">D (computed)</div>
+          <div class="stat-value" id="D-val">0.22 µm²/s</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">MSD slope = 4D</div>
+          <div class="stat-value" id="slope-val">0.87 µm²/s</div>
+        </div>
+      </div>
+      <p style="margin-top: 0.75rem; font-size: 13px; color: var(--text3);">η(water, 295 K) ≈ 0.95 × 10⁻³ Pa·s is used for D = k<sub>B</sub>T / (6πηr). Slope = 4D.</p>
+    </div>
+
+    <h3>What MSD linearity tells you physically</h3>
+
+    <p>The fact that ⟨r²⟩ ∝ t (linear in time) is the <em>definition</em> of normal diffusion. It is a direct consequence of each step being independent of the last. If the slope curves upward (MSD ∝ t<sup>α</sup>, α > 1), the particle has memory — perhaps it is being carried by a flow. If it curves downward (α < 1), the particle is being constrained — perhaps it is trapped near a surface. <strong>A straight line through the origin is your confirmation that you are seeing free, unhindered Brownian motion.</strong></p>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- CHAPTER 7: DIFFUSION COEFFICIENT -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="chapter" id="diffusion">
+    <div class="chapter-eyebrow">Chapter 7 · The Physics</div>
+    <h2>The diffusion coefficient D</h2>
+
+    <p>We defined D mathematically as ℓ²/2τ. But what determines D physically? This is where Einstein's genius comes in. He recognised that diffusion and friction are two faces of the same microscopic phenomenon.</p>
+
+    <p>Think about it: the same water molecule collisions that cause the sphere to diffuse also cause the sphere to decelerate when you push it. <em>Friction and diffusion have the same origin.</em> Einstein's fluctuation-dissipation theorem makes this precise:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Einstein relation (fluctuation-dissipation)</span>
+      D = k<sub>B</sub>T / γ
+      <span class="eq-sub">
+        <span>D — diffusion coefficient [m²/s]</span>
+        <span>k<sub>B</sub> — Boltzmann's constant [J/K]</span>
+        <span>T — temperature [K]</span>
+        <span>γ — drag coefficient [kg/s]</span>
+      </span>
+    </div>
+
+    <p>Read this carefully. Larger T → more thermal energy → larger D (more diffusion). Larger γ → more drag → smaller D (harder to move). The ratio k<sub>B</sub>T/γ captures the competition between thermal driving and viscous resistance.</p>
+
+    <div class="callout callout-physical">
+      <div class="callout-title">Dimensional check</div>
+      <p>[k<sub>B</sub>T/γ] = [J/K × K] / [kg/s] = [J] / [kg/s] = [kg·m²/s²] / [kg/s] = [m²/s] ✓ — correct units for D.</p>
+    </div>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- CHAPTER 8: STOKES DRAG -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="chapter" id="stokes">
+    <div class="chapter-eyebrow">Chapter 8 · The Physics</div>
+    <h2>Stokes' law — drag on a sphere</h2>
+
+    <p>To use the Einstein relation D = k<sub>B</sub>T/γ, we need an expression for the drag coefficient γ. For a sphere, this was solved by George Stokes in 1851.</p>
+
+    <p>When a sphere of radius r moves at velocity v through a viscous fluid of dynamic viscosity η [Pa·s], it experiences a drag force:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Stokes drag law</span>
+      F<sub>drag</sub> = −6πηr·v &nbsp; → &nbsp; γ = 6πηr
+      <span class="eq-sub">
+        <span>η — dynamic viscosity [Pa·s = kg/(m·s)]</span>
+        <span>r — sphere radius [m]</span>
+        <span>γ = 6πηr — drag coefficient [kg/s]</span>
+      </span>
+    </div>
+
+    <h3>What is viscosity η?</h3>
+
+    <p>Viscosity is a fluid's resistance to shear — its "thickness." Formally, η = (shear stress) / (velocity gradient) [Pa·s]. Water at 20°C has η ≈ 10<sup>−3</sup> Pa·s. Glycerol is about 1000× more viscous. Honey is about 10<sup>4</sup>× more viscous.</p>
+
+    <h3>Why does drag scale linearly with r?</h3>
+
+    <p>You might expect drag to scale as r² (cross-sectional area). It doesn't — it scales as r (linearly). The reason: Stokes drag is controlled by the velocity <em>gradient</em> in the fluid around the sphere, not by cross-sectional area. The velocity gradient length-scale is set by r, and the contact area is also set by r, so the two factors of r in "gradient × area" turn into r + r = 2r... actually, the full derivation shows that the viscous stress is ∝ η·v/r, and the area is ∝ r², giving a force ∝ η·v·r. The factor 6π comes from the exact solution to the Stokes equations around a sphere.</p>
+
+    <h3>Assumptions behind Stokes' law</h3>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">When Stokes law is valid</div>
+      <p><strong>Low Reynolds number:</strong> Re = ρvr/η ≪ 1. For a 1 µm sphere in water moving at ~1 µm/s: Re ≈ 10<sup>−6</sup>. Deeply valid. <br><br>
+      <strong>Rigid sphere:</strong> Polystyrene satisfies this. Drops or bubbles would deform and give a different factor. <br><br>
+      <strong>Far from walls:</strong> Near a wall, the fluid has to squeeze through a narrower gap, increasing effective drag. If beads are near the coverslip surface, γ is larger than 6πηr. This can bias your D measurement downward and k<sub>B</sub> upward. Watch for beads stuck or rolling along walls.</p>
+    </div>
+
+    <h3>η depends on temperature</h3>
+
+    <p>This is critical for your week-2 runs. Water viscosity falls substantially with temperature:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Water viscosity (approximate values)</span>
+      η(5°C) ≈ 1.52 × 10⁻³ Pa·s &nbsp;·&nbsp; η(20°C) ≈ 1.00 × 10⁻³ Pa·s &nbsp;·&nbsp; η(25°C) ≈ 0.89 × 10⁻³ Pa·s
+      <span class="eq-sub">Your pipeline computes η(T) automatically via physics.water_viscosity_Pa_s. Always use the computed value — never assume η = η(20°C).</span>
+    </div>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- CHAPTER 9: STOKES-EINSTEIN -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="chapter" id="stokes-einstein">
+    <div class="chapter-eyebrow">Chapter 9 · The Physics</div>
+    <h2>The Stokes-Einstein relation</h2>
+
+    <p>Substitute Stokes' law γ = 6πηr into the Einstein relation D = k<sub>B</sub>T/γ:</p>
+
+    <div class="key-result">
+      <div class="kr-label">The Stokes-Einstein relation — central equation of your experiment</div>
+      <div class="eq-block" style="margin:0; border-left-color: var(--teal)">
+        D = k<sub>B</sub>T / (6πηr)
+        <span class="eq-sub">
+          <span>D [m²/s] — measured from MSD slope</span>
+          <span>k<sub>B</sub> [J/K] — what we want to extract</span>
+          <span>T [K] — thermometer reading</span>
+          <span>η [Pa·s] — looked up from tables (or computed)</span>
+          <span>r [m] — from optical calibration</span>
+        </span>
+      </div>
+    </div>
+
+    <p>Every symbol except k<sub>B</sub> is either measured, looked up, or known. Rearranging:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Extracting Boltzmann's constant</span>
+      k<sub>B</sub> = 6πηr·D / T
+      <span class="eq-sub">This is your measurement equation. Plug in your measured D, your known r, your measured T, and your looked-up η(T) — and you get k<sub>B</sub>.</span>
+    </div>
+
+    <h3>What each quantity physically controls</h3>
+
+    <table class="sym-table">
+      <tr><th>Quantity</th><th>Units</th><th>Physical role</th></tr>
+      <tr><td>T ↑</td><td>K</td><td>More thermal energy → water molecules hit harder → sphere moves faster → D increases</td></tr>
+      <tr><td>η ↑</td><td>Pa·s</td><td>More viscous fluid → more drag → sphere moves slower → D decreases</td></tr>
+      <tr><td>r ↑</td><td>m</td><td>Bigger sphere → more drag (γ = 6πηr) → moves slower → D decreases</td></tr>
+      <tr><td>D ↑</td><td>m²/s</td><td>MSD slope steeper → inferred k<sub>B</sub> higher</td></tr>
+    </table>
+
+    <div class="callout callout-insight">
+      <div class="callout-title">Why this experiment can measure a fundamental constant</div>
+      <p>Stokes-Einstein connects a macroscopic, measurable quantity (D, from video tracking) to a microscopic fundamental constant (k<sub>B</sub>). The bridge is thermodynamics (equipartition) + hydrodynamics (Stokes drag). Einstein showed for the first time that watching a particle under a microscope lets you reach into the atomic world. That is why Perrin won the Nobel Prize for doing exactly this experiment.</p>
+    </div>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- CHAPTER 10: MEASURING D -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="chapter" id="measuring-d">
+    <div class="chapter-eyebrow">Chapter 10 · The Experiment</div>
+    <h2>Measuring D from your tracking data</h2>
+
+    <p>You have a trajectory: a list of (x, y) positions at known times. Here is exactly how D is extracted.</p>
+
+    <h3>Step 1 — Compute displacements at each lag time τ</h3>
+
+    <p>For a lag time τ = n × Δt (where Δt = 1/fps ≈ 0.107 s for your camera), the squared displacement at each time window i is:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Squared displacement</span>
+      r²(i, τ) = [x(t<sub>i</sub>+τ) − x(t<sub>i</sub>)]² + [y(t<sub>i</sub>+τ) − y(t<sub>i</sub>)]²
+    </div>
+
+    <h3>Step 2 — Average over all windows of the same lag time</h3>
+
+    <p>For a trajectory of N total frames, at lag time τ = nΔt, there are N−n windows. Average all of them:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Time-averaged MSD</span>
+      ⟨r²(τ)⟩ = (1/(N−n)) × Σᵢ r²(i, τ)
+      <span class="eq-sub">This is the time-average that the ergodic hypothesis says equals the ensemble average.</span>
+    </div>
+
+    <h3>Step 3 — Plot MSD vs. τ and fit a line</h3>
+
+    <p>The MSD curve ⟨r²⟩ vs τ should be linear. Fit a line: ⟨r²⟩ = 4Dτ + offset. The slope is 4D, so:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Extracting D from the slope</span>
+      D = slope / 4
+      <span class="eq-sub">The offset (y-intercept) should be near zero. A large offset signals localisation noise — position measurement uncertainty that adds a constant to all MSD values regardless of lag time.</span>
+    </div>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">Only fit the linear regime</div>
+      <p>At very short lag times (1–2 frames), localisation noise dominates. At very long lag times, the trajectory has fewer windows — statistical noise increases, and drift can corrupt the result. A typical good fit range is roughly 5% to 30% of the total trajectory length in frames.</p>
+    </div>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- CHAPTER 11: ERGODIC -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="chapter" id="ergodic">
+    <div class="chapter-eyebrow">Chapter 11 · The Experiment</div>
+    <h2>The ergodic hypothesis</h2>
+
+    <p>The MSD formula ⟨r²⟩ = 4Dt is mathematically defined as an <em>ensemble average</em>: release 10<sup>6</sup> identical particles at t = 0 and average r² over all of them at time t. You cannot do this — you have one or a few particles tracked over time.</p>
+
+    <p>The <strong>ergodic hypothesis</strong> states: for a particle in thermal equilibrium, the time average equals the ensemble average, given sufficiently long observation time.</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Ergodic hypothesis</span>
+      ⟨r²(τ)⟩<sub>time</sub> = ⟨r²(τ)⟩<sub>ensemble</sub>
+      <span class="eq-sub">Only valid when: the trajectory is long enough, the system is in equilibrium, and there are no long-time correlations (e.g. the particle isn't drifting or getting stuck).</span>
+    </div>
+
+    <p>This is an <strong>assumption</strong>, not a proven theorem for real systems. It is well-justified for free Brownian particles in equilibrium, but it can fail in several physically important ways:</p>
+
+    <div class="step-flow">
+      <div class="step-item">
+        <div>
+          <div class="step-label">Short times — memory not lost</div>
+          <p>At τ ≲ τ<sub>m</sub> = m/γ ≈ 10<sup>−7</sup> s, the particle still "remembers" its initial velocity. The time average over a short trajectory does not sample all possible states. (Not relevant here — your shortest observable lag is much longer.)</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Long times — sample cell changes</div>
+          <p>Over very long trajectories, the sample cell may evaporate slightly, the temperature may drift, or the bead may gradually approach a wall. The system is no longer in the same equilibrium state throughout, so the time average is not a valid ensemble average.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Drift — broken translation invariance</div>
+          <p>If a flow velocity is present, the particle's position is not translation-invariant over time. The ergodic hypothesis requires no preferred direction — drift violates this. This is why drift must be identified and handled before extracting D. (Next chapter.)</p>
+        </div>
+      </div>
+    </div>
+
+    <p>In practice, you use multiple beads and treat each trajectory as an approximately independent realisation. Pooling results from many beads brings you closer to a true ensemble average and reduces statistical uncertainty.</p>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- CHAPTER 12: DRIFT -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="chapter" id="drift">
+    <div class="chapter-eyebrow">Chapter 12 · The Experiment</div>
+    <h2>Drift — what it is, why it appears, how to handle it</h2>
+
+    <h3>What drift is physically</h3>
+
+    <p>Drift is a systematic, constant (or slowly-varying) velocity superimposed on top of the random Brownian motion. Its sources in your experiment include:</p>
+
+    <div class="step-flow">
+      <div class="step-item">
+        <div>
+          <div class="step-label">Mechanical — sample cell flow</div>
+          <p>If the sample cell is not perfectly sealed, evaporation can cause slow fluid flow. Similarly, any tilt of the microscope stage causes gravitational sedimentation (though for 1 µm spheres in water this is slow). Convection currents from the microscope lamp heating the sample can also cause bulk flow.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Optical — stage drift</div>
+          <p>The microscope stage itself can drift mechanically over minutes, causing all particles in the field of view to translate together. This looks like all particles sharing the same drift velocity — a useful diagnostic.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Physical — thermal gradient</div>
+          <p>If the sample is not at uniform temperature (a gradient exists), particles can undergo thermophoresis — net motion toward the cooler region. This looks like drift directed along the temperature gradient.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>What drift does to the MSD</h3>
+
+    <p>Suppose a drift velocity <strong>v</strong><sub>d</sub> = (v<sub>x</sub>, v<sub>y</sub>) is present. The total displacement at lag τ is:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Displacement with drift</span>
+      Δr(τ) = Δr<sub>diffusion</sub>(τ) + v<sub>d</sub>·τ
+      <span class="eq-sub">The diffusion term is random (zero mean). The drift term is systematic and grows linearly with τ.</span>
+    </div>
+
+    <p>Computing the MSD:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">MSD with drift (expanded)</span>
+      ⟨|Δr(τ)|²⟩ = 4Dτ + |v<sub>d</sub>|²τ²
+      <span class="eq-sub">
+        <span>4Dτ — diffusion term, linear in τ</span>
+        <span>|v<sub>d</sub>|²τ² — drift term, quadratic in τ</span>
+      </span>
+    </div>
+
+    <!-- DRIFT INTERACTIVE DEMO -->
+    <div class="widget">
+      <div class="widget-title">Interactive — effect of drift on MSD curve</div>
+      <div class="slider-row">
+        <label>Drift speed |v<sub>d</sub>|</label>
+        <input type="range" min="0" max="0.5" step="0.01" value="0.0" id="vd-slider" oninput="updateDrift()">
+        <span class="val" id="vd-val">0.00 µm/s</span>
+      </div>
+      <div class="slider-row">
+        <label>D (fixed)</label>
+        <input type="range" min="0.05" max="1.0" step="0.01" value="0.22" id="D2-slider" oninput="updateDrift()">
+        <span class="val" id="D2-val">D = 0.22 µm²/s</span>
+      </div>
+      <div id="drift-chart-wrap" style="position: relative; height: 260px; margin-top: 0.75rem;">
+        <canvas id="drift-chart" role="img" aria-label="MSD vs lag time showing effect of drift"></canvas>
+      </div>
+      <p style="margin-top: 0.75rem; font-size: 13px; color: var(--text3);">The blue line is pure diffusion (4Dτ). The orange line includes drift. Notice how drift causes upward curvature — the MSD bends above the diffusion baseline at long lag times. This is the experimental signature of drift. <strong>If you fit a line to a drifting MSD, you overestimate D.</strong></p>
+    </div>
+
+    <h3>How to detect drift</h3>
+
+    <p><strong>Method 1 — Visual inspection of the MSD.</strong> If your MSD curves upward (super-linear) instead of being straight, drift is likely present. The curvature is more pronounced at long lag times because the τ² term grows faster than τ.</p>
+
+    <p><strong>Method 2 — Check the mean displacement ⟨Δr⟩.</strong> Pure diffusion gives ⟨Δr⟩ = 0 in each direction. If ⟨Δx(τ)⟩ ≠ 0 or ⟨Δy(τ)⟩ ≠ 0 and these means grow linearly with τ, you have drift with velocity v<sub>d</sub> = d⟨Δr⟩/dτ.</p>
+
+    <p><strong>Method 3 — Check multiple particles.</strong> If all particles in the field of view drift in the same direction at the same speed, it is stage drift or global flow. If particles drift in different directions, it is something more complex (convection cells, local flows).</p>
+
+    <h3>How to correct for drift — the physics-based approach</h3>
+
+    <p>The cleanest correction does not touch your raw data. Instead, you measure the drift velocity from the mean displacement:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Drift velocity from mean displacement</span>
+      v<sub>d,x</sub> = ⟨Δx(τ)⟩ / τ &nbsp;&nbsp; v<sub>d,y</sub> = ⟨Δy(τ)⟩ / τ
+    </div>
+
+    <p>Then subtract the drift contribution from the MSD at each lag time:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Drift-corrected MSD</span>
+      ⟨r²(τ)⟩<sub>corrected</sub> = ⟨|Δr(τ)|²⟩ − |v<sub>d</sub>|²τ²
+      <span class="eq-sub">This removes the quadratic term, leaving the linear diffusion signal. Then fit 4Dτ to the corrected curve as before.</span>
+    </div>
+
+    <div class="callout callout-insight">
+      <div class="callout-title">Why this is physics-based, not ad hoc</div>
+      <p>The decomposition Δr = Δr<sub>diffusion</sub> + v<sub>d</sub>τ is exact if v<sub>d</sub> is constant during the trajectory. The subtraction is not "removing data" — it is correctly separating the deterministic drift from the stochastic diffusion. The physics guarantees that these two contributions to MSD are additive and independent, so subtracting the drift term is equivalent to observing the particle in a frame co-moving with the fluid.</p>
+    </div>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">When drift correction is not enough</div>
+      <p>If the drift is not constant — if it varies during the trajectory — then a simple linear subtraction underestimates the total drift contribution. In this case, you should reject the trajectory entirely, or restrict the fit to short lag times (where drift hasn't yet accumulated). The wall-hindered beads appearing above the fit line in your plot2 is a physical alarm related to this: beads near walls have reduced D (wall hydrodynamics), which makes their k<sub>B</sub> appear too high if r is also slightly overestimated.</p>
+    </div>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- CHAPTER 13: EXTRACTING kB -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="chapter" id="getting-kb">
+    <div class="chapter-eyebrow">Chapter 13 · The Experiment</div>
+    <h2>Extracting k<sub>B</sub> — the full chain</h2>
+
+    <p>Here is the complete measurement chain, from raw pixels to fundamental constant:</p>
+
+    <div class="step-flow">
+      <div class="step-item">
+        <div>
+          <div class="step-label">Step 1 — Calibrate space</div>
+          <p>Convert pixel positions to physical distances using the spatial calibration: mpp = 0.14381 µm/px (confirmed via multi-line grid detection). Note that k<sub>B</sub> ∝ mpp³ — a 5% calibration error causes a 15% error in k<sub>B</sub>. This is highly leveraged.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Step 2 — Track trajectories</div>
+          <p>Use trackpy to link particle positions across frames into trajectories. Apply quality cuts: minimum track length, morphological quality (bead shape), physical reliability (stable D estimate). Reject beads near walls, beads showing non-Brownian motion, beads with very short tracks.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Step 3 — Compute MSD per bead</div>
+          <p>For each accepted trajectory, compute the time-averaged MSD at each lag time τ. Check for linearity. Correct for drift if detected. Fit a line to the linear regime. Extract D = slope/4.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Step 4 — Measure r per bead</div>
+          <p>Extract the bead radius r from the optical image using the calibrated pixel scale. Note: diffraction spreads the dark ring ~1-2 px past the true edge, biasing r slightly upward for smaller beads. This bias in r propagates into k<sub>B</sub> = 6πηrD/T.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Step 5 — Compute k<sub>B</sub> per bead</div>
+          <p>For each bead i: k<sub>B,i</sub> = 6π η(T) r<sub>i</sub> D<sub>i</sub> / T. Use the measured T and the computed η(T). The result is a distribution of k<sub>B</sub> estimates — one per bead.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Step 6 — Combine estimates</div>
+          <p>The correct combination is the bootstrap standard error on the per-bead median k<sub>B,i</sub> — not a regression slope (which is broken when all beads cluster in a narrow 1/r range). Report the median ± bootstrap SE, and compare to the accepted value k<sub>B</sub> = 1.381 × 10<sup>−23</sup> J/K.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="key-result">
+      <div class="kr-label">Your target</div>
+      <p>A measurement of k<sub>B</sub> within 20% of the accepted value is considered a success for this lab. Your week-1 pooled result was ~1.07× the accepted value — within target. The week-2 temperature-dependent runs add the check that D ∝ T/η(T) as predicted by Stokes-Einstein.</p>
+    </div>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- SYMBOL REFERENCE -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="chapter" id="all-symbols">
+    <div class="chapter-eyebrow">Reference</div>
+    <h2>Symbol reference</h2>
+
+    <table class="sym-table">
+      <tr><th>Symbol</th><th>Units</th><th>Meaning</th></tr>
+      <tr><td>k<sub>B</sub></td><td>J/K</td><td>Boltzmann's constant — converts temperature to energy at the single-particle level</td></tr>
+      <tr><td>T</td><td>K</td><td>Absolute temperature — sets the scale of all thermal fluctuations</td></tr>
+      <tr><td>D</td><td>m²/s</td><td>Diffusion coefficient — slope of MSD vs t divided by 4 (in 2D)</td></tr>
+      <tr><td>η</td><td>Pa·s</td><td>Dynamic viscosity of the fluid — resistance to shear flow</td></tr>
+      <tr><td>r</td><td>m</td><td>Sphere radius — determines Stokes drag</td></tr>
+      <tr><td>γ</td><td>kg/s</td><td>Drag coefficient — γ = 6πηr (Stokes law)</td></tr>
+      <tr><td>⟨r²⟩</td><td>m²</td><td>Mean squared displacement — ensemble or time average of (Δr)²</td></tr>
+      <tr><td>τ</td><td>s</td><td>Lag time — time interval over which displacement is measured</td></tr>
+      <tr><td>τ<sub>m</sub></td><td>s</td><td>Momentum relaxation time — m/γ ≈ 10⁻⁷ s; sets overdamped regime</td></tr>
+      <tr><td>v<sub>d</sub></td><td>m/s</td><td>Drift velocity — systematic flow superimposed on diffusion</td></tr>
+      <tr><td>mpp</td><td>µm/px</td><td>Microns per pixel — spatial calibration factor (0.14381 µm/px)</td></tr>
+      <tr><td>fps</td><td>s⁻¹</td><td>Frames per second — temporal calibration (≈ 9.304 fps)</td></tr>
+      <tr><td>N<sub>A</sub></td><td>mol⁻¹</td><td>Avogadro's number — N<sub>A</sub> = R/k<sub>B</sub> = 6.022×10²³</td></tr>
+      <tr><td>Re</td><td>—</td><td>Reynolds number = ρvr/η — must be ≪ 1 for Stokes law to hold</td></tr>
+    </table>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- KEY EQUATIONS SUMMARY -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="chapter" id="key-equations">
+    <div class="chapter-eyebrow">Reference</div>
+    <h2>Key equations — the complete chain</h2>
+
+    <div class="eq-block">
+      <span class="eq-label">1. Equipartition theorem</span>
+      ⟨½mv<sub>x</sub>²⟩ = ½k<sub>B</sub>T
+      <span class="eq-sub">Energy per direction per particle = ½k<sub>B</sub>T. This is why the sphere moves at all.</span>
+    </div>
+
+    <div class="eq-block">
+      <span class="eq-label">2. Langevin equation (overdamped)</span>
+      γ(dx/dt) = F(t) &nbsp;&nbsp; [F(t) random, ⟨F⟩=0]
+      <span class="eq-sub">At your timescales, inertia is irrelevant. Position changes are purely due to random kicks and drag.</span>
+    </div>
+
+    <div class="eq-block">
+      <span class="eq-label">3. Mean squared displacement (2D)</span>
+      ⟨r²(τ)⟩ = 4Dτ
+      <span class="eq-sub">Linear in lag time τ. Slope = 4D. This is the observable you measure from trajectories.</span>
+    </div>
+
+    <div class="eq-block">
+      <span class="eq-label">4. Stokes drag</span>
+      γ = 6πηr
+      <span class="eq-sub">Valid for Re ≪ 1, rigid sphere, far from walls. η = η(T) — depends on temperature.</span>
+    </div>
+
+    <div class="eq-block">
+      <span class="eq-label">5. Einstein relation (fluctuation-dissipation)</span>
+      D = k<sub>B</sub>T / γ
+      <span class="eq-sub">Diffusion and friction have the same microscopic origin — molecular collisions.</span>
+    </div>
+
+    <div class="eq-block">
+      <span class="eq-label">6. Stokes-Einstein relation</span>
+      D = k<sub>B</sub>T / (6πηr)
+      <span class="eq-sub">The central equation. Connects tracked D to the fundamental constant k<sub>B</sub>.</span>
+    </div>
+
+    <div class="eq-block">
+      <span class="eq-label">7. Measurement equation for k<sub>B</sub></span>
+      k<sub>B</sub> = 6π η(T) · r · D / T
+      <span class="eq-sub">Plug in D (from MSD slope/4), r (from image), T (from thermometer), η(T) (from tables/pipeline).</span>
+    </div>
+
+    <div class="eq-block">
+      <span class="eq-label">8. MSD with drift</span>
+      ⟨r²(τ)⟩ = 4Dτ + |v<sub>d</sub>|²τ²
+      <span class="eq-sub">Drift adds a quadratic term. Detected as upward curvature. Corrected by subtracting |v<sub>d</sub>|²τ² after measuring v<sub>d</sub> from ⟨Δr⟩/τ.</span>
+    </div>
+
+    <div class="callout callout-physical" style="margin-top: 2rem;">
+      <div class="callout-title">The physical story in one paragraph</div>
+      <p>Water at temperature T consists of molecules with mean kinetic energy k<sub>B</sub>T per direction (equipartition). They constantly bombard your polystyrene sphere with asymmetric net forces (Langevin). The sphere undergoes a random walk whose MSD grows as 4Dτ (diffusion). The drag that slows the sphere (Stokes: γ = 6πηr) and the diffusion that drives it (Einstein: D = k<sub>B</sub>T/γ) are linked by the fluctuation-dissipation theorem. Measuring D from the MSD slope, r from the optical image, T from a thermometer, and η(T) from tables, you extract k<sub>B</sub> — the fundamental bridge between the microscopic and macroscopic worlds.</p>
+    </div>
+  </div>
+
+
+  <div class="chapter-sep">§</div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- DLA EXTENSION — from Shlomo's email, June 2 2026     -->
+  <!-- ══════════════════════════════════════════════════════ -->
+
+  <div class="chapter" id="dla-what">
+    <div class="chapter-eyebrow">Extension · Diffusion-Limited Aggregation</div>
+    <h2>What is DLA?</h2>
+
+    <p>Diffusion-Limited Aggregation (DLA) is a growth process in which particles diffusing randomly through a medium collide with and permanently attach to a growing cluster. The result is a branching, fractal structure — one of the most striking examples of complexity emerging from simple rules.</p>
+
+    <p>Shlomo suggested this as your lab extension: metal salt ions in solution under an applied electric voltage. The ions drift toward an electrode, diffusing along the way, and stick where they first touch the growing deposit. The deposit grows outward in elaborate, tree-like fractal branches.</p>
+
+    <div class="callout callout-insight">
+      <div class="callout-title">Why this connects to Brownian motion</div>
+      <p>DLA is not a separate topic — it is Brownian motion taken to its logical consequence. Each individual ion undergoes the same random walk you have been studying all semester. The fractal pattern is entirely a product of that random walk meeting an irreversible sticking condition. The word "diffusion-limited" in the name means exactly that: the shape of the aggregate is determined by diffusion, not by chemistry or surface energy. Remove the random walk and you get a different pattern entirely.</p>
+    </div>
+
+    <h3>The canonical DLA algorithm</h3>
+
+    <p>The classic thought experiment that defines DLA: place a seed particle at the origin. Release a new particle far away; let it random-walk until it either escapes to infinity or reaches a site adjacent to the existing cluster, at which point it sticks. Repeat. The cluster that grows is a fractal with a characteristic branching structure that looks the same at every scale — from microns to centimetres.</p>
+
+    <!-- DLA SIMULATION -->
+    <div class="widget">
+      <div class="widget-title">Live DLA simulation — particles diffuse and stick to the cluster</div>
+      <canvas id="dla-canvas" style="width:100%; height:320px; border-radius:10px; border:1px solid var(--border); background:#0a0a10; display:block;"></canvas>
+      <div class="step-display" style="margin-top:1rem">
+        <div class="stat-card">
+          <div class="stat-label">Particles stuck</div>
+          <div class="stat-value" id="dla-count">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Cluster radius</div>
+          <div class="stat-value" id="dla-radius">0 px</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active walkers</div>
+          <div class="stat-value" id="dla-walkers">0</div>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn" onclick="dlaReset()">Reset</button>
+        <button class="btn" id="dla-play-btn" onclick="dlaToggle()">Pause</button>
+        <button class="btn" onclick="dlaSetSpeed(1)" >1×</button>
+        <button class="btn" onclick="dlaSetSpeed(8)">8×</button>
+      </div>
+      <p style="margin-top:0.75rem; font-size:13px; color:var(--text3);">Each blue dot is a particle undergoing a random walk. When it touches the white cluster, it sticks permanently. Notice the branching fractal geometry: the tips of the cluster "shadow" the interior, starving it of new particles — this is the mechanism that generates fractal structure.</p>
+    </div>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <div class="chapter" id="dla-physics">
+    <div class="chapter-eyebrow">Extension · DLA</div>
+    <h2>The physics: ions under an electric field</h2>
+
+    <p>In the lab you will deposit metal ions (from a salt solution) under an applied voltage. This is electrodeposition driven by DLA. The physics involves three forces acting on each ion simultaneously:</p>
+
+    <div class="step-flow">
+      <div class="step-item">
+        <div>
+          <div class="step-label">Thermal diffusion — random</div>
+          <p>Exactly as in your Brownian motion experiment: the solvent molecules bombard the ion from all sides, causing a random walk with diffusion coefficient D = k<sub>B</sub>T / (6πηr). For a small ion (r ~ 0.1 nm), D ~ 10<sup>−9</sup> m²/s — much larger than for your 1 µm spheres, because D ∝ 1/r and ions are ~10<sup>4</sup>× smaller.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Electrophoretic drift — directed</div>
+          <p>The applied electric field E [V/m] exerts a force F = qE on each ion (charge q = ze, where z is the valence). This gives a systematic drift velocity v<sub>drift</sub> = μE, where μ = q / (6πηr) [m²/(V·s)] is the electrophoretic mobility. This is the "drift" you studied in Chapter 12 — here it is intentional and controlled by the voltage knob.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Sticking — irreversible</div>
+          <p>When the ion reaches the electrode surface (or an already-deposited ion), a reduction reaction occurs: Cu²⁺ + 2e⁻ → Cu (or Zn²⁺ + 2e⁻ → Zn, depending on the salt). The ion becomes a neutral metal atom, permanently fixed. There is no detachment — the sticking is irreversible. This irreversibility is what causes the fractal to persist rather than equilibrate into a compact sphere.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="eq-block">
+      <span class="eq-label">Total ion displacement per timestep</span>
+      Δr = Δr<sub>diffusion</sub> + v<sub>drift</sub> · Δt = [F(t)/γ]Δt + (qE/γ)Δt
+      <span class="eq-sub">
+        <span>F(t)/γ — random Brownian kick (zero mean)</span>
+        <span>qE/γ — deterministic drift toward the cathode</span>
+        <span>γ = 6πηr — Stokes drag, same as always</span>
+      </span>
+    </div>
+
+    <p>The relative importance of drift vs. diffusion is set by a single dimensionless number — the Péclet number, which is the subject of the next section.</p>
+
+    <div class="callout callout-physical">
+      <div class="callout-title">What the voltage controls</div>
+      <p>Turning up the voltage increases E, which increases v<sub>drift</sub>. At low voltage, diffusion dominates and you get a fractal DLA pattern. At high voltage, drift dominates and the deposit becomes a compact, directed dendrite — the fractal branching disappears. This is the key experimental variable: the voltage knob changes the Pe number and therefore the morphology of the deposit.</p>
+    </div>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <div class="chapter" id="dla-fractal">
+    <div class="chapter-eyebrow">Extension · DLA</div>
+    <h2>Fractal geometry of the deposit</h2>
+
+    <p>The DLA cluster is a fractal: it has structure at every length scale, and its mass M does not scale with size R the way a compact object does. For a compact 2D disc, M ∝ R². For a DLA fractal, M ∝ R<sup>d<sub>f</sub></sup> where d<sub>f</sub> ≈ 1.71 is the <strong>fractal dimension</strong>.</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Fractal scaling relation</span>
+      M(R) ∝ R<sup>d<sub>f</sub></sup> &nbsp;&nbsp; d<sub>f</sub> ≈ 1.71 (2D DLA)
+      <span class="eq-sub">
+        <span>M — number of particles in the cluster within radius R</span>
+        <span>d<sub>f</sub> — fractal dimension (2D DLA ≈ 1.71, between 1 and 2)</span>
+        <span>Compare: compact 2D disc has d<sub>f</sub> = 2 exactly</span>
+      </span>
+    </div>
+
+    <p>How to measure d<sub>f</sub> experimentally: photograph the deposit. Count the number of filled pixels M(R) within circles of increasing radius R centred on the seed electrode. Plot log(M) vs. log(R). The slope is d<sub>f</sub>. A slope of ~1.71 confirms DLA; a slope approaching 2 means the deposit is compact (high-voltage regime).</p>
+
+    <h3>Why is d<sub>f</sub> less than 2?</h3>
+
+    <p>The fractal dimension being less than 2 reflects the "screening" mechanism at the heart of DLA. A diffusing particle approaching the cluster is much more likely to hit a protruding tip than to navigate deep into a fjord-like interior — the interior is screened by the outer branches. Tips grow faster than interior regions. This positive feedback causes the branching instability: every small protrusion grows faster, becoming a bigger protrusion, growing even faster. The result is a pattern where mass is concentrated on a set of fractal branches with empty space between them.</p>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">Measuring d<sub>f</sub> in your experiment</div>
+      <p>Your deposit is quasi-2D (thin electrolyte layer between two plates). The fractal dimension you measure will be close to the 2D DLA value of 1.71 if the voltage is low and diffusion dominates. At higher voltages, d<sub>f</sub> will approach 2 as the deposit becomes more compact. Quantifying this transition as a function of voltage is a concrete, measurable research question.</p>
+    </div>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <div class="chapter" id="dla-peclet">
+    <div class="chapter-eyebrow">Extension · DLA</div>
+    <h2>The Péclet number — the key dimensionless ratio</h2>
+
+    <p>The Péclet number Pe is the ratio of advective (drift) transport to diffusive transport. It is the single most important parameter governing the morphology of your deposit:</p>
+
+    <div class="eq-block">
+      <span class="eq-label">Péclet number</span>
+      Pe = v<sub>drift</sub> · L / D = (μE · L) / D
+      <span class="eq-sub">
+        <span>v<sub>drift</sub> = μE — drift velocity [m/s]</span>
+        <span>L — characteristic length scale [m] (e.g. gap between electrodes)</span>
+        <span>D — diffusion coefficient [m²/s]</span>
+        <span>μ — electrophoretic mobility [m²/(V·s)]</span>
+      </span>
+    </div>
+
+    <p>Three regimes:</p>
+
+    <div class="step-flow">
+      <div class="step-item">
+        <div>
+          <div class="step-label">Pe ≪ 1 — diffusion dominated</div>
+          <p>The ion random-walks many times its mean-free path before drifting appreciably. It samples all approach directions to the cluster equally. This is classical DLA: fractal deposits, d<sub>f</sub> ≈ 1.71. This is what you see at low voltage.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Pe ~ 1 — crossover</div>
+          <p>Drift and diffusion compete on the same length scale. The fractal branches become directionally biased — they lean toward the counter-electrode. The fractal dimension begins to increase toward 2. The deposit morphology is sensitive to small changes in voltage in this regime.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Pe ≫ 1 — drift dominated</div>
+          <p>Ions travel almost directly toward the electrode in near-straight lines, with only small diffusive side-steps. The deposit is a compact, directed dendrite — still branched due to the instability at the growth front, but no longer fractal in the DLA sense. d<sub>f</sub> → 2.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PE INTERACTIVE DEMO -->
+    <div class="widget">
+      <div class="widget-title">Interactive — Péclet number: morphology transition</div>
+      <div class="slider-row">
+        <label>Applied voltage V</label>
+        <input type="range" min="0.1" max="10" step="0.1" value="1.0" id="pe-slider" oninput="updatePe()">
+        <span class="val" id="pe-v-val">1.0 V</span>
+      </div>
+      <div class="step-display" style="margin-top:0.5rem">
+        <div class="stat-card">
+          <div class="stat-label">Electric field E</div>
+          <div class="stat-value" id="pe-E">100 V/m</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Drift speed v<sub>d</sub></div>
+          <div class="stat-value" id="pe-vd">7.0 µm/s</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Péclet number</div>
+          <div class="stat-value" id="pe-val" style="color: var(--warm)">0.07</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Regime</div>
+          <div class="stat-value" id="pe-regime" style="font-size:0.85rem; color:var(--teal2)">DLA fractal</div>
+        </div>
+      </div>
+      <p style="margin-top: 0.75rem; font-size: 13px; color: var(--text3);">Gap L = 10 mm, D = 1×10⁻⁹ m²/s (Cu²⁺ in water), μ = 7×10⁻⁸ m²/(V·s). Pe = μEL/D. The crossover from fractal to compact occurs around Pe ~ 1, corresponding to V ~ 14 V in this geometry.</p>
+    </div>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <div class="chapter" id="dla-connection">
+    <div class="chapter-eyebrow">Extension · DLA</div>
+    <h2>Deep connection to Brownian motion</h2>
+
+    <p>The connection between DLA and your main experiment runs deeper than "both involve random walks." Here is the precise chain:</p>
+
+    <div class="step-flow">
+      <div class="step-item">
+        <div>
+          <div class="step-label">Same underlying equation</div>
+          <p>An ion undergoing DLA obeys exactly the same overdamped Langevin equation as your polystyrene sphere: γ(dx/dt) = F(t) + qE. The only new term is qE — the electric driving force. Remove the field, and DLA is pure Brownian motion with a sticking boundary condition.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Same MSD, same D</div>
+          <p>Between sticking events, the ion's MSD grows as ⟨r²⟩ = 4Dt, exactly as for free diffusion. The Stokes-Einstein relation D = k<sub>B</sub>T/(6πηr) still applies (using the ionic radius r ~ 0.1 nm). The fractal pattern is entirely encoded in <em>where</em> the first-passage to the cluster boundary happens — not in the diffusion law itself.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Equipartition still applies</div>
+          <p>The electric field does not change the thermal energy of the ion — it adds a directional bias on top of the thermal motion. The ion still has mean kinetic energy ½k<sub>B</sub>T per direction from equipartition. The Péclet number Pe = v<sub>drift</sub>/v<sub>thermal</sub> × (L/ℓ) compares the directed drift to the thermal speed — but thermally the ion is unchanged.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Fractal dimension from first-passage statistics</div>
+          <p>The fractal dimension d<sub>f</sub> ≈ 1.71 is a mathematical property of 2D random walks and the harmonic measure (the probability distribution of where a diffusing particle first hits a surface). It is not a property of chemistry or electrostatics — it is purely a consequence of Brownian motion + irreversible sticking. This is why DLA deposits from copper sulfate, zinc sulfate, and silver nitrate all give the same d<sub>f</sub>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="key-result">
+      <div class="kr-label">The deepest connection</div>
+      <p>DLA is a <strong>first-passage problem</strong> for Brownian motion. The fractal structure of the cluster is a direct physical record of the probability that a random walker, released far away, first hits a given boundary point. The tips are "most visible" to incoming random walkers (high harmonic measure); the fjords are "invisible" (exponentially suppressed harmonic measure). Fractal geometry is a consequence of the geometry of random walks in two dimensions.</p>
+    </div>
+  </div>
+
+  <div class="chapter-sep">§</div>
+
+  <div class="chapter" id="dla-experiment">
+    <div class="chapter-eyebrow">Extension · DLA</div>
+    <h2>The experiment: what you will do and measure</h2>
+
+    <p>Shlomo confirmed the lab has the basic equipment. The setup is a thin-layer electrodeposition cell: two electrodes separated by a gap of order 1 cm, filled with a metal salt solution (e.g. CuSO₄ or ZnSO₄), viewed under a camera or microscope.</p>
+
+    <h3>Setup</h3>
+
+    <div class="step-flow">
+      <div class="step-item">
+        <div>
+          <div class="step-label">Cell geometry</div>
+          <p>A thin layer of electrolyte (1–2 mm thick) between two flat electrodes or two wires. Quasi-2D geometry is important — it allows you to photograph the deposit from above and treat it as 2D. The central wire or pin is the cathode (where deposit grows); the outer ring or wire is the anode.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Salt concentration</div>
+          <p>Lower concentration → fewer ions → growth is more diffusion-limited (lower Pe) → better fractal. Higher concentration → more ions → growth becomes reaction-limited rather than diffusion-limited → more compact deposit. Typical range: 0.01–0.1 M.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div>
+          <div class="step-label">Applied voltage</div>
+          <p>This is the main experimental variable. Low voltage (1–3 V): fractal DLA. High voltage (5–15 V): compact/directed. Measure d<sub>f</sub> at each voltage. The crossover voltage is where Pe ~ 1.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>What to measure</h3>
+
+    <p><strong>Fractal dimension d<sub>f</sub>:</strong> photograph the deposit at regular time intervals. For each image, compute M(R) — the number of filled pixels within radius R of the seed — for a range of R. Plot log(M) vs. log(R) and extract the slope d<sub>f</sub>. This can be done in Python with basic image processing.</p>
+
+    <p><strong>Growth rate:</strong> the cluster radius R(t) also follows a power law: R(t) ∝ t<sup>α</sup>, where α depends on the Pe number. In pure DLA (Pe ≪ 1), α ≈ 0.58 in 2D. Measuring α at different voltages is another quantitative test.</p>
+
+    <p><strong>Morphology transition:</strong> the clearest result is simply the visual transition from branching fractal to compact dendrite as voltage increases. Capturing this at several voltages and quantifying it via d<sub>f</sub> is a complete, publication-quality experiment at the undergraduate level.</p>
+
+    <div class="callout callout-physical">
+      <div class="callout-title">Your research question (as discussed with Shlomo)</div>
+      <p>How does the fractal dimension d<sub>f</sub> of an electrodeposited metal aggregate depend on the applied voltage? The prediction from DLA theory: d<sub>f</sub> ≈ 1.71 at low voltage (Pe ≪ 1), increasing toward 2 at high voltage (Pe ≫ 1). This is directly testable with image analysis and quantifies the competition between diffusion and drift — the same competition that governs Brownian motion everywhere in this lab.</p>
+    </div>
+
+    <h3>Quantities to report</h3>
+
+    <table class="sym-table">
+      <tr><th>Quantity</th><th>How obtained</th><th>Physical meaning</th></tr>
+      <tr><td>d<sub>f</sub></td><td>Slope of log M vs. log R</td><td>Fractal dimension — characterises deposit geometry</td></tr>
+      <tr><td>Pe</td><td>μEL/D, computed from V and geometry</td><td>Ratio of drift to diffusion — controls morphology</td></tr>
+      <tr><td>V<sub>crossover</sub></td><td>Voltage where d<sub>f</sub> starts rising above 1.71</td><td>Voltage at which drift begins to dominate</td></tr>
+      <tr><td>D (ion)</td><td>From Stokes-Einstein with r<sub>ion</sub></td><td>Diffusion coefficient of the depositing ion</td></tr>
+      <tr><td>μ</td><td>From tables or Einstein relation μ = qD/k<sub>B</sub>T</td><td>Electrophoretic mobility</td></tr>
+      <tr><td>R(t)</td><td>Time series of cluster radius</td><td>Growth rate — power law exponent α</td></tr>
+    </table>
+
+    <div class="callout callout-insight">
+      <div class="callout-title">Einstein relation for mobility</div>
+      <p>There is a direct analogue of the Stokes-Einstein relation for electrophoresis. The electrophoretic mobility μ and the diffusion coefficient D are related by: <strong>μ = qD / k<sub>B</sub>T</strong>. This is the Nernst-Einstein relation — the same fluctuation-dissipation physics as Stokes-Einstein, applied to electric driving instead of thermal gradient. It says: the same collisions that cause diffusion also determine how fast the ion drifts in a field. Measuring both μ and D gives you k<sub>B</sub> again, via a completely different route.</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- SCRIPTS -->
+<script>
+// ── PROGRESS BAR ──
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progress').style.width = pct + '%';
+});
+
+// ── ACTIVE NAV ──
+const sections = document.querySelectorAll('.chapter[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => {
+        l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id);
+      });
+    }
+  });
+}, { threshold: 0.25 });
+sections.forEach(s => observer.observe(s));
+
+// ── PARTICLE SIMULATION ──
+const pCanvas = document.getElementById('particle-canvas');
+const pCtx = pCanvas.getContext('2d');
+let pRunning = true;
+let pSpeed = 1;
+let pX, pY, pStartX, pStartY, pSteps, pPath, pAnimId;
+
+function setupCanvas() {
+  pCanvas.width = pCanvas.offsetWidth * window.devicePixelRatio;
+  pCanvas.height = pCanvas.offsetHeight * window.devicePixelRatio;
+  pCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+}
+
+function resetParticle() {
+  pX = pCanvas.offsetWidth / 2;
+  pY = pCanvas.offsetHeight / 2;
+  pStartX = pX; pStartY = pY;
+  pSteps = 0;
+  pPath = [[pX, pY]];
+  pCtx.clearRect(0, 0, pCanvas.offsetWidth, pCanvas.offsetHeight);
+  drawParticle();
+}
+
+function setSpeed(s) {
+  pSpeed = s;
+}
+
+function togglePlay() {
+  pRunning = !pRunning;
+  document.getElementById('play-btn').textContent = pRunning ? 'Pause' : 'Play';
+  if (pRunning) animParticle();
+}
+
+function drawParticle() {
+  const w = pCanvas.offsetWidth, h = pCanvas.offsetHeight;
+  pCtx.clearRect(0, 0, w, h);
+  // Grid
+  pCtx.strokeStyle = 'rgba(255,255,255,0.03)';
+  pCtx.lineWidth = 0.5;
+  for (let x = 0; x < w; x += 40) { pCtx.beginPath(); pCtx.moveTo(x,0); pCtx.lineTo(x,h); pCtx.stroke(); }
+  for (let y = 0; y < h; y += 40) { pCtx.beginPath(); pCtx.moveTo(0,y); pCtx.lineTo(w,y); pCtx.stroke(); }
+  // Trajectory
+  if (pPath.length > 1) {
+    pCtx.beginPath();
+    pCtx.moveTo(pPath[0][0], pPath[0][1]);
+    for (let i = 1; i < pPath.length; i++) {
+      const frac = i / pPath.length;
+      pCtx.strokeStyle = `rgba(108,143,205,${0.15 + frac * 0.5})`;
+      pCtx.lineWidth = 0.8;
+      pCtx.lineTo(pPath[i][0], pPath[i][1]);
+      pCtx.stroke();
+      pCtx.beginPath();
+      pCtx.moveTo(pPath[i][0], pPath[i][1]);
+    }
+  }
+  // Start dot
+  pCtx.beginPath();
+  pCtx.arc(pStartX, pStartY, 4, 0, Math.PI*2);
+  pCtx.fillStyle = '#d4845a';
+  pCtx.fill();
+  // Current dot
+  pCtx.beginPath();
+  pCtx.arc(pX, pY, 5, 0, Math.PI*2);
+  pCtx.fillStyle = '#6c8fcd';
+  pCtx.fill();
+  // Distance line
+  pCtx.beginPath();
+  pCtx.moveTo(pStartX, pStartY);
+  pCtx.lineTo(pX, pY);
+  pCtx.setLineDash([3, 3]);
+  pCtx.strokeStyle = 'rgba(212,132,90,0.4)';
+  pCtx.lineWidth = 1;
+  pCtx.stroke();
+  pCtx.setLineDash([]);
+  // Update stats
+  const dist = Math.sqrt((pX-pStartX)**2 + (pY-pStartY)**2);
+  const expectedDist = Math.sqrt(pSteps) * 2.0;
+  document.getElementById('step-count').textContent = pSteps;
+  document.getElementById('dist-now').textContent = (dist * 0.14381 / 5).toFixed(2) + ' µm';
+  document.getElementById('expected-dist').textContent = (expectedDist * 0.14381 / 5).toFixed(2) + ' µm';
+}
+
+function animParticle() {
+  if (!pRunning) return;
+  for (let i = 0; i < pSpeed; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const step = 2 + Math.random() * 6;
+    pX += Math.cos(angle) * step;
+    pY += Math.sin(angle) * step;
+    const w = pCanvas.offsetWidth, h = pCanvas.offsetHeight;
+    pX = Math.max(10, Math.min(w-10, pX));
+    pY = Math.max(10, Math.min(h-10, pY));
+    pSteps++;
+    if (pSteps % 2 === 0) pPath.push([pX, pY]);
+    if (pPath.length > 600) pPath.shift();
+  }
+  drawParticle();
+  pAnimId = requestAnimationFrame(animParticle);
+}
+
+setupCanvas();
+resetParticle();
+animParticle();
+
+// ── MSD CHART ──
+const msdCtx = document.getElementById('msd-chart').getContext('2d');
+let msdChart;
+const kB = 1.381e-23;
+const eta0 = 0.95e-3;
+
+function viscosity(T) {
+  return 2.414e-5 * Math.pow(10, 247.8 / (T - 140));
+}
+
+function updateMSD() {
+  const r = parseFloat(document.getElementById('r-slider').value) * 1e-6;
+  const T = parseFloat(document.getElementById('T-slider').value);
+  const eta = viscosity(T);
+  const D = kB * T / (6 * Math.PI * eta * r);
+  const D_um2s = D * 1e12;
+  document.getElementById('r-val').textContent = 'r = ' + (r*1e6).toFixed(1) + ' µm';
+  document.getElementById('T-val').textContent = 'T = ' + T.toFixed(0) + ' K';
+  document.getElementById('D-val').textContent = D_um2s.toFixed(3) + ' µm²/s';
+  document.getElementById('slope-val').textContent = (4*D_um2s).toFixed(3) + ' µm²/s';
+
+  const tArr = Array.from({length: 40}, (_, i) => (i+1)*0.5);
+  const msdArr = tArr.map(t => 4 * D_um2s * t);
+
+  if (msdChart) msdChart.destroy();
+  msdChart = new Chart(msdCtx, {
+    type: 'line',
+    data: {
+      labels: tArr.map(t => t.toFixed(1)),
+      datasets: [{
+        label: '⟨r²⟩ = 4Dτ',
+        data: msdArr,
+        borderColor: '#6c8fcd',
+        backgroundColor: 'rgba(108,143,205,0.08)',
+        borderWidth: 2,
+        pointRadius: 0,
+        tension: 0,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          title: { display: true, text: 'Lag time τ (s)', color: '#6a6760', font: { size: 12 } },
+          ticks: { color: '#6a6760', maxTicksLimit: 8 },
+          grid: { color: 'rgba(255,255,255,0.04)' }
+        },
+        y: {
+          title: { display: true, text: '⟨r²⟩ (µm²)', color: '#6a6760', font: { size: 12 } },
+          ticks: { color: '#6a6760' },
+          grid: { color: 'rgba(255,255,255,0.04)' }
+        }
+      }
+    }
+  });
+}
+
+updateMSD();
+
+// ── DRIFT CHART ──
+const driftCtx = document.getElementById('drift-chart').getContext('2d');
+let driftChart;
+
+function updateDrift() {
+  const vd = parseFloat(document.getElementById('vd-slider').value);
+  const D = parseFloat(document.getElementById('D2-slider').value);
+  document.getElementById('vd-val').textContent = vd.toFixed(2) + ' µm/s';
+  document.getElementById('D2-val').textContent = 'D = ' + D.toFixed(2) + ' µm²/s';
+
+  const tArr = Array.from({length: 50}, (_, i) => (i+1)*0.4);
+  const diffArr = tArr.map(t => 4*D*t);
+  const driftArr = tArr.map(t => 4*D*t + vd*vd*t*t);
+
+  if (driftChart) driftChart.destroy();
+  driftChart = new Chart(driftCtx, {
+    type: 'line',
+    data: {
+      labels: tArr.map(t => t.toFixed(1)),
+      datasets: [
+        {
+          label: 'Pure diffusion: 4Dτ',
+          data: diffArr,
+          borderColor: '#6c8fcd',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0,
+          borderDash: [5, 3]
+        },
+        {
+          label: 'With drift: 4Dτ + |v_d|²τ²',
+          data: driftArr,
+          borderColor: '#d4845a',
+          backgroundColor: 'rgba(212,132,90,0.06)',
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0,
+          fill: true
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          labels: { color: '#9e9b92', font: { size: 12 }, boxWidth: 20, padding: 12 }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Lag time τ (s)', color: '#6a6760', font: { size: 12 } },
+          ticks: { color: '#6a6760', maxTicksLimit: 8 },
+          grid: { color: 'rgba(255,255,255,0.04)' }
+        },
+        y: {
+          title: { display: true, text: '⟨r²⟩ (µm²)', color: '#6a6760', font: { size: 12 } },
+          ticks: { color: '#6a6760' },
+          grid: { color: 'rgba(255,255,255,0.04)' }
+        }
+      }
+    }
+  });
+}
+
+updateDrift();
+
+// ── DLA SIMULATION ──
+(function() {
+  const canvas = document.getElementById('dla-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, cx, cy;
+  let grid = new Set();
+  let walkers = [];
+  let stuckCount = 0;
+  let maxR = 0;
+  let running = true;
+  let speed = 1;
+  let animId;
+
+  function key(x, y) { return x + ',' + y; }
+
+  function initDLA() {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * window.devicePixelRatio;
+    canvas.height = H * window.devicePixelRatio;
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    cx = Math.floor(W / 2);
+    cy = Math.floor(H / 2);
+    grid.clear();
+    walkers = [];
+    stuckCount = 0;
+    maxR = 0;
+    grid.add(key(cx, cy));
+    stuckCount = 1;
+    for (let i = 0; i < 6; i++) spawnWalker();
+    draw();
+  }
+
+  function spawnWalker() {
+    const spawnR = Math.max(maxR + 18, 30);
+    const angle = Math.random() * Math.PI * 2;
+    walkers.push({
+      x: cx + Math.round(spawnR * Math.cos(angle)),
+      y: cy + Math.round(spawnR * Math.sin(angle)),
+      age: 0
+    });
+  }
+
+  const dx4 = [1, -1, 0, 0];
+  const dy4 = [0, 0, 1, -1];
+
+  function stepWalker(w) {
+    const d = Math.floor(Math.random() * 4);
+    w.x += dx4[d];
+    w.y += dy4[d];
+    w.age++;
+    const r = Math.hypot(w.x - cx, w.y - cy);
+    // Kill if too far
+    if (r > Math.max(maxR + 35, 60)) return false;
+    // Check neighbors for sticking
+    for (let i = 0; i < 4; i++) {
+      if (grid.has(key(w.x + dx4[i], w.y + dy4[i]))) {
+        grid.add(key(w.x, w.y));
+        stuckCount++;
+        if (r > maxR) maxR = r;
+        spawnWalker();
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    // Draw cluster
+    ctx.fillStyle = '#e8e6df';
+    for (const k of grid) {
+      const [x, y] = k.split(',').map(Number);
+      ctx.fillRect(x, y, 1.5, 1.5);
+    }
+    // Draw walkers
+    ctx.fillStyle = 'rgba(108,143,205,0.7)';
+    for (const w of walkers) {
+      ctx.fillRect(w.x, w.y, 2, 2);
+    }
+    // Stats
+    document.getElementById('dla-count').textContent = stuckCount;
+    document.getElementById('dla-radius').textContent = maxR.toFixed(0) + ' px';
+    document.getElementById('dla-walkers').textContent = walkers.length;
+  }
+
+  function step() {
+    const keep = [];
+    for (const w of walkers) {
+      if (stepWalker(w)) keep.push(w);
+    }
+    walkers = keep;
+    while (walkers.length < 8 && stuckCount < 2000) spawnWalker();
+  }
+
+  function loop() {
+    if (!running) return;
+    for (let i = 0; i < speed * 4; i++) {
+      if (stuckCount < 2000) step();
+    }
+    draw();
+    animId = requestAnimationFrame(loop);
+  }
+
+  window.dlaReset = function() {
+    cancelAnimationFrame(animId);
+    initDLA();
+    running = true;
+    document.getElementById('dla-play-btn').textContent = 'Pause';
+    loop();
+  };
+
+  window.dlaToggle = function() {
+    running = !running;
+    document.getElementById('dla-play-btn').textContent = running ? 'Pause' : 'Play';
+    if (running) loop();
+  };
+
+  window.dlaSetSpeed = function(s) { speed = s; };
+
+  initDLA();
+  loop();
+})();
+
+// ── PÉCLET CALCULATOR ──
+function updatePe() {
+  const V = parseFloat(document.getElementById('pe-slider').value);
+  const L = 0.01;      // 10 mm gap
+  const D = 1e-9;      // Cu2+ diffusion coefficient m2/s
+  const mu = 7e-8;     // electrophoretic mobility m2/(Vs)
+  const E = V / L;
+  const vd = mu * E;
+  const Pe = (mu * E * L) / D;
+  document.getElementById('pe-v-val').textContent = V.toFixed(1) + ' V';
+  document.getElementById('pe-E').textContent = (E).toFixed(0) + ' V/m';
+  document.getElementById('pe-vd').textContent = (vd * 1e6).toFixed(1) + ' µm/s';
+  document.getElementById('pe-val').textContent = Pe.toFixed(2);
+  let regime, color;
+  if (Pe < 0.5) { regime = 'DLA fractal'; color = 'var(--teal2)'; }
+  else if (Pe < 3) { regime = 'Crossover'; color = 'var(--amber2)'; }
+  else { regime = 'Compact/drift'; color = 'var(--warm)'; }
+  document.getElementById('pe-regime').textContent = regime;
+  document.getElementById('pe-regime').style.color = color;
+  document.getElementById('pe-val').style.color = color;
+}
+updatePe();
+</script>
+
+</body>
+</html>
