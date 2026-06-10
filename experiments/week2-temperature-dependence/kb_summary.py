@@ -37,6 +37,7 @@ import numpy as np
 import pandas as pd
 
 from pipeline import paths, physics, figstyle
+import kb_grid                      # single source of truth for per-run k_B
 
 KB = physics.K_B
 MPP = paths.load_scale() or 0.14381
@@ -54,30 +55,19 @@ EXCLUDED = {
     "run10": "residual drift",
     "run11": "residual drift",
     "run12": "convection",
-    "run14": "non-stationary (D(t) ramp)",
+    "run14": "non-stationary (D(t) wanders, 64px drift)",
 }
 
 
 def per_run(stem, T):
-    """Median k_B/KB and per-bead median SE over the headline bead set."""
-    out = paths.out_dir(stem, make=False)
-    fman = os.path.join(out, "radius_manual.csv")
-    fm = os.path.join(out, "msd.csv")
-    if not (os.path.exists(fman) and os.path.exists(fm)):
+    """Median k_B/KB + per-bead median SE -- delegated to kb_grid.analyse_run so
+    the synthesis points are IDENTICAL to the grid panels (same gates, same
+    alpha cut, same MAD mislink cut, same median estimator)."""
+    res = kb_grid.analyse_run(stem, paths.load_scale() or MPP)
+    if res is None or res["n"] < 3:
         return None
-    man = pd.read_csv(fman)[["particle", "r_um_manual"]]
-    d = pd.read_csv(fm).merge(man, on="particle", how="inner")
-    rstar = physics.sediment_r_star_um(T)
-    f = d[(~d.get("drift_flag", False).fillna(False))
-          & (d["r_um_manual"] <= rstar)
-          & (d["alpha"].between(0.7, 1.3))
-          & ((d["D_err"] / d["D_um2_s"]) < 0.5)].copy()
-    if len(f) < 3:
-        return None
-    kb = physics.kB_per_bead(f["D_um2_s"].values, f["r_um_manual"].values, T) / KB
-    m = float(np.median(kb))
-    se = float(np.median(np.abs(kb - m)) * 1.4826 / np.sqrt(len(kb)))
-    return dict(run=stem, T=T, ratio=m, se=se, n=len(kb))
+    return dict(run=stem, T=res["T"], ratio=res["kb_med"] / KB,
+                se=res["se_kb_med"] / KB, n=res["n"], fit=res["fit"])
 
 
 def model_ratio(T_nom, f):
@@ -110,17 +100,8 @@ def main():
     excl = [r for r in rows if r["run"] in EXCLUDED]
     fhat, sig_f, chi2dof = fit_f(surv)
 
-    # pooled headline (all survivor beads) for the caption
-    allkb = []
-    for r in surv:
-        d = pd.read_csv(os.path.join(paths.out_dir(r["run"], make=False), "msd.csv")).merge(
-            pd.read_csv(os.path.join(paths.out_dir(r["run"], make=False),
-                                     "radius_manual.csv"))[["particle", "r_um_manual"]],
-            on="particle")
-        rstar = physics.sediment_r_star_um(r["T"])
-        f = d[(~d.get("drift_flag", False).fillna(False)) & (d["r_um_manual"] <= rstar)
-              & (d["alpha"].between(0.7, 1.3)) & ((d["D_err"] / d["D_um2_s"]) < 0.5)]
-        allkb += list(physics.kB_per_bead(f["D_um2_s"].values, f["r_um_manual"].values, r["T"]) / KB)
+    # pooled headline (all survivor beads) -- same beads kb_grid pools
+    allkb = np.concatenate([r["fit"]["kb_i"].values for r in surv]) / KB
     pooled = float(np.median(allkb))
 
     pd.DataFrame(rows).to_csv(os.path.join(paths.FIGURES_DIR, "kb_summary.csv"), index=False)

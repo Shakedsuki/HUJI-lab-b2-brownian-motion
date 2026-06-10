@@ -1,39 +1,49 @@
 # Week-2 Boltzmann constant — per-run k_B grid
 
-**Deliverable:** `kb_grid.png` — a grid of Stokes–Einstein D-vs-(1/r) panels, one
-run per *measured starting temperature* (filename temp, ±1 °C nominal). The slope
-of each panel is k_B:
+**Deliverable:** `kb_grid.png` — Stokes–Einstein D-vs-(1/r) panels, one run per
+*measured starting temperature*. The per-panel headline k_B is the robust
+**per-bead median** of 6πη(T)·r·D/T — NOT the through-origin slope: with the
+narrow ~0.8–1.4 µm⁻¹ lever arm the slope is estimator-unstable (run7 is 1.00× by
+slope, 1.26× by median) and the median never regresses on 1/r, so radius x-scatter
+cannot bias it. The slope is kept only as a faint cross-check. The **synthesis
+figure is `kb_summary.png`** (k_B/k_B^acc vs T + the near-ambient model).
 
-    D = (k_B T / 6π η(T)) · (1/r)      ⇒      k_B = slope · 6π η(T) / T
+## Headline result (FINAL — all 16 runs processed; 10 in grid)
 
-## Headline result (FINAL — all 16 runs processed; 12 in grid, n=102 clean beads)
+**k_B = (1.53 ± 0.07_stat) × 10⁻²³ J/K = 1.10× accepted**, n = 87 clean free
+beads, 10 runs, 6 temperatures. Common-mode systematics (do **not** average down):
+**radius offset ±1 px = ±0.16×**, T-label ±1 °C ≈ ±0.03×. Sensitivity including
+drift beads → 1.15×.
 
-**k_B = (1.40 ± 0.07) × 10⁻²³ J/K = 1.01× accepted**
-(pooled per-bead median; free diffusers, significant-drift beads excluded;
-ALL clean tagged runs pooled — same-T duplicates are reproducibility evidence)
+| run | T (°C) | n | k_B median | χ²/dof | slope x-check |
+|-----|--------|---|-----------|--------|---------------|
+| run2 | 14.0 | 5 | 1.39× | 38 | 1.15× |
+| run3 | 14.0 | 4 | 1.01× | 3.5 | 1.09× |
+| run4 | 14.0 | 8 | 1.27× | 1.6 | 1.23× |
+| run5 | 15.2 | 13 | 1.34× | 31 | 1.26× |
+| run7 | 16.8 | 16 | 1.26× | 9.7 | 1.00× |
+| run8 | 16.8 | 9 | 1.15× | 8.9 | 1.17× |
+| run9 | 20.0 | 5 | 0.92× | 1.5 | 1.00× |
+| run13 | 24.3 | 5 | 1.52× | 1.2 | 1.52× |
+| run15 | 30.3 | 7 | 0.91× | 63 | 0.80× |
+| run16 | 30.3 | 15 | 0.74× | 53 | 0.70× |
 
-| run | T (°C) | n clean | k_B (fit) | R² |
-|-----|--------|---------|-----------|-----|
-| run2 | 14.0 | 5 | 1.15× | 0.87 |
-| run3 | 14.0 | 4 | 1.09× | 0.94 |
-| run4 | 14.0 | 8 | 1.23× | 0.98 |
-| run5 | 15.2 | 13 | 1.26× | 0.86 |
-| run6 | 15.2 | 3 | 1.07× | 0.95 |
-| run7 | 16.8 | 16 | 1.00× | 0.81 |
-| run8 | 16.8 | 9 | 1.17× | 0.93 |
-| run9 | 20.0 | 5 | 1.00× | 0.98 |
-| run13 | 24.3 | 8 | 1.08× | 0.75 |
-| run14 | 24.3 | 9 | 0.69× | 0.83 |
-| run15 | 30.3 | 7 | 0.80× | 0.87 |
-| run16 | 30.3 | 15 | 0.70× | 0.82 |
+**χ²/dof ≫ 1 on most runs is itself a result:** the per-bead bars (σ_D ⊕ σ_r=1 px)
+explain only a fraction of the bead-to-bead spread — forcing χ²/dof→1 needs
+σ_r ≈ 6.5 px (absurd for tagging), so the spread is real structure, not Gaussian
+noise. The honest per-run/pooled uncertainty is the scatter, not the bars.
 
-Sensitivity: including the 28 drift-flagged beads → 1.10×.
-Same-T reproducibility: 14 °C 1.09–1.23×; 15.2 °C 1.07–1.26×; 16.8 °C
-1.00–1.17×; 24.3 °C 0.69–1.08× (the widest split); 30.3 °C 0.70–0.80×.
-Run-to-run spread ±0.2–0.3× is the dominant systematic.
-Excluded: run1 (only 2 clean beads); run10, run11, run12 discarded on drift /
-convection evidence (see EXCLUDED_RUNS in kb_grid.py — reasons print at every
-rebuild).
+**Two systematics (see kb_summary.png):** (1) a temperature-label trend — extracted
+k_B falls with nominal T because the fluid sat near ambient regardless of setpoint
+(fitted decoupling f = 0.72 ± 0.19 → warm "30.3 °C" sample ≈ 23 °C); (2) a
+common-mode radius offset (±1 px → ±15%) that can shift the whole dataset. Caveat:
+**24.3 °C now rests on run13 alone (n=5, high at 1.52×)** — run14 dropped as
+non-stationary; that point is under-constrained.
+
+**Excluded** (all in `kb_grid.EXCLUDED_RUNS`, reasons printed at every rebuild):
+run6 (convection, 5/8 drift), run10+run11 (residual drift, ~165 nm/s), run12
+(convection), run14 (non-stationary — full-clip D(t) wanders, 64 px drift, no
+plateau); run1 below the 3-clean-bead gate.
 
 ## Measurement policies (in the order applied)
 1. **Hand-tagged radii** (`radius_manual.csv`, via `radius_tag.py`): the auto

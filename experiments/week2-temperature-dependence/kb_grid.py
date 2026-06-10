@@ -48,7 +48,8 @@ KB = physics.K_B
 # per-bead trust gates -- identical to analyze_run.GATES (week-1 parity)
 GATES = dict(D_rel_err=0.5, R_cv=0.20, resid=0.15, inlier=0.60)
 MAD_K = 3.5            # robust D*r mislink cut (week-1 plot2_pooled default)
-PX_FLOOR_UM = None     # localization floor for sigma_r; set from scale at runtime
+ALPHA_BAND = (0.7, 1.3)   # free-diffusion validity (MSD exponent); stated, not tuned
+RADIUS_OFFSET_PX = 1.0    # common-mode radius systematic (median is exposed to OFFSET)
 
 # Runs excluded from the measurement, with the evidence (convection is a GATE,
 # not a correction -- a convective run is dropped, never "fixed and trusted").
@@ -69,6 +70,14 @@ EXCLUDED_RUNS = {
              "beads drift-flagged, median |v|=165 nm/s (2x same-T run9's 76); "
              "reads 1.34x, agreeing with drifty run10 not quiet run9 (1.00x). "
              "user-confirmed drop 2026-06-11",
+    "run6":  "convection (active-cooling run): 5/8 free beads drift-flagged, "
+             "leaving n=3 -- two independent disqualifiers. user-confirmed drop "
+             "2026-06-11",
+    "run14": "non-stationary / convective: full-clip (474 s) D(t) wanders "
+             "0.17-0.27 um2/s with a 220 s excursion and 63.7 px cumulative "
+             "drift -- no >=120 s stationary plateau by the pre-registered rule; "
+             "radius-free D*r confirms it is motion, not composition. Dropped as "
+             "never-equilibrated 2026-06-11",
 }
 
 
@@ -127,8 +136,13 @@ def analyse_run(stem, mpp):
     df["r_um"] = df["r_um_manual"]
     df = df.dropna(subset=["D_um2_s", "r_um"])
 
-    # D-quality gate only (beads are human-vetted singles with hand radii)
+    # D-quality gate (beads are human-vetted singles with hand radii)
     df = df[df["D_err"] / df["D_um2_s"] < GATES["D_rel_err"]].copy()
+    # free-diffusion VALIDITY gate: alpha in [0.7,1.3]. A stuck/wall-bound bead
+    # keeps a finite radius but sub-diffuses (alpha<<1); this is a physics cut
+    # (stated independent of the outcome), companion to the r<=r* wall cut.
+    if "alpha" in df.columns:
+        df = df[df["alpha"].between(*ALPHA_BAND)].copy()
 
     # robust D*r mislink cut (Stokes-Einstein => D*r ~ const)
     dr = (df["D_um2_s"] * df["r_um"]).values
@@ -173,16 +187,35 @@ def analyse_run(stem, mpp):
     # (B) std/sqrt(n) of the per-bead slopes (kept per fix 4)
     se_kb_scatter = (pref * float(np.std(slopes, ddof=1)) / np.sqrt(n)
                      if n > 1 else np.nan)
-    # (C) robust per-bead MEDIAN (cross-check)
-    slope_med, slope_med_se = median_se(slopes)
-    kb_med, se_kb_med = pref * slope_med, pref * slope_med_se
+    # (C) robust per-bead MEDIAN -- THE HEADLINE estimator (never regresses on
+    # 1/r, so the narrow lever arm + radius x-scatter cannot bias it the way they
+    # bias the slope; the LS slope is kept only as a faint cross-check).
+    kb_i = fit["kb_i"].values
+    kb_med, se_kb_med = median_se(kb_i)
+    slope_med = kb_med / pref
+    # goodness-of-fit: reduced chi^2 of the per-bead k_B about the median, errors
+    # propagated from sigma_D AND sigma_r (1 px). >>1 => the bars underestimate
+    # the real bead-to-bead scatter (radius realization), not Gaussian noise.
+    sig_i = kb_i * np.sqrt((fit["D_err"].values / fit["D_um2_s"].values) ** 2
+                           + (fit["sig_r"].values / fit["r_um"].values) ** 2)
+    chi2dof = (float(np.sum(((kb_i - kb_med) / sig_i) ** 2)) / (n - 1)
+               if n > 1 else np.nan)
+    # common-mode systematics (do NOT average down): radius OFFSET +/-1 px, and
+    # the +/-1 C temperature-label band via eta(T).
+    dpx = RADIUS_OFFSET_PX * mpp
+    kb_rplus = float(np.median(physics.kB_per_bead(fit["D_um2_s"], fit["r_um"] + dpx, T, eta)))
+    kb_rminus = float(np.median(physics.kB_per_bead(fit["D_um2_s"], fit["r_um"] - dpx, T, eta)))
+    syst_r = abs(kb_rplus - kb_rminus) / 2.0
+    kb_Tp = float(np.median(physics.kB_per_bead(fit["D_um2_s"], fit["r_um"], T + T_unc)))
+    kb_Tm = float(np.median(physics.kB_per_bead(fit["D_um2_s"], fit["r_um"], T - T_unc)))
+    syst_T = abs(kb_Tp - kb_Tm) / 2.0
     # sensitivity: all free beads incl. drift-flagged
-    slopes_all = (df["D_um2_s"] * df["r_um"]).values
-    kb_med_all = pref * float(np.median(slopes_all)) if len(slopes_all) else np.nan
+    kb_med_all = float(np.median(df["kb_i"].values)) if len(df) else np.nan
 
     return dict(run=stem, T=float(T), T_unc=float(T_unc), eta_cP=eta * 1e3,
                 rstar=float(rstar), df=df, fit=fit, n=n, n_wall=n_wall,
-                n_drift=n_drift, kb_med_all=kb_med_all,
+                n_drift=n_drift, kb_med_all=kb_med_all, chi2dof=chi2dof,
+                syst_r=syst_r, syst_T=syst_T,
                 slope_ls=slope_ls, kb_ls=kb_ls, se_kb_fit=se_kb_fit,
                 se_kb_scatter=se_kb_scatter, r2=r2,
                 slope_med=slope_med, kb_med=kb_med, se_kb_med=se_kb_med)
@@ -203,28 +236,25 @@ def draw_panel(ax, res, xmax, ymax):
                     fmt="o", ms=4.5, mfc="none", mec="#d62728", ecolor="0.75",
                     elinewidth=0.7, capsize=1.5, mew=1.0, zorder=2)
     xs = np.array([0.0, xmax])
-    # robust median line (cross-check) -- faint dashed
-    if np.isfinite(res["slope_med"]):
-        ax.plot(xs, res["slope_med"] * xs, "--", color="0.45", lw=1.2, zorder=4)
-    # through-origin LS fit (slope = k_B) -- solid, with the larger-SE band
+    # HEADLINE: robust per-bead median (slope = median(D*r)), solid + stat band
+    se_slope_med = (res["se_kb_med"] / pref) if pref else 0.0
+    ax.fill_between(xs, (res["slope_med"] - se_slope_med) * xs,
+                    (res["slope_med"] + se_slope_med) * xs,
+                    color="#d62728", alpha=0.13, zorder=1)
+    ax.plot(xs, res["slope_med"] * xs, "-", color="#d62728", lw=2.0, zorder=5)
+    # through-origin LS slope -- faint dotted CROSS-CHECK only (no lever arm)
     if np.isfinite(res["slope_ls"]):
-        se_kb = np.nanmax([res["se_kb_fit"], res["se_kb_scatter"]])
-        se_slope = se_kb / pref if pref else 0.0
-        ax.fill_between(xs, (res["slope_ls"] - se_slope) * xs,
-                        (res["slope_ls"] + se_slope) * xs,
-                        color="#d62728", alpha=0.13, zorder=1)
-        ax.plot(xs, res["slope_ls"] * xs, "-", color="#d62728", lw=2.0, zorder=5)
+        ax.plot(xs, res["slope_ls"] * xs, ":", color="0.5", lw=1.2, zorder=4)
     ax.set_xlim(0, xmax); ax.set_ylim(0, ymax)
 
-    ratio = res["kb_ls"] / KB
-    larger = "fit" if (res["se_kb_fit"] or 0) >= (res["se_kb_scatter"] or 0) else "scatter"
-    se_show = np.nanmax([res["se_kb_fit"], res["se_kb_scatter"]]) / KB
+    ratio = res["kb_med"] / KB
+    se_show = res["se_kb_med"] / KB
     ndrift = (f", {res['n_drift']} drift-excl." if res["n_drift"] else "")
     txt = (f"{res['run']}   {res['T']:.1f}$\\pm${res['T_unc']:.0f}$^\\circ$C\n"
-           f"$\\eta$={res['eta_cP']:.3f} cP\n"
-           rf"$k_B$={ratio:.2f}$\,k_B^{{\rm acc}}$  ($R^2$={res['r2']:.2f})"
+           f"$\\eta$={res['eta_cP']:.2f} cP\n"
+           rf"$k_B$={ratio:.2f}$\pm${se_show:.2f}$\,k_B^{{\rm acc}}$"
            "\n"
-           rf"$\pm${se_show:.2f} ({larger})   $n$={res['n']}{ndrift}")
+           rf"$\chi^2$/dof={res['chi2dof']:.1f}   $n$={res['n']}{ndrift}")
     ax.text(0.05, 0.95, txt, transform=ax.transAxes, va="top", ha="left",
             fontsize=8.5, bbox=dict(boxstyle="round", fc="white", ec="0.7", alpha=0.92))
 
@@ -254,23 +284,26 @@ def build_grid(results, out_png):
             ax_b.set_xlabel(r"$1/r$  [$\mu$m$^{-1}$]")
             ax_b.tick_params(labelbottom=True)
     from matplotlib.lines import Line2D
+    rstar_lo = min(r["rstar"] for r in results); rstar_hi = max(r["rstar"] for r in results)
     handles = [
         Line2D([0], [0], marker="o", color="w", markerfacecolor="#1f77b4",
                markersize=7, label="free spheres ($r\\leq r^*$); bars = $\\sigma_D,\\ \\sigma_{1/r}$"),
         Line2D([0], [0], marker="o", color="w", markerfacecolor="none",
                markeredgecolor="#d62728", markersize=7,
-               label="significant drift (excluded from fit)"),
+               label="significant drift, excluded ($|v|{>}0.1\\,\\mu$m/s & $>2\\sigma_v$)"),
         Line2D([0], [0], color="#d62728", lw=2.2,
-               label=r"through-origin LS fit (slope $=k_B$)"),
-        Line2D([0], [0], color="0.45", lw=1.4, ls="--",
-               label="robust per-bead median (cross-check)"),
+               label=r"per-bead median $k_B$ (headline; band $=\pm\sigma_{\rm stat}$)"),
+        Line2D([0], [0], color="0.5", lw=1.4, ls=":",
+               label="through-origin LS slope (cross-check; no lever arm)"),
     ]
-    fig.legend(handles=handles, loc="lower center", ncol=3, fontsize=9.5,
-               frameon=False, bbox_to_anchor=(0.5, -0.012))
-    fig.suptitle("Week-2 Stokes-Einstein per run:  the slope of each $D$-vs-$1/r$ "
-                 "panel is $k_B$  (hand-tagged radii; free diffusers only; shared axes)",
-                 fontsize=13, y=1.004)
-    fig.tight_layout(rect=(0, 0.03, 1, 1))
+    fig.legend(handles=handles, loc="lower center", ncol=2, fontsize=9.5,
+               frameon=False, bbox_to_anchor=(0.5, -0.02))
+    fig.suptitle("Week-2 Stokes-Einstein per run:  $k_B$ = per-bead median of "
+                 r"$6\pi\eta(T)\,r D/T$  (hand-tagged radii; free diffusers "
+                 rf"$r\leq r^*\approx{rstar_lo:.1f}$-${rstar_hi:.1f}\,\mu$m; "
+                 r"$\alpha\in[0.7,1.3]$; shared axes)",
+                 fontsize=12.5, y=1.004)
+    fig.tight_layout(rect=(0, 0.04, 1, 1))
     figstyle.save(fig, out_png)
     plt.close(fig)
     print(f"[kb_grid] wrote {out_png}")
@@ -355,11 +388,10 @@ def main():
             print(f"[kb_grid] {stem}: only {res['n']} free bead(s) "
                   f"(< min_free={min_free}) -> EXCLUDED from grid/sweep/pool")
             continue
-        print(f"[kb_grid] {stem}: T={res['T']:.1f}C eta={res['eta_cP']:.3f}cP  "
-              f"n_free={res['n']} (dropped {res['n_wall']} wall)  "
-              f"k_B(fit)={res['kb_ls']/KB:.2f}x +/-{res['se_kb_fit']/KB:.2f}(fit)"
-              f"/{res['se_kb_scatter']/KB:.2f}(scatter)  R2={res['r2']:.2f}  "
-              f"k_B(med)={res['kb_med']/KB:.2f}x")
+        print(f"[kb_grid] {stem}: T={res['T']:.1f}C eta={res['eta_cP']:.2f}cP  "
+              f"n_free={res['n']} (dropped {res['n_wall']} wall, {res['n_drift']} drift)  "
+              f"k_B(median)={res['kb_med']/KB:.2f}+/-{res['se_kb_med']/KB:.2f}x  "
+              f"chi2/dof={res['chi2dof']:.1f}  [slope x-check {res['kb_ls']/KB:.2f}x]")
         results.append(res)
     if not results:
         raise SystemExit("no analysed runs found -- run process_all.py first")
@@ -369,11 +401,10 @@ def main():
         "run": r["run"], "T_C": r["T"], "T_unc_C": r["T_unc"], "eta_cP": r["eta_cP"],
         "rstar_um": r["rstar"], "n_free": r["n"], "n_wall_dropped": r["n_wall"],
         "n_drift_excluded": r["n_drift"],
-        "kb_fit": r["kb_ls"], "se_kb_fit": r["se_kb_fit"],
-        "se_kb_scatter": r["se_kb_scatter"], "r2": r["r2"],
-        "kb_median": r["kb_med"], "se_kb_median": r["se_kb_med"],
-        "kb_median_incl_drift": r["kb_med_all"],
-        "ratio_fit": r["kb_ls"] / KB, "ratio_median": r["kb_med"] / KB,
+        "kb_median": r["kb_med"], "se_kb_median_stat": r["se_kb_med"],
+        "chi2_dof": r["chi2dof"], "syst_radius_1px": r["syst_r"], "syst_T_1C": r["syst_T"],
+        "ratio_median": r["kb_med"] / KB, "ratio_median_incl_drift": r["kb_med_all"] / KB,
+        "kb_slope_xcheck": r["kb_ls"], "ratio_slope_xcheck": r["kb_ls"] / KB,
     } for r in results])
     summ.to_csv(os.path.join(figdir, "kb_grid_summary.csv"), index=False)
 
@@ -398,9 +429,9 @@ def main():
                 Line2D([0], [0], marker="o", color="w", markerfacecolor="#1f77b4",
                        markersize=7, label="free spheres ($r\\leq r^*$)"),
                 Line2D([0], [0], color="#d62728", lw=2.2,
-                       label="LS fit (slope $=k_B$)"),
-                Line2D([0], [0], color="0.45", lw=1.4, ls="--",
-                       label="per-bead median"),
+                       label="per-bead median $k_B$ (headline)"),
+                Line2D([0], [0], color="0.5", lw=1.4, ls=":",
+                       label="LS slope (cross-check)"),
             ]
             if res["n_drift"]:
                 handles.insert(1, Line2D([0], [0], marker="o", color="w",
@@ -422,10 +453,18 @@ def main():
     print(summ.to_string(index=False, float_format=lambda v: f"{v:.4g}"))
     print("\n=== pooled by temperature (free, drift-excluded) ===")
     print(tab.to_string(index=False, float_format=lambda v: f"{v:.4g}"))
-    print(f"\nHEADLINE pooled k_B = {grand:.3e} +/- {gse:.1e} J/K "
+    # common-mode systematics on the pooled median (do NOT average down)
+    Dall = allbeads.loc[~allbeads["drift_flag"], "D_um2_s"].values
+    Rall = allbeads.loc[~allbeads["drift_flag"], "r_um"].values
+    Tall = np.array([r["T"] for r in results for _ in range(r["n"])])
+    dpx = (paths.load_scale() or 0.14381)
+    sr = abs(np.median(physics.kB_per_bead(Dall, Rall + dpx, Tall))
+             - np.median(physics.kB_per_bead(Dall, Rall - dpx, Tall))) / 2
+    print(f"\nHEADLINE pooled k_B = {grand:.3e} +/- {gse:.1e}(stat) J/K "
           f"({grand / KB:.2f}x accepted) over {len(summ)} runs, "
-          f"{tab['T'].nunique()} temperatures, n={n_fit} "
-          f"(free beads, significant-drift excluded)")
+          f"{tab['T'].nunique()} temperatures, n={n_fit} (free, drift-excluded)")
+    print(f"  systematics (common-mode, do NOT average down): "
+          f"radius +/-1px = +/-{sr/KB:.2f}x ; T-label +/-1C ~ +/-0.03x")
     print(f"  sensitivity -- INCLUDING the {n_all - n_fit} drift beads: "
           f"k_B = {grand_all:.3e} ({grand_all / KB:.2f}x), n={n_all}")
 
