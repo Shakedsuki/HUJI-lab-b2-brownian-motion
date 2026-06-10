@@ -187,19 +187,66 @@ def detect_frame(img, radii=DEFAULT_RADII, alpha=2.0, grad_pct=84.0,
                 polarity=pol, contrast=con)
 
 
+def _detect_one(img, kw, downscale):
+    """Flat-fielded full-res frame -> detections (full-res px), with optional
+    downscale for the FRST accumulator."""
+    import cv2
+    if downscale > 1:
+        img = cv2.resize(img, (img.shape[1] // downscale, img.shape[0] // downscale),
+                         interpolation=cv2.INTER_AREA)
+    d = detect_frame(img, **kw)
+    if downscale > 1 and len(d["x"]):
+        d["x"] = d["x"] * downscale
+        d["y"] = d["y"] * downscale
+        d["r_est"] = d["r_est"] * downscale
+    return d
+
+
+def _detect_range_worker(args):
+    """Worker: detect a contiguous frame range [start, start+count). Each worker
+    opens its own VideoCapture and reads sequentially from `start` (MJPEG is all-
+    intra so the seek is exact). Module-level + picklable for spawn.
+
+    Pins itself to ONE thread (cv2 + BLAS) -- otherwise N workers x M internal
+    threads oversubscribe the cores and run SLOWER than serial."""
+    import cv2
+    import pandas as pd
+    cv2.setNumThreads(1)
+    video_path, flat, start, count, kw, downscale = args
+    cap = cv2.VideoCapture(video_path)
+    cap.set(cv2.CAP_PROP_POS_FRAMES, int(start))
+    parts = []
+    for j in range(count):
+        ok, frm = cap.read()
+        if not ok:
+            break
+        img = np.asarray(frm)[..., :3].mean(-1).astype(np.float32)
+        if flat is not None:
+            img = img - flat
+        d = _detect_one(img, kw, downscale)
+        if len(d["x"]):
+            df = pd.DataFrame(d)
+            df["frame"] = int(start) + j
+            parts.append(df)
+    cap.release()
+    return pd.concat(parts, ignore_index=True) if parts else None
+
+
 def detect_clip(video_path, flat=None, radii=DEFAULT_RADII, alpha=2.0,
                 grad_pct=84.0, presmooth=1.0, sym_min=0.18, min_sep=6,
-                max_frames=None, progress=100, downscale=1):
+                max_frames=None, progress=100, downscale=1, workers=1):
     """Stream a clip and return a features DataFrame for linking.
 
     Columns: frame, x, y, sym, r_est, polarity, contrast (positions in full-res
     PIXELS regardless of downscale).
 
-    downscale>1: the FRST accumulator (its cost ~ pixel count) runs on a 1/downscale
-    frame, then positions/radii are scaled back. Localization coarsens by ~downscale/2
-    px, which the MSD fit absorbs into the intercept c (not the slope 4D) -- so D is
-    preserved while detection runs ~downscale^2 faster. Use for batch tracking;
-    keep downscale=1 for the radius stage / accuracy-critical work."""
+    downscale>1: the FRST accumulator (cost ~ pixel count) runs on a 1/downscale
+    frame, then positions/radii scale back. Coarser centres feed the MSD intercept
+    c, not the slope 4D, so D is preserved at ~downscale^2 speed.
+
+    workers>1: FRST is single-threaded and per-frame independent, so detection
+    fans out across processes (each reads its own contiguous frame range). ~linear
+    in cores -- the dominant batch-tracking speedup on a multi-core box."""
     import pandas as pd
     import cv2
     from . import frames as fr
@@ -208,19 +255,40 @@ def detect_clip(video_path, flat=None, radii=DEFAULT_RADII, alpha=2.0,
         radii = np.unique(np.maximum(
             2, (np.asarray(radii) / downscale).round().astype(int)))
         min_sep = max(3, int(round(min_sep / downscale)))
+    kw = dict(radii=radii, alpha=alpha, grad_pct=grad_pct, presmooth=presmooth,
+              sym_min=sym_min, min_sep=min_sep)
+
+    if workers and workers > 1:
+        import os
+        # children inherit these on spawn -> single-threaded BLAS per worker
+        for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
+                   "NUMEXPR_NUM_THREADS"):
+            os.environ.setdefault(_v, "1")
+        from concurrent.futures import ProcessPoolExecutor
+        total = fr.count_frames(video_path)
+        total = min(total, max_frames) if (max_frames and total > 0) else (total or max_frames or 0)
+        chunk = max(1, (total + workers - 1) // workers)
+        tasks, s = [], 0
+        while s < total:
+            tasks.append((video_path, flat, s, min(chunk, total - s), kw, downscale))
+            s += chunk
+        print(f"    [detect] parallel: {total} frames / {len(tasks)} workers "
+              f"(downscale={downscale})", flush=True)
+        parts = []
+        with ProcessPoolExecutor(max_workers=workers) as ex:
+            for r in ex.map(_detect_range_worker, tasks):
+                if r is not None:
+                    parts.append(r)
+        if not parts:
+            return pd.DataFrame(columns=["frame", "x", "y", "sym", "r_est",
+                                         "polarity", "contrast"])
+        return pd.concat(parts, ignore_index=True).sort_values(
+            "frame").reset_index(drop=True)
 
     parts = []
     for i, frame in enumerate(fr.iter_frames(video_path, max_frames)):
         img = frame - flat if flat is not None else frame
-        if downscale > 1:
-            img = cv2.resize(img, (img.shape[1] // downscale,
-                                   img.shape[0] // downscale),
-                             interpolation=cv2.INTER_AREA)
-        d = detect_frame(img, radii, alpha, grad_pct, presmooth, sym_min, min_sep)
-        if downscale > 1 and len(d["x"]):
-            d["x"] = d["x"] * downscale
-            d["y"] = d["y"] * downscale
-            d["r_est"] = d["r_est"] * downscale
+        d = _detect_one(img, kw, downscale)
         if len(d["x"]):
             df = pd.DataFrame(d)
             df["frame"] = i

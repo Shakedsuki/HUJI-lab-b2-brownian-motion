@@ -88,8 +88,13 @@ def track_clip(video_path, flat=None, search=8, memory=3, stub=50,
 
 
 def run(stem, videos_dir=None, search=8, memory=3, stub=50, max_frames=None,
-        sym_min=0.18, grad_pct=80.0, n_flat=60):
-    """Full per-clip tracking -> writes trajectory.csv, drift.csv, previews."""
+        sym_min=0.18, grad_pct=80.0, n_flat=60, downscale=1, workers=1):
+    """Full per-clip tracking -> writes trajectory.csv, drift.csv, previews.
+
+    downscale>1 runs FRST detection at reduced resolution (~downscale^2 faster);
+    validated on run3 -- downscale=2 preserves median D to ~2% (coarser centres
+    feed the MSD intercept, not the slope). workers>1 fans detection across cores
+    (FRST is per-frame independent). downscale=2 + workers=6 -> ~1.5 min/run."""
     import os
     import matplotlib.pyplot as plt
     from . import paths, frames as fr, figstyle
@@ -97,13 +102,16 @@ def run(stem, videos_dir=None, search=8, memory=3, stub=50, max_frames=None,
     figstyle.set_style()
     vid = paths.video(paths.video_for_run(stem), videos_dir)
     out = paths.out_dir(stem)
-    print(f"[track] {stem}: {vid}")
-    print(f"[track] building flat-field ({n_flat} frames)...")
-    flat = fr.flat_field(vid, n_sample=n_flat, max_frames=max_frames)
+    print(f"[track] {stem}: {vid}  (downscale={downscale}, workers={workers})")
+    print(f"[track] flat-field ({n_flat} frames, cached)...")
+    flat = fr.get_flat(vid, cache_path=os.path.join(out, "flat.npy"),
+                       n_sample=n_flat, max_frames=max_frames)
 
     traj, drift, jumps, (n0, n1) = track_clip(
         vid, flat=flat, search=search, memory=memory, stub=stub,
-        max_frames=max_frames, detect_kw=dict(sym_min=sym_min, grad_pct=grad_pct))
+        max_frames=max_frames, detect_kw=dict(
+            sym_min=sym_min, grad_pct=grad_pct, downscale=downscale,
+            workers=workers))
 
     cols = ["particle", "frame", "x", "y", "x_raw", "y_raw", "sym", "r_est",
             "polarity", "contrast"]
