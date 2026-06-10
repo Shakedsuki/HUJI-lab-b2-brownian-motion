@@ -68,9 +68,11 @@ def main():
         ax.text(0.05, 0.95, f"{r['run']}  ·  {r['T']:.1f} °C",
                 transform=ax.transAxes, va="top", ha="left", fontsize=9.5,
                 color="0.35")
-        ax.text(0.05, 0.85, rf"$k_B = {r['kb_med']/KB:.2f}\,k_B^{{\rm acc}}$",
+        ax.text(0.05, 0.85, rf"$k_B = {r['kb_med']/KB:.2f}\,k_B^{{\rm real}}$",
                 transform=ax.transAxes, va="top", ha="left", fontsize=12,
                 color=RED)
+        ax.text(0.05, 0.74, rf"$n = {r['n']}$", transform=ax.transAxes,
+                va="top", ha="left", fontsize=9.5, color="0.45")
 
     for i in range(nrows):
         axes[i][0].set_ylabel(r"$D$   [$\mu$m$^2$ s$^{-1}$]", fontsize=11)
@@ -79,20 +81,21 @@ def main():
 
     from matplotlib.lines import Line2D
     leg = [Line2D([0], [0], marker="o", color="w", mfc=BLUE, mec="white", ms=8,
-                  label="free spheres (gate-passing)"),
+                  label="particles"),
            Line2D([0], [0], color=RED, lw=2.2, label=r"measured $k_B$ (per-bead median)"),
-           Line2D([0], [0], color="0.7", lw=1.4, ls="--", label=r"accepted $k_B$")]
+           Line2D([0], [0], color="0.7", lw=1.4, ls="--", label=r"real $k_B$ value")]
     fig.legend(handles=leg, loc="lower center", ncol=3, frameon=False,
                fontsize=10, bbox_to_anchor=(0.5, -0.02))
-    fig.suptitle(r"Stokes–Einstein per measurement:   "
-                 r"$D = \dfrac{k_B T}{6\pi\eta(T)}\,\dfrac{1}{r}$",
-                 fontsize=13, y=1.0)
-    fig.tight_layout(rect=(0, 0.05, 1, 0.99))
+    fig.tight_layout(rect=(0, 0.05, 1, 1.0))
     out = os.path.join(paths.FIGURES_DIR, "kb_grid_publication.png")
     fig.savefig(out, bbox_inches="tight", dpi=300)
-    fig.savefig(out[:-4] + ".pdf", bbox_inches="tight")
+    try:
+        fig.savefig(out[:-4] + ".pdf", bbox_inches="tight")
+        pdf = " (+ .pdf)"
+    except PermissionError:
+        pdf = " (.pdf locked -- close the viewer and rerun for the vector copy)"
     plt.close(fig)
-    print(f"wrote {out} (+ .pdf); {len(res)} gate-passing runs")
+    print(f"wrote {out}{pdf}; {len(res)} gate-passing runs")
 
 
 if __name__ == "__main__":
