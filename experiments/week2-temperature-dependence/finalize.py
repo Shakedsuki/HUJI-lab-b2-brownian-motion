@@ -26,6 +26,7 @@ import pandas as pd
 from pipeline import paths
 from pipeline import msd as msdmod
 import kb_grid
+import kb_summary
 import plot1_perbead
 
 
@@ -47,6 +48,11 @@ def main():
     print("\n[finalize] building kb_grid + sweep ...", flush=True)
     sys.argv = ["kb_grid.py"]                        # all analysed runs
     kb_grid.main()
+
+    # synthesis figure: k_B/k_B^acc vs T with the near-ambient model (median est.)
+    print("\n[finalize] building kb_summary (k_B vs T synthesis) ...", flush=True)
+    sys.argv = ["kb_summary.py"]
+    kb_summary.main()
 
     # 3. representative run per temperature (max free beads) -> per-bead figures
     summ = pd.read_csv(os.path.join(paths.FIGURES_DIR, "kb_grid_summary.csv"))

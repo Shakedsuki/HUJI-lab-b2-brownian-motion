@@ -28,3 +28,7 @@ auto/
 *.npy
 experiments/*/measurements/*/pipeline/*_tune/
 experiments/*/measurements/*/pipeline/early_tag/
+
+# week2 scratch + transient logs
+experiments/**/pipeline/equil/
+experiments/**/figures/process_*.log
