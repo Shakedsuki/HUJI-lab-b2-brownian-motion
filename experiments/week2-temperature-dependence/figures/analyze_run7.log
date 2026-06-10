@@ -1,0 +1,12 @@
+
+=== analyze run7: T = 16.8 +/- 1.0 C ===
+[analyze] reusing existing curation.csv (labels.csv if present)
+[msd] run7: mpp=0.14381 um/px, fps=9.299 (dt=0.1075s)
+[msd] 240 tracks with >= 60 frames
+[msd] wrote msd.csv (240 beads); D range 0.003-1.005 um^2/s, median alpha=0.89
+[msd] wrote plot1_msd.png (23 singles; ensemble <D>=0.241 um^2/s) -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run7\pipeline
+[radius] run7: measuring radius for 23 beads, mpp=0.14381 um/px
+[radius] wrote radius.csv (23 beads); r_um range 1.26-1.94 um
+[radius] wrote radius_check.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run7\pipeline
+[analyze] run7: 18 clean beads (3 free, r*=1.4 um, dRho=29 kg/m3); eta=1.086 cP; r_um 1.30-1.94 (0 over 5.0um spec-max -> diffraction bias); median k_B(free) = 2.128e-23 J/K (1.54x accepted)
+[analyze] wrote kb_per_bead.csv + kb_run.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run7\pipeline

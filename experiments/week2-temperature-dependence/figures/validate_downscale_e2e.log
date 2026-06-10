@@ -1,0 +1,22 @@
+[track] detecting (FRST) over frames...
+    [detect] frame 100: 53 features
+    [detect] frame 200: 50 features
+    [detect] frame 300: 44 features
+    [detect] frame 400: 45 features
+    [detect] frame 500: 49 features
+    [detect] frame 600: 47 features
+    [detect] frame 700: 50 features
+    [detect] frame 800: 49 features
+    [detect] frame 900: 56 features
+    [detect] frame 1000: 49 features
+    [detect] frame 1100: 49 features
+    [detect] frame 1200: 50 features
+[track] 59663 detections over 1225 frames; linking...
+[track] 1967 tracks -> 130 after dropping stubs < 50 frames
+[track] cumulative drift max |d| = 16.9 px; 0 sudden-jump frame(s)
+
+================ HALF-RES vs FULL-RES (run3) ================
+half-res track time : 7.3 min for 130 tracks (356 ms/frame)
+HALF-RES :  116 beads >=60f   median D=0.1249  IQR 0.048-0.270 um^2/s
+FULL-RES :  259 beads        median D=0.1221  IQR 0.065-0.224 um^2/s (committed)
+median-D ratio half/full = 1.023  (want ~1.0 -> D preserved)

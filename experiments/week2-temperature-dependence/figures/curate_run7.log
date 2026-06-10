@@ -1,0 +1,6 @@
+[curate] run7: 279 tracks; measuring shape at 80 global frames...
+[curate] 277 tracks -> PROPOSED 23 clean singles, 254 rejected
+[curate] reject reasons: not-round=247, elongated=163, two-cores=79, short=37, rigid-doublet=31, mislink=17, defocus=16
+[curate] wrote curation.csv + curation_proposed.csv -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run7\pipeline
+[review] run7: 42 beads (9 auto-keep to confirm, 33 borderline) -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run7\pipeline\review_run7.html
+REVIEW_HTML C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run7\pipeline\review_run7.html

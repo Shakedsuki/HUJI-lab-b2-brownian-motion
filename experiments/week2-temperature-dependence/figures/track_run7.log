@@ -1,0 +1,12 @@
+[track] run7: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run7_starting_temp_16.8C_aiming_at_10C.avi  (downscale=2)
+[track] building flat-field (60 frames)...
+[track] detecting (FRST) over frames...
+    [detect] frame 100: 98 features
+    [detect] frame 200: 91 features
+    [detect] frame 300: 89 features
+    [detect] frame 400: 87 features
+    [detect] frame 500: 92 features
+    [detect] frame 600: 87 features
+    [detect] frame 700: 95 features
+    [detect] frame 800: 97 features
+    [detect] frame 900: 94 features

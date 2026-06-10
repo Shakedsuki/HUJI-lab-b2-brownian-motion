@@ -1,0 +1,7 @@
+[qa] run15: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run15_starting_temp_30.3_aiming_at_35C.avi (2167 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run15: VERDICT=clean; focus_cv=0.06 flow_med=0.29 struct_rms=0.45 px/fr; window=None (full clip clean (100% good))
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run15\pipeline

@@ -1,0 +1,133 @@
+[qa] run1: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run1_starting_temp_14C_aiming_at_4.3C.avi (1355 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run1: VERDICT=clean; focus_cv=0.18 flow_med=0.33 struct_rms=0.56 px/fr; window=None (full clip clean (100% good))
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run1\pipeline
+[qa] run2: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run2_starting_temp_14C_aiming_at_4.3C.avi (1108 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run2: VERDICT=clean; focus_cv=0.08 flow_med=0.34 struct_rms=0.61 px/fr; window=None (full clip clean (100% good))
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run2\pipeline
+[qa] run3: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run3_starting_temp_14C_aiming_at_4.3C.avi (2498 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run3: VERDICT=clean; focus_cv=0.04 flow_med=0.31 struct_rms=0.55 px/fr; window=None (full clip clean (100% good))
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run3\pipeline
+[qa] run4: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run4_starting_temp_14C_aiming_at_4.3C.avi (1732 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run4: VERDICT=clean; focus_cv=0.07 flow_med=0.34 struct_rms=0.42 px/fr; window=None (full clip clean (100% good))
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run4\pipeline
+[qa] run5: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run5_starting_temp_15.2C_aiming_at_7C.avi (1549 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run5: VERDICT=clean; focus_cv=0.09 flow_med=0.26 struct_rms=0.45 px/fr; window=[79, 1547] (settled window 95% of clip)
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run5\pipeline
+[qa] run6: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run6_starting_temp_15.2C_aiming_at_7C.avi (1483 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run6: VERDICT=clean; focus_cv=0.07 flow_med=0.30 struct_rms=0.41 px/fr; window=None (full clip clean (100% good))
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run6\pipeline
+[qa] run7: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run7_starting_temp_16.8C_aiming_at_10C.avi (1429 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run7: VERDICT=clean; focus_cv=0.04 flow_med=0.32 struct_rms=0.34 px/fr; window=None (full clip clean (100% good))
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run7\pipeline
+[qa] run8: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run8_starting_temp_16.8C_aiming_at_10C.avi (1436 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run8: VERDICT=clean; focus_cv=0.07 flow_med=0.31 struct_rms=0.42 px/fr; window=None (full clip clean (100% good))
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run8\pipeline
+[qa] run9: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run9_starting_temp_20.0_aiming_at_16C.avi (2045 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run9: VERDICT=clean; focus_cv=0.15 flow_med=0.45 struct_rms=0.46 px/fr; window=None (full clip clean (100% good))
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run9\pipeline
+[qa] run10: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run10_starting_temp_20.0_aiming_at_16C.avi (1387 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run10: VERDICT=clean; focus_cv=0.10 flow_med=0.42 struct_rms=0.52 px/fr; window=None (full clip clean (100% good))
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run10\pipeline
+[qa] run11: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run11_starting_temp_20.0_aiming_at_16C.avi (1601 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run11: VERDICT=clean; focus_cv=0.10 flow_med=0.42 struct_rms=0.46 px/fr; window=None (full clip clean (100% good))
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run11\pipeline
+[qa] run12: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run12_starting_temp_23.78_aiming_at_23C.avi (2181 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run12: VERDICT=clean; focus_cv=0.07 flow_med=0.69 struct_rms=0.75 px/fr; window=None (full clip clean (100% good))
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run12\pipeline
+[qa] run13: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run13_starting_temp_24.3_aiming_at_23C.avi (1309 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run13: VERDICT=clean; focus_cv=0.07 flow_med=0.36 struct_rms=0.48 px/fr; window=None (full clip clean (100% good))
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run13\pipeline
+[qa] run14: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run14_starting_temp_24.3_aiming_at_23C.avi (4409 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run14: VERDICT=clean; focus_cv=0.06 flow_med=0.36 struct_rms=0.51 px/fr; window=None (full clip clean (100% good))
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run14\pipeline
+[qa] run15: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run15_starting_temp_30.3_aiming_at_35C.avi (2167 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run15: VERDICT=clean; focus_cv=0.06 flow_med=0.29 struct_rms=0.45 px/fr; window=None (full clip clean (100% good))
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run15\pipeline
+[qa] run16: C:\dev\brownian-motion\experiments\week2-temperature-dependence\videos\run16_starting_temp_30.3_aiming_at_35C.avi (1342 frames); flat-field + scan 40 samples @ 1/2 res
+    [qa] 10/40 samples
+    [qa] 20/40 samples
+    [qa] 30/40 samples
+    [qa] 40/40 samples
+[qa] run16: VERDICT=clean; focus_cv=0.04 flow_med=0.32 struct_rms=0.47 px/fr; window=None (full clip clean (100% good))
+[qa] wrote qa.json + qa_scan.csv + qa_health.png -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\measurements\run16\pipeline
+
+=== QA SUMMARY (all runs) ===
+  run  n_frames  focus_cv  count_med  flow_med_px  struct_rms_med_px  affine_r2_med verdict
+ run1      1355  0.181815       57.0     0.326545           0.563508       0.076950   clean
+ run2      1108  0.076055       52.0     0.344241           0.612838       0.075030   clean
+ run3      2498  0.035481       41.5     0.305103           0.551293       0.076851   clean
+ run4      1732  0.065804       59.0     0.341295           0.420280       0.052067   clean
+ run5      1549  0.085062       51.0     0.264804           0.454927       0.044704   clean
+ run6      1483  0.071120       69.5     0.301201           0.410914       0.051313   clean
+ run7      1429  0.035027       82.0     0.319803           0.341604       0.028006   clean
+ run8      1436  0.066806       62.5     0.312895           0.418934       0.049017   clean
+ run9      2045  0.151100       69.0     0.446655           0.464200       0.042730   clean
+run10      1387  0.098211       57.0     0.421817           0.523896       0.053379   clean
+run11      1601  0.102856       59.0     0.418302           0.456129       0.043203   clean
+run12      2181  0.070735       27.0     0.694674           0.745623       0.091367   clean
+run13      1309  0.065592       45.0     0.355976           0.478095       0.045844   clean
+run14      4409  0.056804       46.0     0.359544           0.511843       0.048778   clean
+run15      2167  0.063952       49.5     0.287623           0.452427       0.043334   clean
+run16      1342  0.040078       43.0     0.321768           0.470627       0.040610   clean
+
+[qa] wrote qa_summary.csv -> C:\dev\brownian-motion\experiments\week2-temperature-dependence\figures
