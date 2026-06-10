@@ -26,7 +26,8 @@ roundness gate that a doublet/blob fails.
 """
 
 import numpy as np
-from scipy.ndimage import gaussian_filter, maximum_filter, map_coordinates
+from scipy.ndimage import (gaussian_filter, gaussian_filter1d, maximum_filter,
+                           map_coordinates)
 
 
 def _kasa(xy):
@@ -157,6 +158,61 @@ def _edge_ecc(pts, xc, yc):
     l1 = tr / 2 + np.sqrt(disc)
     l2 = tr / 2 - np.sqrt(disc)
     return float(np.sqrt(max(1 - l2 / l1, 0.0))) if l1 > 0 else np.nan
+
+
+def radial_profile(img, x, y, rmax=28.0, n_ang=72, dr=0.25):
+    """Azimuthally-averaged radial intensity profile about (x, y).
+    Returns (rs, profile) with rs in px (step dr)."""
+    rs = np.arange(dr, rmax, dr)
+    th = np.linspace(0, 2 * np.pi, n_ang, endpoint=False)
+    xs = x + np.cos(th)[:, None] * rs[None, :]
+    ys = y + np.sin(th)[:, None] * rs[None, :]
+    prof = map_coordinates(img, [ys.ravel(), xs.ravel()], order=1,
+                           mode="nearest").reshape(n_ang, len(rs)).mean(0)
+    return rs, prof
+
+
+def gradient_edge_radius(img, x, y, rmax=28.0, n_ang=72, dr=0.25, smooth_px=1.0,
+                         r_lo=2.0, min_prom=0.15):
+    """Physical-edge radius (px) at the STEEPEST intensity gradient of the
+    core->ring transition. Polarity-aware. Returns (r_edge_px, rs, profile);
+    r_edge_px is NaN when no PROMINENT ring is found (let the human place it).
+
+    A bright-field bead is a bright/dark core ringed by a dark diffraction ring.
+    The geometric sphere edge sits at the steep core->ring transition (the ring's
+    INNER side); the dark ring's OUTER edge (what the auto ring-fit uses)
+    over-reads by the ring width. We azimuthally average, scan outward to the
+    FIRST PROMINENT ring extremum (depth >= min_prom of the profile range,
+    relative to the running core-side extreme -- so we don't latch onto a faint
+    near-centre noise dip), and take the radius of maximum |dI/dr| in the
+    core->ring interval (the classic sub-pixel edge). A consistent, well-defined
+    SEED for the human to confirm/nudge -- NOT claimed to be the exact
+    hydrodynamic radius (a residual diffraction offset remains, carried as a
+    systematic downstream)."""
+    rs, prof = radial_profile(img, x, y, rmax, n_ang, dr)
+    ps = gaussian_filter1d(prof, max(smooth_px / dr, 0.5))
+    g = np.gradient(ps, rs)
+    rng = float(ps.max() - ps.min()) + 1e-9
+    n_core = max(2, int(round(0.8 / dr)))
+    n_bg = max(3, int(round(4.0 / dr)))
+    bright = float(ps[:n_core].mean()) >= float(np.median(ps[-n_bg:]))
+    lo_i = max(1, int(round(r_lo / dr)))
+    if lo_i >= len(rs) - 3:
+        return np.nan, rs, prof
+    # ring is a MIN of v; scan out for the first prominent dip below the running
+    # core-side max (mirrors shape._ray_edges' first-significant-ring logic)
+    v = ps if bright else -ps
+    ring_i, run_max = None, v[lo_i]
+    for i in range(lo_i + 1, len(rs) - 1):
+        run_max = max(run_max, v[i])
+        if v[i] <= v[i - 1] and v[i] <= v[i + 1] and (run_max - v[i]) > min_prom * rng:
+            ring_i = i
+            break
+    if ring_i is None:                       # no clean ring -> no confident seed
+        return np.nan, rs, prof
+    gi = g[lo_i:ring_i + 1]
+    k = lo_i + int(np.argmin(gi) if bright else np.argmax(gi))
+    return float(rs[k]), rs, prof
 
 
 def measure_shape(img, x, y, r_seed, polarity=1, half=None, n_ang=48,

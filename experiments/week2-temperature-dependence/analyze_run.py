@@ -61,6 +61,23 @@ def analyze(stem):
         df["r_px_med"] = df["r_um"] / (paths.load_scale() or 0.14381)
         print(f"[analyze] using {len(df)} MANUAL radii (radius_manual.csv); "
               f"auto outer-ring radii overridden", flush=True)
+        # Re-apply curation's IDENTITY/contamination flags to the seeded set.
+        # Human seeding happens on ONE (sharpest) frame, so it cannot see a
+        # DYNAMIC mislink or a resolved rigid doublet that only shows over the
+        # track. We re-impose curate.py's contamination verdicts (two-cores,
+        # mislink, rigid-doublet) -- but NOT the auto-ring-fit QUALITY gates
+        # (R_cv/resid/inlier), which reject good small beads on a poor AUTO fit
+        # that the hand radius legitimately bypasses.
+        cur_path = os.path.join(out, "curation.csv")
+        if os.path.exists(cur_path):
+            cur = pd.read_csv(cur_path)
+            contam = set(cur[cur["reason"].fillna("").str.contains(
+                "two-cores|mislink|rigid", regex=True)]["particle"].astype(int))
+            n0 = len(df)
+            df = df[~df["particle"].isin(contam)]
+            print(f"[analyze] curation re-applied to seeded set: dropped "
+                  f"{n0 - len(df)} contaminated (doublet/mislink) bead(s)",
+                  flush=True)
     else:
         kept = curate.kept_pids(out)
         if kept is not None:
@@ -83,21 +100,41 @@ def analyze(stem):
     rstar = physics.sediment_r_star_um(T)        # Delta_rho from measured 0.96 g/cc
     df["r_star_um"] = rstar
     df["free"] = df["r_um"] <= rstar
+    # DIAGNOSTIC ONLY (never a filter): a free single sphere cannot diffuse
+    # faster than unbounded Stokes-Einstein, so D/D_SE > 1 is unphysical. But
+    # D_SE uses the ACCEPTED k_B, so cutting on it would tune us to the answer
+    # and (since noise scatters ~half of even-perfect beads above 1) bias low.
+    # We FLAG egregious violators (no plausible k_B makes D/D_SE > ~1.5 physical)
+    # for inspection; we do not drop them.
+    df["D_SE_um2_s"] = physics.stokes_einstein_D(T, df["r_um"] * 1e-6, eta) * 1e12
+    df["D_over_SE"] = df["D_um2_s"] / df["D_SE_um2_s"]
+    n_egreg = int((df["D_over_SE"] > 1.5).sum())
+    if n_egreg:
+        print(f"[analyze] FLAG (not cut): {n_egreg} bead(s) with D/D_SE > 1.5 "
+              f"-- inspect for radius over-tag or mislink", flush=True)
     df.to_csv(os.path.join(out, "kb_per_bead.csv"), index=False)
 
     free = df[df["free"]]
     KB = physics.K_B
-    kb_med = float(np.median(free["kb_i"])) if len(free) >= 3 else np.nan
+    # HEADLINE = week1 method: median of per-bead k_B,i = 6 pi eta r D / T over ALL
+    # clean singles (equivalently median(D_i*r_i) * 6 pi eta / T), NO free cut --
+    # exactly what week1 reported (0.96x). Including the large wall-hindered beads
+    # is deliberate: their low D*r partially offsets the radius over-read, the same
+    # cancellation week1 relied on. The free-only median is a secondary diagnostic.
+    kb_all = float(np.median(df["kb_i"])) if len(df) >= 3 else np.nan
+    kb_free = float(np.median(free["kb_i"])) if len(free) >= 3 else np.nan
     n_over = int((df["r_um"] > R_SPEC_UM[1]).sum())
-    print(f"[analyze] {stem}: {len(df)} clean beads ({len(free)} free, "
-          f"r*={rstar:.1f} um, dRho={drho:.0f} kg/m3); eta={eta*1e3:.3f} cP; "
-          f"r_um {df['r_um'].min():.2f}-{df['r_um'].max():.2f} ({n_over} over "
-          f"{R_SPEC_UM[1]}um spec-max -> diffraction bias); "
-          f"median k_B(free) = {kb_med:.3e} J/K ({kb_med/KB:.2f}x accepted)",
+    print(f"[analyze] {stem}: {len(df)} clean singles ({len(free)} free <r*={rstar:.1f}um, "
+          f"dRho={drho:.0f}); eta={eta*1e3:.3f}cP; "
+          f"r_um {df['r_um'].min():.2f}-{df['r_um'].max():.2f} ({n_over} over spec-max); "
+          f"k_B(all singles, WEEK1) = {kb_all:.3e} J/K ({kb_all/KB:.2f}x)  <- HEADLINE"
+          + (f"; free-only = {kb_free:.3e} ({kb_free/KB:.2f}x)"
+             if np.isfinite(kb_free) else "; free-only n<3"),
           flush=True)
-    _plot(stem, df, free, T, rstar, kb_med, out)
+    _plot(stem, df, free, T, rstar, kb_all, out)
     return dict(run=stem, T=T, n=len(df), n_free=len(free), eta_cP=eta * 1e3,
-                kb_med=kb_med, ratio=kb_med / KB if np.isfinite(kb_med) else np.nan)
+                kb=kb_all, ratio=kb_all / KB if np.isfinite(kb_all) else np.nan,
+                kb_free=kb_free)
 
 
 def _plot(stem, df, free, T, rstar, kb_med, out):
@@ -115,7 +152,7 @@ def _plot(stem, df, free, T, rstar, kb_med, out):
                label=r"SE @ accepted $k_B$")
     if np.isfinite(kb_med):
         ax[0].plot(xs, kb_med / pref * xs, "C2-", lw=2,
-                   label=rf"SE @ free median ({kb_med/KB:.2f}x)")
+                   label=rf"SE @ median all singles ({kb_med/KB:.2f}x)")
     ax[0].set_xlabel(r"$1/r$ [$\mu$m$^{-1}$]"); ax[0].set_ylabel(r"$D$ [$\mu$m$^2$/s]")
     ax[0].set_xlim(0, None); ax[0].set_ylim(0, None); ax[0].legend(fontsize=8)
     ax[0].set_title(f"{stem}: D vs 1/r  (T={T} C)")
@@ -124,7 +161,7 @@ def _plot(stem, df, free, T, rstar, kb_med, out):
                   c=df["free"].map({True: "C0", False: "0.6"}))
     ax[1].axhline(KB, color="k", lw=1.4, label="accepted $k_B$")
     if np.isfinite(kb_med):
-        ax[1].axhline(kb_med, color="C2", ls="--", lw=1.6, label="free median")
+        ax[1].axhline(kb_med, color="C2", ls="--", lw=1.6, label="median (all singles)")
     ax[1].axvline(rstar, color="C3", ls=":", lw=1.2, label=f"r*={rstar:.1f}um")
     ax[1].set_xlabel(r"$r$ [$\mu$m]"); ax[1].set_ylabel(r"per-bead $k_{B,i}$ [J/K]")
     ax[1].set_ylim(0, None); ax[1].legend(fontsize=8)

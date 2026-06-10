@@ -79,6 +79,19 @@ def review(stem):
         print(f"[radius_tag] {stem}: no beads to tag")
         return
 
+    # preload previous tags so re-tagging REFINES instead of restarting: each
+    # already-tagged bead opens at your saved radius (marked tagged), untagged
+    # ones at the auto estimate. Saving overwrites radius_manual.csv.
+    man_path = os.path.join(out, "radius_manual.csv")
+    if os.path.exists(man_path):
+        prev = pd.read_csv(man_path).set_index("particle")["r_px_manual"].to_dict()
+        n_pre = 0
+        for bd in beads:
+            if bd["pid"] in prev:
+                bd["r"] = float(prev[bd["pid"]]); bd["tagged"] = True; n_pre += 1
+        print(f"[radius_tag] {stem}: preloaded {n_pre} previous tag(s) from "
+              f"radius_manual.csv -- adjust or accept; 's' re-saves all tagged beads")
+
     state = {"i": 0}
     fig, ax = plt.subplots(figsize=(8, 8.5))
 
