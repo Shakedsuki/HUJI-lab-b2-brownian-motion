@@ -54,6 +54,11 @@ def main():
     sys.argv = ["kb_summary.py"]
     kb_summary.main()
 
+    # clean publication grid: gate-passing measurements + their k_B
+    print("\n[finalize] building kb_grid_pub (publication grid) ...", flush=True)
+    import kb_grid_pub
+    kb_grid_pub.main()
+
     # 3. representative run per temperature (max free beads) -> per-bead figures
     summ = pd.read_csv(os.path.join(paths.FIGURES_DIR, "kb_grid_summary.csv"))
     reps = (summ.sort_values("n_free", ascending=False)
