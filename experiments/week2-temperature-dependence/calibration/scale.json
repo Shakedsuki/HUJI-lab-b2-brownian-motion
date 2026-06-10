@@ -1,0 +1,16 @@
+{
+  "_note": "Spatial calibration for the 1632x1224 mode (run2-run10). Sub-pixel grid-line centers (half-max midpoints) on a median-collapsed ruler profile. Two ADJACENT vertical grid lines (flat plateau between them -> a single 100 um pitch, not 200) at x ~= 355 and x ~= 1048 -> period 695.35 px = 100 um. The y-axis had only one horizontal line in the FOV (1224 px < 2 periods) so it cannot give a period. Value matches the earlier hand measurement (0.1439) to 0.06%, CONFIRMING the length scale; since k_B ~ (um_per_px)^3, calibration contributes <1% to k_B and is NOT the source of the 19% high k_B. Uncertainty ~0.2% from sub-pixel center location over a single 695 px period.",
+  "um_per_px": 0.14381,
+  "um_per_px_unc": 0.0003,
+  "pitch_um": 100,
+  "axes": {
+    "x": {"um_per_px": 0.14381, "period_px": 695.35, "n_lines": 2, "n_periods": 1},
+    "y": null
+  },
+  "isotropy_pct": null,
+  "source": "video:measurent_0.1mm_focused.avi (median)",
+  "resolution": "1632x1224",
+  "applies_to": "run2..run10 (1632x1224 mode only; NOT run1/test at 2560x1920)",
+  "objective": "40x",
+  "method": "sub-pixel half-max line centers + linear period fit (x-axis; y had <2 lines)"
+}

@@ -1,0 +1,20 @@
+{
+  "run": "run5",
+  "n_frames": 1549,
+  "n_samples": 40,
+  "focus_med": 189.86516571044922,
+  "focus_cv": 0.08506226220073713,
+  "bright_cv": 0.003381997841694669,
+  "count_med": 51.0,
+  "flow_med_px": 0.2648043586540146,
+  "flow_max_px": 0.9955999166975859,
+  "struct_rms_med_px": 0.4549268467093328,
+  "affine_r2_med": 0.04470434975993459,
+  "proposed_window": [
+    79,
+    1547
+  ],
+  "window_note": "settled window 95% of clip",
+  "flags": [],
+  "verdict": "clean"
+}

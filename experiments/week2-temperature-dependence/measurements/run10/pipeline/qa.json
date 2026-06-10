@@ -1,0 +1,17 @@
+{
+  "run": "run10",
+  "n_frames": 1387,
+  "n_samples": 40,
+  "focus_med": 137.01609802246094,
+  "focus_cv": 0.09821052267989351,
+  "bright_cv": 0.0079422829212107,
+  "count_med": 57.0,
+  "flow_med_px": 0.42181697931030493,
+  "flow_max_px": 2.1307163245552196,
+  "struct_rms_med_px": 0.5238955798997026,
+  "affine_r2_med": 0.05337852375465457,
+  "proposed_window": null,
+  "window_note": "full clip clean (100% good)",
+  "flags": [],
+  "verdict": "clean"
+}

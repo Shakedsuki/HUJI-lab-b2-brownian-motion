@@ -1,0 +1,146 @@
+{
+  "run10_starting_temp_20.0_aiming_at_16C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.301,
+    "fps_avg": 9.301,
+    "nb_frames": 1387,
+    "duration_s": 149.12375,
+    "codec": "mjpeg"
+  },
+  "run11_starting_temp_20.0_aiming_at_16C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.296,
+    "fps_avg": 9.296,
+    "nb_frames": 1601,
+    "duration_s": 172.224613,
+    "codec": "mjpeg"
+  },
+  "run12_starting_temp_23.78_aiming_at_23C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.3,
+    "fps_avg": 9.3,
+    "nb_frames": 2181,
+    "duration_s": 234.516129,
+    "codec": "mjpeg"
+  },
+  "run13_starting_temp_24.3_aiming_at_23C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.298,
+    "fps_avg": 9.298,
+    "nb_frames": 1309,
+    "duration_s": 140.782964,
+    "codec": "mjpeg"
+  },
+  "run14_starting_temp_24.3_aiming_at_23C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.301,
+    "fps_avg": 9.301,
+    "nb_frames": 4409,
+    "duration_s": 474.03505,
+    "codec": "mjpeg"
+  },
+  "run15_starting_temp_30.3_aiming_at_35C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.302,
+    "fps_avg": 9.302,
+    "nb_frames": 2167,
+    "duration_s": 232.960654,
+    "codec": "mjpeg"
+  },
+  "run16_starting_temp_30.3_aiming_at_35C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.299,
+    "fps_avg": 9.299,
+    "nb_frames": 1342,
+    "duration_s": 144.316593,
+    "codec": "mjpeg"
+  },
+  "run1_starting_temp_14C_aiming_at_4.3C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.299,
+    "fps_avg": 9.299,
+    "nb_frames": 1355,
+    "duration_s": 145.714593,
+    "codec": "mjpeg"
+  },
+  "run2_starting_temp_14C_aiming_at_4.3C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.303,
+    "fps_avg": 9.303,
+    "nb_frames": 1108,
+    "duration_s": 119.101365,
+    "codec": "mjpeg"
+  },
+  "run3_starting_temp_14C_aiming_at_4.3C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.302,
+    "fps_avg": 9.302,
+    "nb_frames": 2498,
+    "duration_s": 268.544399,
+    "codec": "mjpeg"
+  },
+  "run4_starting_temp_14C_aiming_at_4.3C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.3,
+    "fps_avg": 9.3,
+    "nb_frames": 1732,
+    "duration_s": 186.236559,
+    "codec": "mjpeg"
+  },
+  "run5_starting_temp_15.2C_aiming_at_7C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.302,
+    "fps_avg": 9.302,
+    "nb_frames": 1549,
+    "duration_s": 166.523328,
+    "codec": "mjpeg"
+  },
+  "run6_starting_temp_15.2C_aiming_at_7C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.299,
+    "fps_avg": 9.299,
+    "nb_frames": 1483,
+    "duration_s": 159.479514,
+    "codec": "mjpeg"
+  },
+  "run7_starting_temp_16.8C_aiming_at_10C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.299,
+    "fps_avg": 9.299,
+    "nb_frames": 1429,
+    "duration_s": 153.672438,
+    "codec": "mjpeg"
+  },
+  "run8_starting_temp_16.8C_aiming_at_10C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.297,
+    "fps_avg": 9.297,
+    "nb_frames": 1436,
+    "duration_s": 154.458427,
+    "codec": "mjpeg"
+  },
+  "run9_starting_temp_20.0_aiming_at_16C.avi": {
+    "width": 1632,
+    "height": 1224,
+    "fps_nominal": 9.3,
+    "fps_avg": 9.3,
+    "nb_frames": 2045,
+    "duration_s": 219.892473,
+    "codec": "mjpeg"
+  }
+}
