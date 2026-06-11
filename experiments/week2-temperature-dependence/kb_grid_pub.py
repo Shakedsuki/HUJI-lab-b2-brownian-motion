@@ -52,28 +52,34 @@ def main():
 
     for ax, r in zip(axes.flat, res):
         f = r["fit"]
-        # faint accepted-k_B reference (slope from accepted k_B at this T)
         pref = physics.kB_prefactor(r["T"]) * 1e-18
-        ax.plot(xs, (KB / pref) * xs, "--", color="0.7", lw=1.1, zorder=1)
-        # measured k_B = per-bead median slope, with +/- statistical band
+        # measured k_B = per-bead median slope + its +/- statistical SE band
         sm = r["slope_med"]; se = r["se_kb_med"] / pref
         ax.fill_between(xs, (sm - se) * xs, (sm + se) * xs, color=RED,
                         alpha=0.13, lw=0, zorder=2)
         ax.plot(xs, sm * xs, "-", color=RED, lw=2.0, zorder=4)
-        # gate-passing beads
-        ax.plot(f["inv_r"], f["D_um2_s"], "o", ms=4.5, mfc=BLUE, mec="white",
-                mew=0.5, zorder=5)
+        # drift/alpha-gated beads (NOT in the fit): faint open circles -> n self-documents
+        dr = r["df"][r["df"]["drift_flag"]]
+        if len(dr):
+            ax.plot(1 / dr["r_um"], dr["D_um2_s"], "o", ms=4.5, mfc="none",
+                    mec="0.6", mew=0.9, zorder=3)
+        # gate-passing beads with sigma_D (vert) + sigma_1/r (horiz), faded
+        ax.errorbar(f["inv_r"], f["D_um2_s"], xerr=f["sig_invr"], yerr=f["D_err"],
+                    fmt="o", ms=4.5, mfc=BLUE, mec="white", mew=0.5,
+                    ecolor="0.7", elinewidth=0.7, capsize=0, zorder=5)
+        # accepted-k_B reference -- drawn ON TOP so it stays visible where it
+        # nearly coincides with the measurement (e.g. run3)
+        ax.plot(xs, (KB / pref) * xs, color="0.45", lw=1.2, ls=(0, (6, 3)), zorder=6)
         ax.set_xlim(0, xmax); ax.set_ylim(0, ymax)
         ax.tick_params(labelsize=9, length=3)
         ax.grid(True, color="0.92", lw=0.6, zorder=0)
         ax.set_axisbelow(True)
-        # one minimal text block: run . T . measured k_B
         ax.text(0.05, 0.95, f"{r['run']}  ·  {r['T']:.1f} °C",
                 transform=ax.transAxes, va="top", ha="left", fontsize=9.5,
                 color="0.35")
-        ax.text(0.05, 0.85, rf"$k_B = {r['kb_med']/KB:.2f}\,k_B^{{\rm acc}}$",
-                transform=ax.transAxes, va="top", ha="left", fontsize=12,
-                color=RED)
+        ax.text(0.05, 0.85,
+                rf"$k_B = {r['kb_med']/KB:.2f}\pm{r['se_kb_med']/KB:.2f}\,k_B^{{\rm acc}}$",
+                transform=ax.transAxes, va="top", ha="left", fontsize=11, color=RED)
         ax.text(0.05, 0.74, rf"$n = {r['n']}$", transform=ax.transAxes,
                 va="top", ha="left", fontsize=9.5, color="0.45")
 
@@ -84,12 +90,18 @@ def main():
 
     from matplotlib.lines import Line2D
     leg = [Line2D([0], [0], marker="o", color="w", mfc=BLUE, mec="white", ms=8,
-                  label="particles"),
+                  label=r"particles (bars: $\sigma_D,\ \sigma_{1/r}$)"),
+           Line2D([0], [0], marker="o", color="w", mfc="none", mec="0.6", mew=1.2,
+                  ms=8, label="cut by drift/$\\alpha$ gates (excl.)"),
            Line2D([0], [0], color=RED, lw=2.2, label=r"measured $k_B$ (per-bead median)"),
-           Line2D([0], [0], color="0.7", lw=1.4, ls="--", label=r"accepted $k_B$")]
-    fig.legend(handles=leg, loc="lower center", ncol=3, frameon=False,
-               fontsize=10, bbox_to_anchor=(0.5, -0.02))
-    fig.tight_layout(rect=(0, 0.05, 1, 1.0))
+           Line2D([0], [0], color="0.45", lw=1.4, ls=(0, (6, 3)), label=r"accepted $k_B$")]
+    fig.legend(handles=leg, loc="lower center", ncol=4, frameon=False,
+               fontsize=9.5, bbox_to_anchor=(0.5, -0.012))
+    fig.text(0.5, -0.05, r"Red band = $\pm1\sigma$ statistical SE on the median "
+             r"slope (= the $\pm$ on $k_B$).  $n$ = particles passing the drift "
+             r"and $\alpha\in[0.7,1.3]$ gates (filled); gated-out beads shown open.",
+             ha="center", va="top", fontsize=8.5, color="0.4")
+    fig.tight_layout(rect=(0, 0.07, 1, 1.0))
     out = os.path.join(paths.FIGURES_DIR, "kb_grid_publication.png")
     fig.savefig(out, bbox_inches="tight", dpi=300)
     try:

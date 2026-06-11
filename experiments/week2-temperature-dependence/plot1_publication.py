@@ -47,9 +47,12 @@ def ensemble_and_curves(stem, pids, mpp, dt):
     ens = np.array([ens_sum[L] / ens_w[L] for L in Ls])
     et = Ls * dt
     fm = Ls <= FIT_LAG
-    slope, intercept = (np.polyfit(et[fm], ens[fm], 1) if fm.sum() >= 2
-                        else (np.nan, np.nan))
-    return curves, et, ens, slope / 4.0, intercept
+    if fm.sum() >= 2:
+        (slope, intercept), cov = np.polyfit(et[fm], ens[fm], 1, cov=True)
+        se_D = float(np.sqrt(max(cov[0, 0], 0))) / 4.0
+    else:
+        slope = intercept = se_D = np.nan
+    return curves, et, ens, slope / 4.0, intercept, se_D, FIT_LAG * dt
 
 
 def main():
@@ -76,32 +79,41 @@ def main():
     for ax in axes.flat[len(res):]:
         ax.set_visible(False)
 
-    panels = []
+    panels, devs = [], []
     for stem_res in res:
         stem = stem_res["run"]
         fps = paths.fps_of(paths.video_for_run(stem)) or 9.30
         pids = stem_res["fit"]["particle"].astype(int).tolist()
-        curves, et, ens, D_ens, c = ensemble_and_curves(stem, pids, mpp, 1.0 / fps)
-        panels.append((stem_res, curves, et, ens, D_ens, c))
+        cu, et, ens, D_ens, c, _se_cov, tfit = ensemble_and_curves(stem, pids, mpp, 1.0 / fps)
+        Di = stem_res["fit"]["D_um2_s"].values
+        D_med = float(np.median(Di))                         # Fig-2 estimator
+        # honest SE: bead-to-bead scatter / sqrt(n) (the polyfit-cov SE collapses
+        # to ~0 because the ensemble-MSD points are strongly correlated)
+        se_D = float(np.std(Di, ddof=1) / np.sqrt(len(Di))) if len(Di) > 1 else np.nan
+        devs.append(abs(D_ens - D_med) / D_med)
+        panels.append((stem_res, cu, et, ens, D_ens, c, se_D, tfit))
     tmax = PLOT_LAG / (paths.fps_of(paths.video_for_run(res[0]["run"])) or 9.30)
-    ymax = max(np.nanmax(ens[et <= tmax]) for _, _, et, ens, _, _ in panels) * 1.08
+    ymax = max(np.nanmax(ens[et <= tmax]) for _, _, et, ens, *_ in panels) * 1.08
 
-    for ax, (r, curves, et, ens, D_ens, c) in zip(axes.flat, panels):
-        for t, m in curves:                      # faint per-particle MSDs
+    for ax, (r, cu, et, ens, D_ens, c, se_D, tfit) in zip(axes.flat, panels):
+        for t, m in cu:                          # faint per-particle MSDs
             sel = t <= tmax
             ax.plot(t[sel], m[sel], "-", color=BLUE, lw=0.7, alpha=0.28, zorder=2)
         es = et <= tmax
-        ax.plot(et[es], ens[es], "o", ms=3.6, color=BLUE, mec="white", mew=0.4,
-                zorder=4)
-        ax.plot([0, tmax], [c, 4 * D_ens * tmax + c], "-", color=RED, lw=2.0, zorder=5)
+        ax.plot(et[es], ens[es], "o", ms=3.6, color=BLUE, mec="white", mew=0.4, zorder=4)
+        yfit = 4 * D_ens * tfit + c
+        ax.plot([0, tfit], [c, yfit], "-", color=RED, lw=2.2, zorder=5)        # fit window: solid
+        ax.plot([tfit, tmax], [yfit, 4 * D_ens * tmax + c], "--", color=RED,    # beyond: dashed
+                lw=1.4, dashes=(4, 3), zorder=5)
+        ax.axvline(tfit, color="0.6", lw=0.8, ls=":", zorder=1)                 # fit-window edge
         ax.set_xlim(0, tmax); ax.set_ylim(0, ymax)
         ax.tick_params(labelsize=9, length=3)
         ax.grid(True, color="0.92", lw=0.6, zorder=0); ax.set_axisbelow(True)
         ax.text(0.05, 0.95, f"{r['run']}  ·  {r['T']:.1f} °C",
                 transform=ax.transAxes, va="top", ha="left", fontsize=9.5, color="0.35")
-        ax.text(0.05, 0.85, rf"$\langle D\rangle = {D_ens:.3f}\ \mu$m$^2$s$^{{-1}}$",
+        ax.text(0.05, 0.85, rf"$\langle D\rangle = {D_ens:.3f}\pm{se_D:.3f}$",
                 transform=ax.transAxes, va="top", ha="left", fontsize=10.5, color=RED)
-        ax.text(0.05, 0.74, rf"$n = {r['n']}$", transform=ax.transAxes,
+        ax.text(0.05, 0.75, rf"$n = {r['n']}$", transform=ax.transAxes,
                 va="top", ha="left", fontsize=9.5, color="0.45")
 
     for i in range(nrows):
@@ -110,13 +122,21 @@ def main():
         axes[nrows - 1][j].set_xlabel(r"lag time  $\tau$   [s]", fontsize=11)
 
     from matplotlib.lines import Line2D
+    tfit0 = panels[0][7]
     leg = [Line2D([0], [0], color=BLUE, lw=1.4, alpha=0.5, label="particle MSD"),
            Line2D([0], [0], marker="o", color="w", mfc=BLUE, mec="white", ms=7,
                   label="ensemble MSD"),
-           Line2D([0], [0], color=RED, lw=2.2, label=r"fit  $\langle r^2\rangle = 4D\tau$")]
-    fig.legend(handles=leg, loc="lower center", ncol=3, frameon=False,
-               fontsize=10, bbox_to_anchor=(0.5, -0.02))
-    fig.tight_layout(rect=(0, 0.05, 1, 1.0))
+           Line2D([0], [0], color=RED, lw=2.2, label=r"fit $\langle r^2\rangle=4D\tau+c$"),
+           Line2D([0], [0], color=RED, lw=1.4, ls="--", label="extrapolation (excl. from fit)")]
+    fig.legend(handles=leg, loc="lower center", ncol=4, frameon=False,
+               fontsize=9.5, bbox_to_anchor=(0.5, -0.015))
+    fig.text(0.5, -0.055, rf"$\langle D\rangle\pm$SE = ensemble-MSD fit over the "
+             rf"SHORT-LAG window $\tau\leq{tfit0:.1f}$ s (dotted line; free intercept "
+             rf"$c$, found $\approx$0 — localization $\lesssim$1 px, so $D$ is "
+             rf"unbiased).  Fig 2 $k_B$ uses the per-bead median $D$, which agrees "
+             rf"with $\langle D\rangle$ to within {100*max(devs):.0f}%.",
+             ha="center", va="top", fontsize=8.5, color="0.4")
+    fig.tight_layout(rect=(0, 0.07, 1, 1.0))
     out = os.path.join(paths.FIGURES_DIR, "plot1_publication.png")
     fig.savefig(out, bbox_inches="tight", dpi=300)
     try:
