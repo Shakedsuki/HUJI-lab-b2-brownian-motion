@@ -54,8 +54,11 @@ def main():
     sys.argv = ["kb_summary.py"]
     kb_summary.main()
 
-    # clean publication grid: gate-passing measurements + their k_B
-    print("\n[finalize] building kb_grid_pub (publication grid) ...", flush=True)
+    # clean publication grids: Fig 1 (MSD -> D) + Fig 2 (D vs 1/r -> k_B)
+    print("\n[finalize] building plot1_publication (Fig 1: MSD) ...", flush=True)
+    import plot1_publication
+    plot1_publication.main()
+    print("\n[finalize] building kb_grid_pub (Fig 2: publication grid) ...", flush=True)
     import kb_grid_pub
     kb_grid_pub.main()
 
