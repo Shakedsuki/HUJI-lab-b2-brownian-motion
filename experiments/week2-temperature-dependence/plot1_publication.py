@@ -69,9 +69,12 @@ def main():
         "axes.spines.right": False, "figure.dpi": 150,
     })
     BLUE, RED = "#2b6cb0", "#c1272d"
-    ncols, nrows = 5, 2
-    fig, axes = plt.subplots(nrows, ncols, figsize=(13.5, 6.3),
-                             sharex=True, sharey=True)
+    ncols = 3 if len(res) <= 9 else 5
+    nrows = int(np.ceil(len(res) / ncols))
+    fig, axes = plt.subplots(nrows, ncols, figsize=(3.6 * ncols, 3.3 * nrows),
+                             sharex=True, sharey=True, squeeze=False)
+    for ax in axes.flat[len(res):]:
+        ax.set_visible(False)
 
     panels = []
     for stem_res in res:

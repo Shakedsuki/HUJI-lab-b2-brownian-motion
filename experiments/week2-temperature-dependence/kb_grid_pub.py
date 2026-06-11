@@ -41,9 +41,12 @@ def main():
         "ytick.direction": "out", "axes.spines.top": False,
         "axes.spines.right": False, "figure.dpi": 150,
     })
-    ncols, nrows = 5, 2
-    fig, axes = plt.subplots(nrows, ncols, figsize=(13.5, 6.3),
-                             sharex=True, sharey=True)
+    ncols = 3 if len(res) <= 9 else 5
+    nrows = int(np.ceil(len(res) / ncols))
+    fig, axes = plt.subplots(nrows, ncols, figsize=(3.6 * ncols, 3.3 * nrows),
+                             sharex=True, sharey=True, squeeze=False)
+    for ax in axes.flat[len(res):]:
+        ax.set_visible(False)
     BLUE, RED = "#2b6cb0", "#c1272d"
     xs = np.array([0.0, xmax])
 
@@ -68,7 +71,7 @@ def main():
         ax.text(0.05, 0.95, f"{r['run']}  ·  {r['T']:.1f} °C",
                 transform=ax.transAxes, va="top", ha="left", fontsize=9.5,
                 color="0.35")
-        ax.text(0.05, 0.85, rf"$k_B = {r['kb_med']/KB:.2f}\,k_B^{{\rm real}}$",
+        ax.text(0.05, 0.85, rf"$k_B = {r['kb_med']/KB:.2f}\,k_B^{{\rm acc}}$",
                 transform=ax.transAxes, va="top", ha="left", fontsize=12,
                 color=RED)
         ax.text(0.05, 0.74, rf"$n = {r['n']}$", transform=ax.transAxes,
@@ -83,7 +86,7 @@ def main():
     leg = [Line2D([0], [0], marker="o", color="w", mfc=BLUE, mec="white", ms=8,
                   label="particles"),
            Line2D([0], [0], color=RED, lw=2.2, label=r"measured $k_B$ (per-bead median)"),
-           Line2D([0], [0], color="0.7", lw=1.4, ls="--", label=r"real $k_B$ value")]
+           Line2D([0], [0], color="0.7", lw=1.4, ls="--", label=r"accepted $k_B$")]
     fig.legend(handles=leg, loc="lower center", ncol=3, frameon=False,
                fontsize=10, bbox_to_anchor=(0.5, -0.02))
     fig.tight_layout(rect=(0, 0.05, 1, 1.0))

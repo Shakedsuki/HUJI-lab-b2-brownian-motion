@@ -78,6 +78,11 @@ EXCLUDED_RUNS = {
              "drift -- no >=120 s stationary plateau by the pre-registered rule; "
              "radius-free D*r confirms it is motion, not composition. Dropped as "
              "never-equilibrated 2026-06-11",
+    "run13": "CATEGORY-level disqualification (clean per-run, but the 23-24 C "
+             "heated-just-above-ambient regime is non-reproducible: same-T "
+             "run12=1.77x convection + run14=0.63x non-stationary; a lone clean "
+             "run cannot anchor a temperature that otherwise failed). Heated-"
+             "class drop 2026-06-11",
 }
 
 

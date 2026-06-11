@@ -50,13 +50,9 @@ RUNS = {
     "run7": 16.8, "run8": 16.8, "run9": 20.0, "run10": 20.0, "run11": 20.0,
     "run12": 23.78, "run13": 24.3, "run14": 24.3, "run15": 30.3, "run16": 30.3,
 }
-EXCLUDED = {
-    "run6":  "convection (5/8 drift)",
-    "run10": "residual drift",
-    "run11": "residual drift",
-    "run12": "convection",
-    "run14": "non-stationary (D(t) wanders, 64px drift)",
-}
+# single source of truth -- whatever kb_grid excludes (currently run6,10,11,12,
+# 13,14) is greyed here too, so the synthesis fit and the grid never disagree.
+EXCLUDED = set(kb_grid.EXCLUDED_RUNS)
 
 
 def per_run(stem, T):
