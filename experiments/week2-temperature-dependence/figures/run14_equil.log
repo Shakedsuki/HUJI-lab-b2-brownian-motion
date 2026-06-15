@@ -1,0 +1,24 @@
+[equil] run14: full-clip track (no frame cap), mpp=0.14381, dt=0.1075s
+[track] detecting (FRST) over frames...
+    [detect] parallel: 4409 frames / 6 workers (downscale=2)
+[track] 213202 detections over 4409 frames; linking...
+[track] 11356 tracks -> 485 after dropping stubs < 50 frames
+[track] cumulative drift max |d| = 63.7 px; 0 sudden-jump frame(s)
+[equil] tracked 485 tracks over 4409 frames (474 s)
+[equil] 45 beads in auto-size band (0.85, 1.4) um
+[equil] windowed D(t):
+  t_mid  n     D    Dr
+ 19.998  7 0.200 0.272
+ 59.994  6 0.166 0.228
+ 99.989  8 0.176 0.242
+139.985  7 0.170 0.237
+179.981  8 0.228 0.305
+219.976  8 0.273 0.362
+259.972 10 0.183 0.246
+299.968 11 0.169 0.220
+339.963 11 0.168 0.211
+379.959 10 0.212 0.284
+419.955 13 0.219 0.290
+459.951 12 0.175 0.240
+[equil] wrote C:\dev\brownian-motion\experiments\week2-temperature-dependence\figures\run14_equilibration.png
+[equil] D start->end: 0.200 -> 0.175 um2/s (-13%); plateau check in the figure.
