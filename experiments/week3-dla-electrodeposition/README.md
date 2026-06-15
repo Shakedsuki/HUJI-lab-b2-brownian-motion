@@ -1,11 +1,13 @@
-# Week 3 — DLA: Cu electrodeposition fractal dimension
+# Week 3 — DLA: Cu electrodeposition (fractal dimension + growth kinetics)
 
 Copper electrodeposition in a thin quasi-2D cell: CuSO₄ **0.29 %** solution,
 **~12 V** between a central cathode wire and a copper ring anode. The deposit
-grows by diffusion-limited aggregation (DLA) and its fractal dimension is
-measured from photographs of the dried aggregate.
+grows by diffusion-limited aggregation (DLA). Its **fractal dimension** is
+measured from photographs of the dried aggregate (below), and its **growth
+kinetics** R(t), M(t) are measured from videos of the deposition
+([Growth kinetics from video](#growth-kinetics-from-video--rt-mt)).
 
-## Result
+## Result — fractal dimension (still photos)
 
 ```
 D = 1.65 ± 0.04      (DLA theory in 2D: D ≈ 1.71)
@@ -26,14 +28,61 @@ At ~12 V the growth is not purely diffusion-limited — the strong field adds a
 drift component, which is known to push the deposit toward denser, more radial
 branches; a slight D below or near the ideal 1.71 is expected.
 
+## Growth kinetics from video — R(t), M(t)
+
+The still photos above fix the fractal dimension of the *final* deposit but carry
+no time axis. Seven videos of the deposition (1280×720, 59.94 fps) add it:
+tracking the aggregate frame-by-frame gives the DLA growth laws
+
+```
+M ∝ Rg^D      D = 1.6 ± 0.1     (run 4: 1.72 ± 0.08,  DSC_0076: 1.56 ± 0.03)
+M ∝ t^α       α ≈ 0.85–0.9      (≈ constant-current / Faradaic deposition)
+Rg ∝ t^β      β ≈ 0.52          (≈ 1/D — the DLA radius law  R ∝ t^(1/D))
+```
+
+measured on the two **close-up** runs (run 4, DSC_0076), where individual
+branches are resolved. The mass–radius exponent **D = 1.6 ± 0.1 measured from the
+moving deposit independently reproduces the static D = 1.65 ± 0.04** and the
+2D-DLA value ≈ 1.71 — a cross-check from a wholly different measurement. The three
+laws close self-consistently: **D ≈ α/β** (1.73 and 1.63 for the two clips), which
+would fail for a mis-chosen nucleation time and is the internal validation.
+
+| clip | view | α (M∝t) | β (Rg∝t) | D (M∝Rgᴰ) | α/β |
+|---|---|---|---|---|---|
+| run 4 (dense) | close-up | 0.89 ± 0.06 | 0.52 ± 0.01 | **1.72 ± 0.08** | 1.73 |
+| DSC_0076 (radial) | close-up | 0.85 ± 0.01 | 0.52 ± 0.01 | **1.56 ± 0.03** | 1.63 |
+| run 1 / 2 / 3 | wide | — | — | (2.0–3.0, resolution-limited) | — |
+
+**Physics.** α ≈ 0.9 ≈ 1: the deposited mass grows roughly linearly in time, i.e.
+approximately constant-current (Faradaic) deposition, with a mild slowdown as the
+cell depletes. β ≈ 0.52 ≈ 1/D is the DLA expectation that a cluster fed at a
+constant rate spreads as R ∝ t^(1/D). In **run 3** the voltage was lowered
+12 → 5–6 V partway through, and Rg(t) and M(t) visibly roll over to a plateau as
+the current drops — a direct illustration of the current-dependence of the growth
+(its wide-view D is resolution-limited and not quoted).
+
+**Why only the close-ups give D.** In the wide-dish views the whole deposit spans
+only ~100–270 px, so the 1–2 px branches and the faint inter-branch shading blur
+into a filled footprint and the apparent dimension rises toward 2 (run 1/2/3 give
+2.0–3.0). The close-ups resolve the branches, so their M–Rg scaling is the
+trustworthy fractal measure — visible directly in `figures/kinetics_summary.png`,
+where only the two close-ups trace a clean, wide-range power law.
+
 ## Layout
 
 ```
 media/     original camera photographs as shot (IMG_4123/4125/4127/4134 + CuSO4 cap label)
 data/      analysis inputs (close-ups for measurement; dish shots + label for record)
-scripts/   fractal_dimension.py — segmentation + box-counting + mass-radius
-figures/   per-image diagnostics: segmentation overlay and both log-log fits
+           + kinetics_<clip>.csv  (per-frame t, M, R95, R99.5, Rg, n_comp)
+scripts/   fractal_dimension.py  — segmentation + box-counting + mass-radius (stills)
+           growth_kinetics.py    — per-frame R(t)/M(t) tracking + DLA growth-law fits
+figures/   fractal_<image>.png   — per-image fractal-dimension diagnostics
+           kinetics_<clip>.png   — per-clip kinetics (segmented frames + the three fits)
+           kinetics_summary.png  — Rg(t) and M~Rg for all clips together
 ```
+
+The deposition videos (~0.5 GB each) live outside the repo; point the kinetics
+script at them with the `WEEK3_VIDEO_DIR` environment variable.
 
 ## Method (scripts/fractal_dimension.py)
 
@@ -47,6 +96,48 @@ figures/   per-image diagnostics: segmentation overlay and both log-log fits
    covers >25 % of the inner quarter-disc (the IMG_4127 case).
 
 Run: `python3 scripts/fractal_dimension.py`
+
+## Kinetics method (scripts/growth_kinetics.py)
+
+Per frame, the *growing* deposit is isolated by exploiting that it is the only
+thing in the cell that changes:
+
+1. **Temporal background subtraction** — reference = median of the first frames;
+   the dish, copper-ring anode, wire, reflections, dust, and any leftover deposit
+   from a previous run are static and cancel, so only new growth survives. This
+   alone removes the stray central blob present in run 2 / run 3.
+2. **Flat-field branch tracing** — within the changed region, dark dendrite pixels
+   are kept by the same flat-field local-contrast threshold as the static analysis
+   (divide by a σ=101 px blur), run as a hysteresis so faint tips are followed
+   *without* flood-filling the smooth depletion halo into a solid blob.
+3. **Wire removal** — the green/yellow cathode wire (the only moving coloured
+   object) is segmented in HSV each frame and excluded wherever it currently is.
+4. **Cluster gate** — only the component connected to the cathode-tip seed (the
+   persistent early deposit closest to the wire) is kept, dropping far dust.
+
+Per frame we record mass *M* (deposit area, px), radius of gyration *Rg*, the
+95th-percentile reach *R95* and *Rmax*. Exponents are fit over an **objective
+growth window** — mass between 8 % and 75 % of the plateau, past the nucleation
+lag and before the current-starved saturation — with time measured from the
+observed nucleation *t0*. The radius used is **Rg**: the reach *R95* saturates
+once branches approach the frame edge, which drives the apparent D above 2 (the
+unphysical value is the tell). Quoted errors combine the statistical slope error
+with a systematic from varying the fit window (which dominates). *R* is in pixels:
+the exponents are scale-free, so no px→mm calibration is needed.
+
+Run: `WEEK3_VIDEO_DIR=/path/to/videos python3 scripts/growth_kinetics.py`
+(decodes with ffmpeg; writes `data/kinetics_<clip>.csv` and the figures).
+
+## Kinetics figure caption (`figures/kinetics_<clip>.png`)
+
+> **Growth kinetics of the copper electrodeposit.** *(Top)* three segmented
+> frames (early / mid / late) with the extracted deposit in **green**, the
+> cathode-tip seed (dot) and the *R95* circle. *(Bottom-left)* radius of gyration
+> *Rg* and reach *R95* (left axis) and mass *M* (right axis) versus time, with the
+> fit window highlighted. *(Bottom-centre)* the radius law *Rg ∝ (t − t0)^β* on
+> log-log axes. *(Bottom-right)* the mass–radius relation *M ∝ Rg^D*, whose slope
+> is the fractal dimension; the inset gives α (from *M ∝ t^α*) and the consistency
+> ratio α/β, which equals *D* for self-similar growth.
 
 ## Figure caption (`figures/fractal_<image>.png`)
 
