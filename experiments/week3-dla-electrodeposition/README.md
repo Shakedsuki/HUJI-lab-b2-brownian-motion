@@ -29,7 +29,8 @@ branches; a slight D below or near the ideal 1.71 is expected.
 ## Layout
 
 ```
-data/      photographs (close-ups used for analysis; dish shots + CuSO4 label for record)
+media/     original camera photographs as shot (IMG_4123/4125/4127/4134 + CuSO4 cap label)
+data/      analysis inputs (close-ups for measurement; dish shots + label for record)
 scripts/   fractal_dimension.py — segmentation + box-counting + mass-radius
 figures/   per-image diagnostics: segmentation overlay and both log-log fits
 ```
