@@ -22,6 +22,10 @@ extract Boltzmann's constant.
 
 where `D = k_BT / 6πηa` is the diffusion coefficient (Stokes-Einstein).
 
+Weeks 1–2 cover the Brownian-motion / k_B measurement above. **Week 3 is a
+separate experiment** — diffusion-limited aggregation (DLA) studied via copper
+electrodeposition (see [Week 3](#week-3--dla-by-cu-electrodeposition) below).
+
 ---
 
 ## Repo layout
@@ -30,14 +34,19 @@ where `D = k_BT / 6πηa` is the diffusion coefficient (Stokes-Einstein).
 brownian-motion/
 ├── docs/                                # colloquium tracker, reference notes
 ├── experiments/
-│   └── week1-system-calibration/
-│       ├── scripts/                     # the analysis pipeline (see below)
-│       ├── calibration/                 # µm/px scale (scale.json) + check image
-│       ├── measurements/<run>/          # trajectory/msd/radius/labels CSVs
-│       │   └── figures/                 # that run's plot1.png, plot2.png
-│       ├── figures/                     # cross-run aggregate
-│       ├── runs.json, videos_meta.json  # per-run physics + acquisition metadata
-│       └── videos/                      # raw .avi (gitignored)
+│   ├── week1-system-calibration/        # k_B pipeline (see below)
+│   │   ├── scripts/                     # the analysis pipeline
+│   │   ├── calibration/                 # µm/px scale (scale.json) + check image
+│   │   ├── measurements/<run>/          # trajectory/msd/radius/labels CSVs
+│   │   ├── figures/                     # cross-run aggregate
+│   │   ├── runs.json, videos_meta.json  # per-run physics + acquisition metadata
+│   │   └── videos/                      # raw .avi (gitignored)
+│   ├── week2-temperature-dependence/    # k_B vs temperature
+│   └── week3-dla-electrodeposition/     # DLA: fractal dimension + growth kinetics
+│       ├── scripts/                     # fractal_dimension.py, growth_kinetics.py, ...
+│       ├── data/                        # analysis inputs + kinetics_<clip>.csv
+│       ├── figures/                     # fractal/kinetics diagnostics
+│       └── media/                       # camera stills (videos live outside the repo)
 ├── requirements.txt
 └── README.md
 ```
@@ -58,6 +67,26 @@ aggregate.py    pool runs → combined k_B + error budget → figures/aggregate_
 
 Shared helpers: `physics.py` (constants, viscosity, Stokes-Einstein),
 `_paths.py` (per-week path resolver), `figure_style.py` (consistent figures).
+
+---
+
+## Week 3 — DLA by Cu electrodeposition
+
+A separate experiment: copper electrodeposited in a thin quasi-2D cell (CuSO₄
+0.29 %, ~12 V, central cathode wire + copper ring anode) grows a branched
+dendrite by diffusion-limited aggregation. Two measurements
+(`experiments/week3-dla-electrodeposition/`):
+
+- **Fractal dimension (still photos):** `D = 1.65 ± 0.04` — box-counting +
+  mass-radius on the dried deposits (2D-DLA theory ≈ 1.71).
+- **Growth kinetics (videos):** tracking the deposit frame-by-frame gives
+  `M ∝ Rg^D` with `D = 1.6 ± 0.1` (independently reproducing the static value),
+  `M ∝ t^α` with `α ≈ 0.9` (≈ constant-current / Faradaic deposition), and the
+  aggregate radius `Rg ∝ t^β` with `β ≈ 0.52 ≈ 1/D` (the DLA radius law
+  `R ∝ t^(1/D)`). The three laws close self-consistently (`D ≈ α/β`).
+
+See the [Week-3 README](experiments/week3-dla-electrodeposition/README.md) for
+method, per-clip results, and figure captions.
 
 ---
 

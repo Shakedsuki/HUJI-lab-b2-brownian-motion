@@ -74,11 +74,13 @@ where only the two close-ups trace a clean, wide-range power law.
 media/     original camera photographs as shot (IMG_4123/4125/4127/4134 + CuSO4 cap label)
 data/      analysis inputs (close-ups for measurement; dish shots + label for record)
            + kinetics_<clip>.csv  (per-frame t, M, R95, R99.5, Rg, n_comp)
-scripts/   fractal_dimension.py  — segmentation + box-counting + mass-radius (stills)
-           growth_kinetics.py    — per-frame R(t)/M(t) tracking + DLA growth-law fits
-figures/   fractal_<image>.png   — per-image fractal-dimension diagnostics
-           kinetics_<clip>.png   — per-clip kinetics (segmented frames + the three fits)
-           kinetics_summary.png  — Rg(t) and M~Rg for all clips together
+scripts/   fractal_dimension.py   — segmentation + box-counting + mass-radius (stills)
+           growth_kinetics.py     — per-frame R(t)/M(t) tracking + DLA growth-law fits
+           fractalD_from_video.py — readable standalone mass-radius D plot from a CSV
+figures/   fractal_<image>.png    — per-image fractal-dimension diagnostics (stills)
+           kinetics_<clip>.png    — per-clip kinetics (segmented frames + the three fits)
+           kinetics_summary.png   — Rg(t) and M~Rg for all clips together
+           fractalD_<clip>.png    — standalone mass-radius fractal-dimension plot
 ```
 
 The deposition videos (~0.5 GB each) live outside the repo; point the kinetics
@@ -127,6 +129,12 @@ the exponents are scale-free, so no px→mm calibration is needed.
 
 Run: `WEEK3_VIDEO_DIR=/path/to/videos python3 scripts/growth_kinetics.py`
 (decodes with ffmpeg; writes `data/kinetics_<clip>.csv` and the figures).
+
+For a single, readable mass-radius dimension plot straight from a saved CSV (no
+video decode), e.g. the cleanest close-up:
+`python3 scripts/fractalD_from_video.py run4_dense` →
+`figures/fractalD_run4_dense.png` (M–Rg fit with the DLA-1.71 reference and a
+local-slope scale-free check).
 
 ## Kinetics figure caption (`figures/kinetics_<clip>.png`)
 
