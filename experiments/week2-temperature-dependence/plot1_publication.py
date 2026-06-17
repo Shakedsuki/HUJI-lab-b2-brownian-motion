@@ -28,10 +28,20 @@ PLOT_LAG = 56       # show a bit past the fit window
 
 
 def ensemble_and_curves(stem, pids, mpp, dt):
-    """Per-particle MSD curves (um^2 vs s) + the n_pairs-weighted ensemble."""
+    """Per-particle MSD curves (um^2 vs s) + the n_pairs-weighted ensemble and
+    its per-lag uncertainty.
+
+    The ensemble pools beads of DIFFERENT radii (hence different D), so the
+    honest per-lag error on the ensemble mean is the bead-to-bead spread,
+    sigma_ens(tau) = std_beads(MSD_i(tau)) / sqrt(n_beads) -- the same scatter
+    that sets the annotated <D> +/- SE (the fit-covariance SE collapses to ~0
+    because the overlapping-pair ensemble points are strongly correlated). It
+    grows with tau as the different-D beads fan out, which is exactly why the
+    fit is restricted to the short-lag window.
+    """
     traj = pd.read_csv(os.path.join(paths.out_dir(stem, make=False), "trajectory.csv"))
     curves = []
-    ens_sum, ens_w = {}, {}
+    ens_sum, ens_w, per_lag = {}, {}, {}
     for pid in pids:
         g = traj[traj["particle"] == pid].sort_values("frame")
         lag, msd_px2, npair, _dx, _dy = M.per_bead_msd(
@@ -43,8 +53,13 @@ def ensemble_and_curves(stem, pids, mpp, dt):
         for L, m, w in zip(lag, m_um2, npair):
             ens_sum[L] = ens_sum.get(L, 0.0) + m * w
             ens_w[L] = ens_w.get(L, 0.0) + w
+            per_lag.setdefault(L, []).append(m)
     Ls = np.array(sorted(ens_sum))
     ens = np.array([ens_sum[L] / ens_w[L] for L in Ls])
+    # per-lag bead-to-bead SE of the ensemble mean
+    ens_se = np.array([
+        (np.std(per_lag[L], ddof=1) / np.sqrt(len(per_lag[L])))
+        if len(per_lag[L]) > 1 else np.nan for L in Ls])
     et = Ls * dt
     fm = Ls <= FIT_LAG
     if fm.sum() >= 2:
@@ -52,7 +67,7 @@ def ensemble_and_curves(stem, pids, mpp, dt):
         se_D = float(np.sqrt(max(cov[0, 0], 0))) / 4.0
     else:
         slope = intercept = se_D = np.nan
-    return curves, et, ens, slope / 4.0, intercept, se_D, FIT_LAG * dt
+    return curves, et, ens, ens_se, slope / 4.0, intercept, se_D, FIT_LAG * dt
 
 
 def main():
@@ -84,24 +99,33 @@ def main():
         stem = stem_res["run"]
         fps = paths.fps_of(paths.video_for_run(stem)) or 9.30
         pids = stem_res["fit"]["particle"].astype(int).tolist()
-        cu, et, ens, D_ens, c, _se_cov, tfit = ensemble_and_curves(stem, pids, mpp, 1.0 / fps)
+        cu, et, ens, ens_se, D_ens, c, _se_cov, tfit = ensemble_and_curves(stem, pids, mpp, 1.0 / fps)
         Di = stem_res["fit"]["D_um2_s"].values
         D_med = float(np.median(Di))                         # Fig-2 estimator
         # honest SE: bead-to-bead scatter / sqrt(n) (the polyfit-cov SE collapses
         # to ~0 because the ensemble-MSD points are strongly correlated)
         se_D = float(np.std(Di, ddof=1) / np.sqrt(len(Di))) if len(Di) > 1 else np.nan
         devs.append(abs(D_ens - D_med) / D_med)
-        panels.append((stem_res, cu, et, ens, D_ens, c, se_D, tfit))
+        panels.append((stem_res, cu, et, ens, ens_se, D_ens, c, se_D, tfit))
     tmax = PLOT_LAG / (paths.fps_of(paths.video_for_run(res[0]["run"])) or 9.30)
-    ymax = max(np.nanmax(ens[et <= tmax]) for _, _, et, ens, *_ in panels) * 1.08
+    ymax = max(np.nanmax((ens + np.nan_to_num(ens_se))[et <= tmax])
+               for _, _, et, ens, ens_se, *_ in panels) * 1.06
 
-    for ax, (r, cu, et, ens, D_ens, c, se_D, tfit) in zip(axes.flat, panels):
+    for ax, (r, cu, et, ens, ens_se, D_ens, c, se_D, tfit) in zip(axes.flat, panels):
         for t, m in cu:                          # faint per-particle MSDs
             sel = t <= tmax
             ax.plot(t[sel], m[sel], "-", color=BLUE, lw=0.7, alpha=0.28, zorder=2)
         es = et <= tmax
-        ax.plot(et[es], ens[es], "o", ms=3.6, color=BLUE, mec="white", mew=0.4, zorder=4)
+        # ensemble MSD with per-lag bead-to-bead SE error bars
+        ax.errorbar(et[es], ens[es], yerr=ens_se[es], fmt="o", ms=3.6, color=BLUE,
+                    mec="white", mew=0.4, ecolor=BLUE, elinewidth=0.7, capsize=1.3,
+                    zorder=4)
         yfit = 4 * D_ens * tfit + c
+        # +/-1 sigma band of the fit slope (<D> +/- SE) over the fit window
+        tb = np.linspace(0, tfit, 40)
+        lb = 4 * D_ens * tb + c
+        db = 4 * se_D * tb
+        ax.fill_between(tb, lb - db, lb + db, color=RED, alpha=0.13, lw=0, zorder=3)
         ax.plot([0, tfit], [c, yfit], "-", color=RED, lw=2.2, zorder=5)        # fit window: solid
         ax.plot([tfit, tmax], [yfit, 4 * D_ens * tmax + c], "--", color=RED,    # beyond: dashed
                 lw=1.4, dashes=(4, 3), zorder=5)
@@ -122,17 +146,22 @@ def main():
         axes[nrows - 1][j].set_xlabel(r"lag time  $\tau$   [s]", fontsize=11)
 
     from matplotlib.lines import Line2D
-    tfit0 = panels[0][7]
+    from matplotlib.patches import Patch
+    tfit0 = panels[0][8]
     leg = [Line2D([0], [0], color=BLUE, lw=1.4, alpha=0.5, label="particle MSD"),
-           Line2D([0], [0], marker="o", color="w", mfc=BLUE, mec="white", ms=7,
-                  label="ensemble MSD"),
+           Line2D([0], [0], marker="o", color=BLUE, mfc=BLUE, mec="white", ms=7,
+                  label=r"ensemble MSD $\pm$ SE"),
            Line2D([0], [0], color=RED, lw=2.2, label=r"fit $\langle r^2\rangle=4D\tau+c$"),
+           Patch(facecolor=RED, alpha=0.2, label=r"$\pm1\sigma$ ($\langle D\rangle$ SE)"),
            Line2D([0], [0], color=RED, lw=1.4, ls="--", label="extrapolation (excl. from fit)")]
-    fig.legend(handles=leg, loc="lower center", ncol=4, frameon=False,
-               fontsize=9.5, bbox_to_anchor=(0.5, -0.015))
-    fig.text(0.5, -0.055, rf"$\langle D\rangle\pm$SE = ensemble-MSD fit over the "
-             rf"SHORT-LAG window $\tau\leq{tfit0:.1f}$ s (dotted line; free intercept "
-             rf"$c$, found $\approx$0 — localization $\lesssim$1 px, so $D$ is "
+    fig.legend(handles=leg, loc="lower center", ncol=5, frameon=False,
+               fontsize=9.0, bbox_to_anchor=(0.5, -0.015))
+    fig.text(0.5, -0.055, rf"Error bars = per-lag bead-to-bead SE "
+             rf"($\mathrm{{std}}_{{\rm beads}}/\sqrt{{n}}$; grows with $\tau$ as "
+             rf"different-radius beads diverge).  "
+             rf"$\langle D\rangle\pm$SE = ensemble-MSD fit over the "
+             rf"SHORT-LAG window $\tau\leq{tfit0:.1f}$ s (band; free intercept "
+             rf"$c\approx$0 — localization $\lesssim$1 px, so $D$ is "
              rf"unbiased).  Fig 2 $k_B$ uses the per-bead median $D$, which agrees "
              rf"with $\langle D\rangle$ to within {100*max(devs):.0f}%.",
              ha="center", va="top", fontsize=8.5, color="0.4")
