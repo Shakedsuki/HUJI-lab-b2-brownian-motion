@@ -28,6 +28,12 @@ import kb_grid
 FIT_LAG = 30        # short-lag fit window (frames) -- matches msd.py
 PLOT_LAG = 56       # show a bit past the fit window
 
+# Representative run per temperature defaults to the most-populated gate-passing
+# run; stems listed here are PINNED as their temperature's representative instead.
+# run16 (30.3 C) has the most beads but carries the table-collision disturbance,
+# so the cleaner run15 is pinned for 30.3 C.
+PINNED_REPS = {"run15"}
+
 
 def ensemble_and_curves(stem, pids, mpp, dt):
     """Per-particle MSD curves (um^2 vs s) + the n_pairs-weighted ensemble and
@@ -83,13 +89,17 @@ def main():
         if r is not None and r["n"] >= 3:
             res.append(r)
     # ONE representative run per temperature -- the most-populated gate-passing
-    # run at each T (same rule finalize.py uses for the per-bead diagnostics), so
-    # the grid reads as a clean temperature sweep, one cell per temperature.
+    # run at each T (same rule finalize.py uses for the per-bead diagnostics),
+    # unless a run is PINNED for that temperature, so the grid reads as a clean
+    # temperature sweep, one cell per temperature.
     from collections import defaultdict
     byT = defaultdict(list)
     for r in res:
         byT[r["T"]].append(r)
-    res = [max(grp, key=lambda r: r["n"]) for _, grp in sorted(byT.items())]
+    res = []
+    for _, grp in sorted(byT.items()):
+        pinned = [r for r in grp if r["run"] in PINNED_REPS]
+        res.append(pinned[0] if pinned else max(grp, key=lambda r: r["n"]))
 
     plt.rcParams.update({
         "font.size": 11, "axes.linewidth": 0.8, "axes.spines.top": False,
