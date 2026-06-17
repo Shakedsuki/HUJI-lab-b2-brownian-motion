@@ -1,0 +1,1026 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children no
+\language hebrew
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement H
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008080
+\end_index
+\leftmargin 1cm
+\topmargin 1.5cm
+\rightmargin 1cm
+\bottommargin 2.54cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style hebrew
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content true
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\html_math_img_scale 1.1
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Box Doublebox
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "c"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "20pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\paragraph_spacing double
+\align center
+
+\series bold
+\size huge
+(
+\numeric on
+77336
+\numeric off
+) מעבדה בפיזיקה ב
+\family roman
+\shape up
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\shape default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+2
+\numeric off
+ | ניסוי
+\family roman
+\shape up
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ תנועה בראונית
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+שמות:
+ שקד סוקניק וניר כהן
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+today
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\lang american
+\begin_inset Formula 
+\[
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+
+\series bold
+\shape smallcaps
+\size larger
+מטרת הניסוי
+\end_layout
+
+\begin_layout Standard
+מטרת הניסוי הייתה לחקור תנועה בראונית,
+ ואת נוסחת מקדם הדיפוזיה.
+ לצורך כך,
+ ניתן לבחון חלקיקים שמשוער שנעים בתנועה בראונית,
+ ולבדוק מה ממוצע ריבוע ההעתק שלהם לאורך זמן.
+\end_layout
+
+\begin_layout Standard
+המשוואה לממוצע ריבוע ההעתק של חלקיק הנע בתנועה בראונית דו ממדית כתלות בזמן היא
+\begin_inset Formula 
+\[
+\left\langle r^{2}\right\rangle \left(t\right)=4Dt
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+כאשר מפתחים אותה ממשוואת לנגווין והנחה שהכוח רנדומלי והתוחלת מתאפסת.
+ מקדם הדיפוזיה 
+\begin_inset Formula $D$
+\end_inset
+
+ הוא
+\begin_inset Formula 
+\[
+D=\frac{k_{b}T}{6\pi\eta a}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\eta$
+\end_inset
+
+ מקדם צמיגות הנוזל,
+ 
+\begin_inset Formula $T$
+\end_inset
+
+ הטמפרטורה,
+ 
+\begin_inset Formula $k_{b}$
+\end_inset
+
+ קבוע בולצמן ו
+\begin_inset Formula $a$
+\end_inset
+
+ רדיוס החלקיק.
+\end_layout
+
+\begin_layout Standard
+מפתחים אותו בעזרת חוק סטוקס ויחס איינשטיין.
+\end_layout
+
+\begin_layout Standard
+בפרט בניסוי שלנו,
+ בחנו תנועת חלקיקים כדוריים בנוזל וכיצד נראה ממוצע ריבוע ההעתק שלהם לאורך זמן.
+ בדקנו אם גרף זה לינארי כפי שמצופה מהמשוואות,
+ והאם השיפוע מקיים את משוואת מקדם הדיפוזיה.
+ בעזרת חלקיקים בגדלים שונים בדקנו את תלות מקדם הדיפוזיה ברדיוס החלקיק 
+\begin_inset Formula $a$
+\end_inset
+
+,
+ ובעזרת שליטה בטמפרטורה בדקנו את התלות בה,
+ בין אם הקשר המיידי מ
+\begin_inset Formula $T$
+\end_inset
+
+ או מההשפעה העקיפה דרך צמיגות הנוזל 
+\begin_inset Formula $\eta$
+\end_inset
+
+.
+ בנוסף,
+ חילצנו את קבוע בולצמן מתוך ההתאמות.
+ 
+\end_layout
+
+\begin_layout Standard
+לצורך הניתוח נעזרנו בהנחה הארגודית הטוענת כי ממוצע בזמן של פרמטר סטטיסטי של חלקיק לאורך זמן רב שקול לממוצע הפרמטר בין של אוסף של חלקיקים רבים.
+ הנחה זאת מאפשרת להסיק מדגימה ארוכה של חלקיק אחד על התנהגות המערכת.
+\end_layout
+
+\begin_layout Subsection*
+
+\series bold
+\shape smallcaps
+\size larger
+מערכת הניסוי ועיבוד נתונים
+\end_layout
+
+\begin_layout Standard
+מערכת הניסוי התבססה על מיקרוסקופ אופטי שאליו קושרה מצלמה דיגיטלית מהירה.
+ על גבי זכוכית הנושא של המיקרוסקופ הונחה טיפה המכילה תרחיף של חלקיקי פוליאתילן כדוריים בקטרים שונים,
+ הצפים בתוך תמיסה צמיגה של מים מזוקקים וגליצרול (ראו איור 1).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment center
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename system diagram.png
+	lyxscale 10
+	scale 80
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+דיאגרמה של מערכת הניסוי.
+ המערכת מורכבת ממקור אור המאיר על טיפת נוזל ובתוכה חלקיקים,
+ ומהצד השני מצלמה המחוברת למיקרוסקופ מצלמת סרטון של תנועת החלקיקים.
+ בנוסף,
+ קיים בקר טמפרטורה המחובר למשטח עליו יושבת דגימה הנוזל,
+ ואיתו שלטנו בטמפרטורה של הטיפה.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+באמצעות המצלמה והתכנה 
+\begin_inset Formula $\text{uEye Cockpit}$
+\end_inset
+
+,
+ תועדה התנועה הבראונית של החלקיקים בזמן אמת בקצב דגימה קבוע של 
+\begin_inset Formula $9.30\text{fps}$
+\end_inset
+
+.
+ תמונה מייצגת מתוך סרטוני המערכת מוצגת באיור 2.
+ לצורך השגת סטטיסטיקה רחבה ובחינת תלות מקדם הדיפוזיה ברדיוס החלקיק 
+\begin_inset Formula $a$
+\end_inset
+
+,
+ בוצעו מספר מדידות באזורים שונים של הטיפה שבהם נלכדו חלקיקים בגדלים שונים.
+ משך התיעוד של כל דגימה עמד על כ-2 דקות.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment center
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename example.png
+	lyxscale 10
+	scale 40
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+תמונה מסרטון שצילמה המצלמה.
+ ניתן לראות חלקיקים כדוריים בגדלים שונים בתוך הנוזל.
+ בנוסף,
+ קיימים חלקיקים שהם לא כדורים מושלמים או איחוד של כמה חלקיקים,
+ והם לא נדגמו לצורך מחקר התנועה הבראונית.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+בחלקו השני של הניסוי,
+ נבחנה תלות מקדם הדיפוזיה בטמפרטורת המערכת.לצורך כך,
+ כיוונו את בקר הטמפרטורות לערכים שונים בטווח 
+\begin_inset Formula $5-30^{\circ}C$
+\end_inset
+
+.
+ כדי למצוא את הטמפרטורה של הטיפה באופן מדוייק,
+ חיברנו מד טמפרטורה ישירות לזכוכית עליה הייתה מונחת הטיפה.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+עיבוד נתונים:
+\end_layout
+
+\begin_layout Standard
+כדי לעבד את הסרטונים השתמשנו בקוד פייתון המבוסס על ספריות עיבוד תמונה.
+ הקוד זיהה בסרטון חלקיקים כדוריים,
+ חילץ את הרדיוס שלהם בפיקסלים ואת המיקום שלהם לאורך זמן בפיקסלים.
+\end_layout
+
+\begin_layout Standard
+כדי להמיר בין פיקסלים ליחידות 
+\begin_inset Formula $SI$
+\end_inset
+
+ צילמנו סרגל,
+ ומצאנו את יחס ההמרה 
+\begin_inset Formula $0.1438\mu m/px$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+לאחר שקיבלנו מספר סדרות של מיקומי חלקיקים בזמן והרדיוסים שלהם,
+ רצינו לחלץ את המיקום בריבוע הממוצע.
+ לצורך כך לקחנו את סדרת המיקומים של חלקיק אחד וחילקנו אותה ל
+\begin_inset Formula $10$
+\end_inset
+
+ תתי סדרות באורך 
+\begin_inset Formula $12$
+\end_inset
+
+ שניות,
+ והתייחסנו ל
+\begin_inset Formula $10$
+\end_inset
+
+ תתי הסדרות כהרצות שונות של חלקיק באותו הרדיוס.
+ ניתוח זה מוצדק מההנחה שהמערכת שוכחת את תנאי ההתחלה שלה בקצב גבוה ביחס לאורך בזמן של תת הסדרה,
+ שכן מסת החלקיקים וצמיגות הנוזל גבוהה.
+ 
+\end_layout
+
+\begin_layout Standard
+לאחר מכן,
+ לכל תת סדרה הגדרנו את מיקום האפס כמיקום ההתחלתי של אותה הסדרה,
+ ואז חישבנו בכל נקודת זמן אחרת את ההעתק בריבוע מנקודת ההתחלה
+\begin_inset Formula 
+\[
+r^{2}\left(t\right)=\left(x\left(t\right)-x\left(t_{0}\right)\right)^{2}+\left(y\left(t\right)-y\left(t_{0}\right)\right)^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+כאשר 
+\begin_inset Formula $x,y$
+\end_inset
+
+ מיקומי החלקיק בצירים המתאימים.
+\end_layout
+
+\begin_layout Standard
+לבסוף,
+ נעזרנו בהנחה הארגודית כפי שהוסברה במבוא,
+ ומיצענו את ריבוע ההעתקים בין כל
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+10
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\numeric off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+תתי הסדרות כדי לקבל את ממוצע ריבוע ההעתק של החלקיק.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+שגיאות:
+\end_layout
+
+\begin_layout Standard
+קיימות שגיאות שיטטיות של הערכת רדיוס החלקיק ומיקום החלקיק הנובעות מהדיסקרטיציה של הפיקסלים,
+ והן נכנסו להערכות השגיאות.
+ בנוסף היו שגיאות ברדיוס החלקיק הנבעו מאפקטים אופטיים של מיקום מוקד העדשה ביחס למיקום החלקיק (בציר האנכי למישור התנועה שבחנו של החלקיק).
+\end_layout
+
+\begin_layout Standard
+בנוסף,
+ לעיתים נתקלנו בבעייה שהשפיעה באופן משמעותי,
+ והיא סחף של הנוזל.
+ ייתכן כי זה נבע שהמשטח עליו הונחה הטיפה היה בזווית קלה ולא מקביל לאופק,
+ מה שגרם לנוזל לזוז במרוד השיפוע.
+\end_layout
+
+\begin_layout Standard
+כדי לזהות אפקט זה בוצע חישוב למתואר מעלה,
+ אך בו חישבנו את ההעתק הממוצע 
+\begin_inset Formula $\left\langle r\right\rangle \left(t\right)$
+\end_inset
+
+.
+ בהתאם להנחת האיזוטרופיות של המערכת (הכוח הממוצע מתאפס) היינו מצפים שתוחלת ההעתק תנוע סביב האפס.
+ אך במקרים בהם היה סחף,
+ תוחלת ההעתק צפויה לא לנוע סביב האפס,
+ אלה סביב ישר כלשהו,
+ ששיפועו נובע ממהירות הסחף.
+ מתוך כך,
+ יכולנו לחלץ את מהירות הסחף ולחסר אותה מההעתקים שחישבנו,
+ על מנת למזער את אפקט הסחף.
+\end_layout
+
+\begin_layout Subsection*
+
+\series bold
+\shape smallcaps
+\size larger
+מערכת הניסוי ועיבוד נתונים
+\end_layout
+
+\begin_layout Standard
+ראשית בחנו את ממוצע ריבוע ההעתק של החלקיקים לאורך זמן בטמפרטורת החדר,
+ כפי שרואים באיור
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+3
+\numeric off
+.
+ מצאנו כי קיימת תלות לינארית ברוב המקרים,
+ וכן כי השיפועים שונים בעבור חלקיקים ברדיוסים שונים,
+ כפי שהיינו מצפים מהנוסחאות שפיתחנו.
+\end_layout
+
+\begin_layout Standard
+הצעד הבא היה לבחון את התלות של מקדם הדיפוזיה ברדיוס החלקיק.
+ על מנת לקבל תלות לינארית,
+ הצגנו באיור
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+4
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\numeric off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+את מקדם הדיפוזיה כתלות באחד חלקי הרדיוס (
+\begin_inset Formula $\frac{1}{a}$
+\end_inset
+
+).
+ ניתן לראות כי ברוב המקרים קיבלנו התאמה לינארית בהתאם לנוסחת מקדם הדיפוזיה שהצגנו במבוא.
+\end_layout
+
+\begin_layout Standard
+בנוסף,
+ בעזרת בצמיגות הנוזל 
+\begin_inset Formula $\eta=0.89cP$
+\end_inset
+
+ ובטמפרטורת החדר 
+\begin_inset Formula $T=25^{\circ}$
+\end_inset
+
+ יכולנו לחלץ את קבוע בולצמן.
+ קיבלנו את הערכים 
+\begin_inset Formula $k_{b}\approx\left(1.33\pm0.09\right)\times10^{-23}\text{J/K},\left(1.34\pm0.12\right)\times10^{-23}\text{J/K},\left(1.19\pm0.07\right)\times10^{-23}\text{J/K}$
+\end_inset
+
+,
+ ואחוזי ההתאמה ביחס לערך המוכר בספרות של קבוע בולצמן הן 
+\begin_inset Formula $96\%,97\%,86\%$
+\end_inset
+
+ בהתאמה.
+\end_layout
+
+\begin_layout Standard
+לאחר מכן עברנו לדגימות שנעשו בטמפרטורת שונות.
+ ראשית וידאנו כי עדיין מתקיימת ההתאמה הלינארית לממוצע ריבוע ההעתק של החלקיקים,
+ כפי שרואים באיור
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+5
+\numeric off
+.
+ קיבלנו התאמה יחסית טובה,
+ למעט הגרף האחרון בו ייתכן שהיו התנגשויות בשולחן עליו הונח המיקרוסקופ,
+ מה שגרם להפרעות.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename plot1_snapshots_strip_runs3-4-6.png
+	lyxscale 20
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+ממוצע ריבוע ההעתק 
+\begin_inset Formula $\left\langle r^{2}\right\rangle $
+\end_inset
+
+ של חלקיקי פוליאתילן כדוריים כתלות בזמן 
+\begin_inset Formula $\tau$
+\end_inset
+
+.
+ בגרפים השונים מוצגים נתונים מדגימות שונות,
+ ובכל גרף מוצגים שלושה חלקיקים בגדלים שונים מאותה הדגימה.
+ מתחת לגרפים מוצגת תמונה של החלקיקים מהסרטון להמחשה.
+ לגרפים הותאמו המשוואות 
+\begin_inset Formula $\left\langle r^{2}\right\rangle =4D\tau+c$
+\end_inset
+
+ על מנת לחלץ את מקדם הדיפוזיה.
+ האופסט 
+\begin_inset Formula $c$
+\end_inset
+
+ משקף ארטיפאקטים מתהליך הטראקינג שלנו ואינו נובע מהדיפוזזיה עצמה.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\backslash
+
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename plot2_grid_runs3-4-6.png
+	lyxscale 20
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+מקדם הדיפוזיה 
+\begin_inset Formula $D$
+\end_inset
+
+ כתלות באחד חלקי רדיוס החלקיקים 
+\begin_inset Formula $\frac{1}{a}$
+\end_inset
+
+.
+ כל גרף מציג את המקדם שחושב מחלקיקים בדגימות שונות.
+ בקו האדום מותאם מקדם הדיפוזיה 
+\begin_inset Formula $D=\left(k_{B}T/6\pi\eta\right)\left(1/a\right)$
+\end_inset
+
+.
+ השיפועים יצאו בהתאמה 
+\begin_inset Formula $\left(0.236±0.016,0.239±0.022,0.212±0.013\right)$
+\end_inset
+
+.
+ הפס מסביב לפיט מתאר את סטיית התקן שלו.
+ קבוע בולצמן חולץ מהשיפוע לפי 
+\begin_inset Formula $k_{B}=6\pi\eta/T\cdot\left(\text{slope}\right)$
+\end_inset
+
+ עבור טמפרטורת החדר 
+\begin_inset Formula $T=25^{\circ}$
+\end_inset
+
+ ובצמיגות מים מזוקקים 
+\begin_inset Formula $\eta=0.89cP$
+\end_inset
+
+.
+ מהדגימות קיבלנו את הערכים 
+\begin_inset Formula $k_{b}\approx\left(1.33\pm0.09\right)\times10^{-23}\text{J/K},\left(1.34\pm0.12\right)\times10^{-23}\text{J/K},\left(1.19\pm0.07\right)\times10^{-23}\text{J/K}$
+\end_inset
+
+.
+ אחוזי ההתאמה ביחס לערך המוכר בספרות של קבוע בולצמן הן 
+\begin_inset Formula $96\%,97\%,86\%$
+\end_inset
+
+ בהתאמה.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename plot1_publication.png
+	lyxscale 20
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+ממוצע ריבוע ההעתק 
+\begin_inset Formula $\left\langle r^{2}\right\rangle $
+\end_inset
+
+ של חלקיקי פוליאתילן כדוריים כתלות בזמן 
+\begin_inset Formula $\tau$
+\end_inset
+
+ בעבור טמפרטורות שונות.
+ כל גרף מתאים לדגימה הנעשתה בטמפרטורה שונה המצויינת ליד הגרף.
+ ניתן לראות כי הגרף הכחול שהוא ממוצע ההעתק בריבוע על פני חלקיקים רבים,
+ יחסית מתאים להתאמה הלינארית באדום.
+ אך בפרט בדגימה האחרונה (
+\lang english
+run16
+\lang hebrew
+) ההתאמה נכשלת לקראת הסוף,
+ ייתכן שזו הייתה דגימה בה היו התנגשויות בשולחן עליו הונח המיקרוסקופ,
+ מה שגרם להפרעות.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename C:/
+	lyxscale 20
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+מקדם הדיפוזיה 
+\begin_inset Formula $D$
+\end_inset
+
+ כתלות בטמפרטורה.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\shape smallcaps
+\size larger
+דיון
+\end_layout
+
+\begin_layout Standard
+מצאנו כי החלקיקים אכן נעו בתנועה בראונית,
+ שכן ההתאמה הלינארית של ממוצע ריבוע ההעתק הייב
+\end_layout
+
+\end_body
+\end_document
