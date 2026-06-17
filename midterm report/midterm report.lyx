@@ -1071,76 +1071,63 @@ status open
 \end_layout
 
 \begin_layout Standard
-מצאנו כי החלקיקים אכן נעו בתנועה בראונית,
- שכן ההתאמה הלינארית של ממוצע ריבוע ההעתק הייתה טובה (איור
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\nospellcheck off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
- 
-\family default
+
+\series bold
+תנועה בראונית ויחס סטוקס-איינשטיין.
 \series default
-\shape default
-\size default
-\emph default
-\numeric on
-\nospellcheck default
-\bar default
-\strikeout default
-\xout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-3
-\numeric off
-),
- וכך גם ההתאמה של מקדם הדיפוזיה לאחד חלקי רדיוס החלקיק (איור
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\nospellcheck off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
- 
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\numeric on
-\nospellcheck default
-\bar default
-\strikeout default
-\xout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-4
-\numeric off
-).
+ מצאנו כי 
+\begin_inset Formula $\left\langle r^{2}\right\rangle $
+\end_inset
+
+ לינארי בזמן (איור 3) וכי 
+\begin_inset Formula $D\propto1/a$
+\end_inset
+
+ (איור 4): התנועה בראונית, היחס מתקיים, וקבוע בולצמן בטמפרטורת החדר תואם את הערך המקובל עד כדי 
+\begin_inset Formula $5\text{-}15\%$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
-יתר על כן,
- קיבלנו הערכות טובות מאוד לקבוע בולצמן.
+
+\series bold
+מהו הרדיוס האמיתי?
+\series default
+ האתגר המרכזי היה להגדיר את רדיוס החלקיק: עקב עקיפה ושבירה במיקרוסקופ נראה החלקיק כליבה בהירה עטופה בטבעת/הילה, ולא ברור היכן נגמר החלקיק והיכן מתחילה האופטיקה. מאחר ש-
+\begin_inset Formula $D\propto1/a$
+\end_inset
+
+, זהו המקור הדומיננטי לשגיאה — הסטה אופיינית של 
+\begin_inset Formula $\sim0.3\,\mu m$
+\end_inset
+
+ בקצה שקולה לכ-
+\begin_inset Formula $15\%$
+\end_inset
+
+ ב-
+\begin_inset Formula $k_{B}$
+\end_inset
+
+ — והוא שמסביר את עיקר הפיזור שראינו: סרגלי השגיאה משקפים פיזור פיזיקלי אמיתי, לא רעש סטטיסטי בלבד.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+טמפרטורה וצמיגות.
+\series default
+ מקדם הדיפוזיה הנמדד נותר כמעט קבוע אף שסטוקס-איינשטיין מנבא עלייה עם הטמפרטורה (איור 6), משום שלא קיבענו טמפרטורה יציבה בזמן הצילום — הבקר היה עדיין בדרך לערך, והערך הרשום אינו הערך בפועל. ללא מדידת טמפרטורת הטיפה בזמן אמת לא ידענו את הצמיגות 
+\begin_inset Formula $\eta(T)$
+\end_inset
+
+ הנכנסת ישירות ל-
+\begin_inset Formula $D$
+\end_inset
+
+, ולכן לא ניתן היה לחלץ את התלות בטמפרטורה — אף שהתנועה נותרה בראונית בכל הטמפרטורות (איור 5), כלומר מגבלת בקרה ולא כשל פיזיקלי. בהמשך נדרשת מדידה ישירה ובזמן-אמת של טמפרטורת הטיפה ואיזון תרמי לפני התיעוד.
 \end_layout
 
 \end_body
