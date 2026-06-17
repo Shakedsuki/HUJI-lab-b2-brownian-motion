@@ -976,9 +976,9 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename system diagram.png
+	filename D_vs_T.png
 	lyxscale 20
-	width 40col%
+	width 75col%
 
 \end_inset
 
@@ -993,7 +993,55 @@ status open
 \begin_inset Formula $D$
 \end_inset
 
- כתלות בטמפרטורה.
+ כתלות בטמפרטורת הדגימה.
+ מאחר שמקדם הדיפוזיה תלוי גם ברדיוס החלקיק 
+\begin_inset Formula $a$
+\end_inset
+
+,
+ נירמלנו כל חלקיק לרדיוס אחיד 
+\begin_inset Formula $a_{\mathrm{ref}}=1\,\mu m$
+\end_inset
+
+ (כלומר הצגנו את הגודל 
+\begin_inset Formula $D\cdot a/a_{\mathrm{ref}}$
+\end_inset
+
+ שאינו תלוי ברדיוס).
+ כל נקודה כחולה היא חציון מקדמי הדיפוזיה של החלקיקים החופשיים בטמפרטורה נתונה;
+ שגיאת המידה האנכית היא שגיאת החציון,
+ והאופקית היא אי-הוודאות בטמפרטורה (
+\begin_inset Formula $\pm1^{\circ}C$
+\end_inset
+
+).
+ הקו הירוק הוא ניבוי סטוקס-איינשטיין 
+\begin_inset Formula $D=k_{B}T/6\pi\eta(T)a$
+\end_inset
+
+ עבור הערך המקובל של קבוע בולצמן,
+ ללא פרמטרים חופשיים.
+ ניתן לראות כי בעוד הניבוי עולה בכ-
+\begin_inset Formula $55\%$
+\end_inset
+
+ בין 
+\begin_inset Formula $14^{\circ}C$
+\end_inset
+
+ ל-
+\begin_inset Formula $30^{\circ}C$
+\end_inset
+
+,
+ מקדם הדיפוזיה הנמדד נותר כמעט קבוע.
+ הדבר מצביע על כך שטמפרטורת הטיפה לא הגיעה לערך שאליו כויל הבקר,
+ אלא נותרה קרובה לטמפרטורת הסביבה.
+ הסטייה מהקו הירוק בכל טמפרטורה שקולה ליחס 
+\begin_inset Formula $k_{B}/k_{B}^{\mathrm{acc}}$
+\end_inset
+
+.
 \end_layout
 
 \end_inset

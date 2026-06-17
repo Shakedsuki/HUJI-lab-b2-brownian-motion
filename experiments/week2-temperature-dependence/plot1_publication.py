@@ -2,15 +2,17 @@
 plot1_publication.py -- clean, publication-ready MSD-vs-lag grid (Figure 1).
 
 The COMPLEMENT to kb_grid_publication.py (Figure 2): it shows where the D values
-come from. One panel per gate-passing run (the same 10 as Fig 2); within each
-panel the same gate-passing particles. Each particle's time-averaged MSD
-<r^2>(tau) is drawn faint (showing the motion is diffusive -- <r^2> linear in
-tau), with the ensemble fit <r^2> = 4 D tau prominent and the ensemble <D>
-annotated. Each faint curve maps one-to-one onto a point in Fig 2.
+come from. ONE representative run per temperature (the most-populated gate-passing
+run at each T) -- the grid reads as a temperature sweep, one cell per temperature.
+Each panel shows that run's ensemble MSD <r^2>(tau) as points with per-lag error
+bars (bead-to-bead SE), the ensemble fit <r^2> = 4 D tau + c (solid in the
+short-lag window, dashed extrapolation) with a +/-1 sigma band, and the ensemble
+<D> annotated.
 
-Minimal ink: faint per-particle MSDs, the ensemble fit line, one text line
-(run, T, <D>, n). Reuses kb_grid.analyse_run for the gate-passing set and
-pipeline.msd for the MSD, so the particle set is identical to Fig 2.
+Minimal ink: the ensemble MSD points (+/- SE), the fit line + band, one text line
+(run, T, <D>, n) -- NO faint per-particle "ghost" curves. Reuses
+kb_grid.analyse_run for the gate-passing set and pipeline.msd for the MSD, so the
+particle set is identical to Fig 2.
 
 Writes figures/plot1_publication.png (+ .pdf).
 """
@@ -80,7 +82,14 @@ def main():
         r = kb_grid.analyse_run(stem, mpp)
         if r is not None and r["n"] >= 3:
             res.append(r)
-    res.sort(key=lambda r: (r["T"], int(r["run"][3:])))
+    # ONE representative run per temperature -- the most-populated gate-passing
+    # run at each T (same rule finalize.py uses for the per-bead diagnostics), so
+    # the grid reads as a clean temperature sweep, one cell per temperature.
+    from collections import defaultdict
+    byT = defaultdict(list)
+    for r in res:
+        byT[r["T"]].append(r)
+    res = [max(grp, key=lambda r: r["n"]) for _, grp in sorted(byT.items())]
 
     plt.rcParams.update({
         "font.size": 11, "axes.linewidth": 0.8, "axes.spines.top": False,
@@ -112,9 +121,6 @@ def main():
                for _, _, et, ens, ens_se, *_ in panels) * 1.06
 
     for ax, (r, cu, et, ens, ens_se, D_ens, c, se_D, tfit) in zip(axes.flat, panels):
-        for t, m in cu:                          # faint per-particle MSDs
-            sel = t <= tmax
-            ax.plot(t[sel], m[sel], "-", color=BLUE, lw=0.7, alpha=0.28, zorder=2)
         es = et <= tmax
         # ensemble MSD with per-lag bead-to-bead SE error bars
         ax.errorbar(et[es], ens[es], yerr=ens_se[es], fmt="o", ms=3.6, color=BLUE,
@@ -148,15 +154,15 @@ def main():
     from matplotlib.lines import Line2D
     from matplotlib.patches import Patch
     tfit0 = panels[0][8]
-    leg = [Line2D([0], [0], color=BLUE, lw=1.4, alpha=0.5, label="particle MSD"),
-           Line2D([0], [0], marker="o", color=BLUE, mfc=BLUE, mec="white", ms=7,
-                  label=r"ensemble MSD $\pm$ SE"),
+    leg = [Line2D([0], [0], marker="o", color=BLUE, mfc=BLUE, mec="white", ms=7,
+                  ls="none", label=r"ensemble MSD $\pm$ SE"),
            Line2D([0], [0], color=RED, lw=2.2, label=r"fit $\langle r^2\rangle=4D\tau+c$"),
            Patch(facecolor=RED, alpha=0.2, label=r"$\pm1\sigma$ ($\langle D\rangle$ SE)"),
            Line2D([0], [0], color=RED, lw=1.4, ls="--", label="extrapolation (excl. from fit)")]
-    fig.legend(handles=leg, loc="lower center", ncol=5, frameon=False,
+    fig.legend(handles=leg, loc="lower center", ncol=4, frameon=False,
                fontsize=9.0, bbox_to_anchor=(0.5, -0.015))
-    fig.text(0.5, -0.055, rf"Error bars = per-lag bead-to-bead SE "
+    fig.text(0.5, -0.055, rf"One representative run (most free beads) per "
+             rf"temperature.  Error bars = per-lag bead-to-bead SE "
              rf"($\mathrm{{std}}_{{\rm beads}}/\sqrt{{n}}$; grows with $\tau$ as "
              rf"different-radius beads diverge).  "
              rf"$\langle D\rangle\pm$SE = ensemble-MSD fit over the "

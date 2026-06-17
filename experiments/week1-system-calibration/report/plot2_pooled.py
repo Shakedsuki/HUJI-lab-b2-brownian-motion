@@ -127,20 +127,35 @@ def analyze(runs, args, eta_cP, eta_Pa_s, r_star, pooled=True, verbose=True):
 
 
 def draw_panel(ax, res, args, *, full=True, xmax=None, ymax=None,
-               title=None, ylabel=True):
+               title=None, ylabel=True, errorbars=None):
     """Render one D-vs-1/r panel from an analyze() result onto `ax`.
 
     full=True  -> standalone figure (representative error bar, full stats box,
                   legend). full=False -> compact grid panel (k_B label only).
+
+    errorbars: draw per-bead x (sigma_1/r = sigma_r/r^2) and y (sigma_D) error
+    bars on every point. Defaults to ON for the compact grid panels and OFF for
+    the pooled panel (88 beads -> a representative "typical uncertainty" marker
+    instead, set below). Pass explicitly to override.
     """
     free, slope, slope_err = res["free"], res["slope"], res["slope_err"]
+    if errorbars is None:
+        errorbars = not full
 
     for r in res["runs"]:
         g = free[free["run"] == r]
-        if len(g):
+        if not len(g):
+            continue
+        col = RUN_COLORS.get(r, "#444444")
+        if errorbars:
+            ax.errorbar(g["inv_r"], g["D_um2_s"],
+                        xerr=g["inv_r_err"], yerr=g["D_err"],
+                        fmt="o", ms=4.5, alpha=0.85, color=col,
+                        mec="white", mew=0.4, ecolor="0.7", elinewidth=0.7,
+                        capsize=1.5, label=f"{r} (n={len(g)})")
+        else:
             ax.plot(g["inv_r"], g["D_um2_s"], "o", ms=4.5, alpha=0.8,
-                    color=RUN_COLORS.get(r, "#444444"), mec="white", mew=0.4,
-                    label=f"{r} (n={len(g)})")
+                    color=col, mec="white", mew=0.4, label=f"{r} (n={len(g)})")
 
     xhi = xmax if xmax is not None else free["inv_r"].max() * 1.08
     yhi = ymax if ymax is not None else free["D_um2_s"].max() * 1.12
