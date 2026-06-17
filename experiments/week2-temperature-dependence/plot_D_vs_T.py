@@ -9,11 +9,11 @@ with temperature. We therefore plot D SCALED TO A FIXED radius r_ref = 1 um,
 
 which is just the radius-free Stokes-Einstein group D*r (= k_B T / 6 pi eta)
 expressed as the diffusion coefficient a 1-um-radius bead would have. The figure
-is deliberately MINIMAL/editorial -- the report caption carries the detail, so it
-shows ONLY the per-T median (robust MAD-SE on y, +/-1 C T-label on x) and the
-parameter-free Stokes-Einstein curve. No title, no per-bead scatter cloud, no n
-labels; trimmed two-entry legend. Per-T n and the numbers live in
-D_vs_T_summary.csv.
+keeps the report's clean look -- no title, minimal axes (D [um^2/s] vs
+temperature), trimmed two-entry legend -- but shows the supporting detail: the
+faint per-bead cloud (jittered by run), the per-T median (robust MAD-SE on y,
++/-1 C T-label on x) with its n annotated, and the parameter-free Stokes-Einstein
+curve, on a light grid. Numbers also in D_vs_T_summary.csv.
 
 The only curve is the PARAMETER-FREE Stokes-Einstein prediction at the accepted
 k_B,
@@ -41,7 +41,7 @@ import kb_grid
 
 KB = physics.K_B
 R_REF_UM = 1.0          # reference radius for the scaled D [um]
-BLUE, GREEN = "#2b6cb0", "#2ca02c"
+BLUE, GREEN, GREY = "#2b6cb0", "#2ca02c", "#9aa0a6"
 
 
 def se_curve_um2_s(T_C):
@@ -94,10 +94,8 @@ def main():
 
     import matplotlib.pyplot as plt
     figstyle.set_style()
-    fig, ax = plt.subplots(figsize=(7.0, 4.8))
-    # editorial/minimal: faint horizontal guides only, no box clutter
-    ax.grid(False)
-    ax.grid(True, axis="y", color="0.91", lw=0.7, zorder=0)
+    fig, ax = plt.subplots(figsize=(9.0, 6.0))
+    ax.grid(True, color="0.88", lw=0.6, zorder=0)
     ax.set_axisbelow(True)
 
     # parameter-free Stokes-Einstein prediction at accepted k_B
@@ -105,11 +103,23 @@ def main():
     ax.plot(Tg, se_curve_um2_s(Tg), "-", color=GREEN, lw=2.4, zorder=3,
             label=r"Stokes-Einstein ($k_B^{\mathrm{acc}}$)")
 
-    # per-T median -- the only data ink -- with +/-SE (y) and +/-1 C (x) bars
+    # faint per-bead points, x-jittered by run so same-T runs separate
+    runs = sorted(allfree["run"].unique(), key=lambda s: int(s[3:]))
+    for i, run in enumerate(runs):
+        gp = allfree[allfree["run"] == run]
+        jit = (i - (len(runs) - 1) / 2) * 0.12
+        ax.scatter(gp["T"] + jit, gp["D_scaled"], s=16, color=GREY, alpha=0.45,
+                   edgecolors="none", zorder=2)
+
+    # per-T median, with +/-SE (y) and +/-1 C (x) bars
     ax.errorbar(tab["T"], tab["D_at_1um"], yerr=tab["D_at_1um_se"],
                 xerr=tab["T_unc"], fmt="o", ms=8, color=BLUE, mec="white",
                 mew=0.8, ecolor=BLUE, elinewidth=1.6, capsize=4, zorder=5,
                 label=r"per-$T$ median $D$")
+    for _, r in tab.iterrows():
+        ax.annotate(f"n={r['n_free']:.0f}", (r["T"], r["D_at_1um"]),
+                    textcoords="offset points", xytext=(8, 7),
+                    fontsize=9, color="0.4")
 
     ax.set_xlabel(r"temperature  [$^\circ$C]")
     ax.set_ylabel(r"$D$  [$\mu$m$^2$/s]")
