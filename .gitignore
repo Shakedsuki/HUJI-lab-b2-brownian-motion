@@ -22,6 +22,11 @@ Thumbs.db
 # LyX
 *.lyx~
 auto/
+# LyX/Emacs emergency + autosave cruft (e.g. "#midterm report.lyx#").
+# Leading "#" must be escaped, else the line is read as a comment.
+\#*#
+.#*
+*.lyx.emergency
 
 # v2 pipeline: commit result figures + CSVs; ignore caches, dev-tune montages,
 # and the early-tag working snapshot (all regenerable).
