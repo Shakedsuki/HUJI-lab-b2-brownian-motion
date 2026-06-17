@@ -173,6 +173,10 @@ def main():
         p1.ROOT, "figures", f"plot1_snapshots_{args.layout}_runs{tag}{suffix}.png"))
     os.makedirs(os.path.dirname(out), exist_ok=True)
     fig.savefig(out, bbox_inches="tight")
+    try:
+        fig.savefig(out[:-4] + ".pdf", bbox_inches="tight")
+    except PermissionError:
+        pass
     note = f"  ({n_synth} synthetic placeholder thumbnails)" if n_synth else ""
     print(f"saved -> {out}{note}")
 
