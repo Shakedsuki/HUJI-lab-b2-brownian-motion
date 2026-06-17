@@ -241,12 +241,12 @@ today
 \end_layout
 
 \begin_layout Standard
-כאשר מפתחים אותה ממשוואת לנגווין והנחה שהכוח רנדומלי והתוחלת מתאפסת.
- מקדם הדיפוזיה 
+כאשר מפתחים אותה ממשוואת לנג'ווין והנחה שהכוח רנדומלי והתוחלת מתאפסת.
+ מחוק סטוקס ויחס איינשטיין מקבלים את מקדם הדיפוזיה 
 \begin_inset Formula $D$
 \end_inset
 
- הוא
+
 \begin_inset Formula 
 \begin{equation}
 D=\frac{k_{b}T}{6\pi\eta a}
@@ -258,6 +258,7 @@ D=\frac{k_{b}T}{6\pi\eta a}
 \end_layout
 
 \begin_layout Standard
+עבור 
 \begin_inset Formula $\eta$
 \end_inset
 
@@ -279,10 +280,6 @@ D=\frac{k_{b}T}{6\pi\eta a}
 \end_layout
 
 \begin_layout Standard
-מפתחים אותו בעזרת חוק סטוקס ויחס איינשטיין.
-\end_layout
-
-\begin_layout Standard
 בפרט בניסוי שלנו,
  בחנו תנועת חלקיקים כדוריים בנוזל וכיצד נראה ממוצע ריבוע ההעתק שלהם לאורך זמן.
  בדקנו אם גרף זה לינארי כפי שמצופה מהמשוואות,
@@ -297,13 +294,17 @@ D=\frac{k_{b}T}{6\pi\eta a}
 \begin_inset Formula $T$
 \end_inset
 
- או מההשפעה העקיפה דרך צמיגות הנוזל 
+ או מההשפעה העקיפה דרך הצמיגות הדינאמית של הנוזל 
 \begin_inset Formula $\eta$
 \end_inset
 
 .
  בנוסף,
- חילצנו את קבוע בולצמן מתוך ההתאמות.
+ חילצנו את קבוע בולצמן
+\begin_inset Formula $k_{B}$
+\end_inset
+
+ מתוך ההתאמות.
  
 \end_layout
 
@@ -1150,6 +1151,7 @@ status open
 
  בעבור טמפרטורות שונות.
  כל גרף מתאים לדגימה הנעשתה בטמפרטורה שונה המצויינת ליד הגרף.
+ הטמפרטורה המצוינת לצד כל אחת מהמדידות מציינת את הטמפרטורה ההתחלתית של התמיסה כפי שנמדדה באמצעות התרמומטר (ראו דיון בהמשך בנושא זה).
  ניתן לראות כי הגרף הכחול שהוא ממוצע ההעתק בריבוע על פני חלקיקים רבים,
  יחסית מתאים להתאמה הלינארית באדום.
 \end_layout
@@ -1245,6 +1247,13 @@ status open
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
 \end_inset
 
 
