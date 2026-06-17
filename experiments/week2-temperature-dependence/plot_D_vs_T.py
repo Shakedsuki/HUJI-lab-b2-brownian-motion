@@ -103,13 +103,19 @@ def main():
     ax.plot(Tg, se_curve_um2_s(Tg), "-", color=GREEN, lw=2.4, zorder=3,
             label=r"Stokes-Einstein ($k_B^{\mathrm{acc}}$)")
 
-    # faint per-bead points, x-jittered by run so same-T runs separate
-    runs = sorted(allfree["run"].unique(), key=lambda s: int(s[3:]))
-    for i, run in enumerate(runs):
-        gp = allfree[allfree["run"] == run]
-        jit = (i - (len(runs) - 1) / 2) * 0.12
-        ax.scatter(gp["T"] + jit, gp["D_scaled"], s=16, color=GREY, alpha=0.45,
-                   edgecolors="none", zorder=2)
+    # faint per-bead points, x-jittered PER TEMPERATURE so each cloud stays
+    # centered on its own T (and thus on its median marker); same-T runs are
+    # spread symmetrically around T so they don't overlap.
+    from collections import defaultdict
+    runs_by_T = defaultdict(list)
+    for run in sorted(allfree["run"].unique(), key=lambda s: int(s[3:])):
+        runs_by_T[float(allfree.loc[allfree["run"] == run, "T"].iloc[0])].append(run)
+    for T_run, runs_here in runs_by_T.items():
+        for k, run in enumerate(runs_here):
+            jit = (k - (len(runs_here) - 1) / 2) * 0.12
+            gp = allfree[allfree["run"] == run]
+            ax.scatter(gp["T"] + jit, gp["D_scaled"], s=16, color=GREY,
+                       alpha=0.45, edgecolors="none", zorder=2)
 
     # per-T median, with +/-SE (y) and +/-1 C (x) bars
     ax.errorbar(tab["T"], tab["D_at_1um"], yerr=tab["D_at_1um_se"],
