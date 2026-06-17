@@ -696,7 +696,7 @@ status open
 \begin_inset Formula $c$
 \end_inset
 
- משקף ארטיפאקטים מתהליך הטראקינג שלנו ואינו נובע מהדיפוזזיה עצמה.
+ משקף ארטיפאקטים מתהליך הטראקינג שלנו ואינו נובע מהדיפוזיה עצמה.
 \end_layout
 
 \end_inset
@@ -707,6 +707,205 @@ status open
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+נשים לב כי באיור
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+3
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\numeric off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+לעיל התאמנו את המשוואה הליניארית 
+\begin_inset Formula $\left\langle r^{2}\right\rangle =4D\tau+c$
+\end_inset
+
+,
+ בעוד שבספרות נהוג לתאר את התנועה הבראונית הדו-ממדית כאשר 
+\begin_inset Formula $c=0$
+\end_inset
+
+ והישר עובר דרך ראשית הצירים.
+ מקור היסט זה מגיע מרעשים במדידת המיקום של החלקיקים,
+ היות ואנו לא 
+\begin_inset Quotes dld
+\end_inset
+
+באמת
+\begin_inset Quotes drd
+\end_inset
+
+ יודעים מהו מרכז החלקיקים שאנו מודדים,
+ ולכן כל מיקום שאנו מודדים נושא איתו שגיאה אקראית הנובעת משיקולים אופטיים (כגון דיפרקציה),
+ מהרעשים בתמונה עצמה ברמת הפיקסל,
+ וכו.
+ אם נסמן את אותה שגיאה אקראית ב-
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ אזי מיקום החלקיק שאנחנו מודדים הינו הלכה למעשה 
+\begin_inset Formula $x_{meas}=x_{true}+\varepsilon$
+\end_inset
+
+,
+ ומכאן שמדידת המיקום לאורך צעדי הזמן הינה 
+\begin_inset Formula $\Delta x_{meas}=\Delta x_{true}+\Delta\varepsilon$
+\end_inset
+
+.
+ נוכל לראות כי כאשר נעלה הביטוי בריבוע ונמצע נקבל
+\begin_inset Formula 
+\begin{equation}
+\left\langle \Delta x^{2}_{meas}\right\rangle =\left\langle \Delta x^{2}_{true}\right\rangle +2\cancelto{0}{\left\langle \Delta x_{true}\Delta\varepsilon\right\rangle }+\left\langle \Delta\varepsilon^{2}\right\rangle =\left\langle \Delta x^{2}_{true}\right\rangle +\left\langle \Delta\varepsilon^{2}\right\rangle 
+\end{equation}
+
+\end_inset
+
+ כאשר הביטוי המעורב מתאפס היותו מההנחה הארגודית 
+\begin_inset Formula $\left\langle \varepsilon_{x}\right\rangle =0$
+\end_inset
+
+ (הרעש לא אמור להיות תלוי בתנועה).
+ נרחיב זאת לדו-ממד ונקבל
+\begin_inset Formula 
+\begin{equation}
+\left\langle r^{2}_{meas}\right\rangle =\underbrace{\left\langle \Delta x^{2}_{meas}\right\rangle }_{2D\tau+\Delta\varepsilon^{2}_{x}}+\underbrace{\left\langle \Delta y^{2}_{meas}\right\rangle }_{2D\tau+\Delta\varepsilon^{2}_{y}}=4D\tau+\Delta\varepsilon^{2}_{x}+\Delta\varepsilon^{2}_{y}
+\end{equation}
+
+\end_inset
+
+ מכיוון ש- 
+\begin_inset Formula $\Delta\varepsilon^{2}_{x}=\Delta\varepsilon^{2}_{y}$
+\end_inset
+
+ נסמן 
+\begin_inset Formula $\frac{1}{2}c\equiv\Delta\varepsilon^{2}_{x}=\Delta\varepsilon^{2}_{y}$
+\end_inset
+
+ ומכאן
+\begin_inset Formula 
+\begin{equation}
+\left\langle r^{2}_{meas}\right\rangle =4D\tau+c
+\end{equation}
+
+\end_inset
+
+ ומכאן מקורו של האופסט 
+\begin_inset Formula $c$
+\end_inset
+
+ המופיע באיור
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+3
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\numeric off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+לעיל.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1074,6 +1273,7 @@ status open
 
 \series bold
 תנועה בראונית ויחס סטוקס-איינשטיין.
+
 \series default
  מצאנו כי 
 \begin_inset Formula $\left\langle r^{2}\right\rangle $
@@ -1083,7 +1283,10 @@ status open
 \begin_inset Formula $D\propto1/a$
 \end_inset
 
- (איור 4): התנועה בראונית, היחס מתקיים, וקבוע בולצמן בטמפרטורת החדר תואם את הערך המקובל עד כדי 
+ (איור 4):
+ התנועה בראונית,
+ היחס מתקיים,
+ וקבוע בולצמן בטמפרטורת החדר תואם את הערך המקובל עד כדי 
 \begin_inset Formula $5\text{-}15\%$
 \end_inset
 
@@ -1094,12 +1297,33 @@ status open
 
 \series bold
 מהו הרדיוס האמיתי?
+
 \series default
- האתגר המרכזי היה להגדיר את רדיוס החלקיק: עקב עקיפה ושבירה במיקרוסקופ נראה החלקיק כליבה בהירה עטופה בטבעת/הילה, ולא ברור היכן נגמר החלקיק והיכן מתחילה האופטיקה. מאחר ש-
+ האתגר המרכזי היה להגדיר מהו 
+\begin_inset Quotes dld
+\end_inset
+
+באמת
+\begin_inset Quotes drd
+\end_inset
+
+ רדיוס החלקיקים שמופיעים במיקרוסקופ:
+ עקב עקיפה ודיפרקציה במיקרוסקופ החלקיק נראה כדורי בעל 
+\begin_inset Quotes dld
+\end_inset
+
+ליבה
+\begin_inset Quotes drd
+\end_inset
+
+ בהירה שעטופה בטבעת/הילה,
+ ולא ברור היכן נגמר החלקיק והיכן מתחילה האופטיקה.
+ מכיוון ש-
 \begin_inset Formula $D\propto1/a$
 \end_inset
 
-, זהו המקור הדומיננטי לשגיאה — הסטה אופיינית של 
+,
+ זה בדיוק המקור המרכזי לשגיאות ככה שהיסט של לערך 
 \begin_inset Formula $\sim0.3\,\mu m$
 \end_inset
 
@@ -1107,27 +1331,61 @@ status open
 \begin_inset Formula $15\%$
 \end_inset
 
- ב-
-\begin_inset Formula $k_{B}$
-\end_inset
-
- — והוא שמסביר את עיקר הפיזור שראינו: סרגלי השגיאה משקפים פיזור פיזיקלי אמיתי, לא רעש סטטיסטי בלבד.
+ בקבוע בולצמן.
+ לדעתנו,
+ זה מסביר את עיקר הפיזור שראינו:
+ השגיאות משקפים פיזור פיזיקלי אמיתי ולא רעש סטטיסטי.
 \end_layout
 
 \begin_layout Standard
 
 \series bold
 טמפרטורה וצמיגות.
+
 \series default
- בטמפרטורות הנמוכות התקבלה הערכת-יתר של קבוע בולצמן ובגבוהות הערכת-חסר (איור 6; הסטייה מעקומת סטוקס-איינשטיין שווה ליחס 
-\begin_inset Formula $k_{B}/k_{B}^{\mathrm{acc}}$
+ בטמפרטורות הנמוכות התקבלה הערכת-יתר של קבוע בולצמן ובגבוהות הערכת-חסר (איור 6;
+ הסטייה מעקומת סטוקס-איינשטיין שווה ליחס 
+\begin_inset Formula $k_{B}/k^{\mathrm{acc}}_{B}$
 \end_inset
 
-). מקורה בצמיגות, שבה תלוי קבוע בולצמן ישירות (
+).
+ לדעתנו מקורה בצמיגות,
+ שבה תלוי קבוע בולצמן ישירות (
 \begin_inset Formula $k_{B}=6\pi\eta aD/T$
 \end_inset
 
-): את הצמיגות חישבנו לפי הטמפרטורה שכיוונו, ולא לפי טמפרטורת הטיפה בפועל. מאחר שהבקר לא הספיק להתייצב ורשמנו רק טמפרטורה התחלתית ויעד, במדידות הקרות הטיפה הייתה ככל הנראה חמה מהיעד — הצמיגות האמיתית נמוכה יותר, כלומר הערכנו צמיגות גבוהה מדי ומכאן קבוע בולצמן גבוה; ובמדידות החמות קרה ההפך. התנועה עצמה נותרה בראונית בכל הטמפרטורות (איור 5), ולכן מדובר במגבלת בקרה ותרמומטריה ולא בכשל פיזיקלי. מדידה ישירה ובזמן-אמת של טמפרטורת הטיפה הייתה מאפשרת הערכת צמיגות מדויקת יותר וקבוע בולצמן קרוב יותר לערכו האמיתי.
+):
+ את הצמיגות חישבנו לפי הטמפרטורה שכיוונו בתרמומטר,
+ ולא לפי טמפרטורת הטיפה בפועל.
+ אך מאחר שהמכשיר מעולם לא התייצב על הטמפרטורה שקבענו לו אלא תמיד 
+\begin_inset Quotes dld
+\end_inset
+
+שאף
+\begin_inset Quotes drd
+\end_inset
+
+ לעברה רשמנו רק את הטמפרטורה ההתחלתית (לאחר שהתייצבה מספיק עד כדי 
+\begin_inset Formula $\pm0.01^{\circ}C$
+\end_inset
+
+ ואת טמפרטורת היעד,
+ במדידות הקרות התמיסה הייתה ככל הנראה חמה מהיעד שהגדרנו,
+ ולכן הצמיגות האמיתית 
+\begin_inset Formula $\eta\left(T\right)$
+\end_inset
+
+ נמוכה יותר,
+ כלומר הערכנו צמיגות גבוהה מדי ומכאן קבוע בולצמן גבוה;
+ ובמדידות החמות קרה ההפך.
+ התנועה עצמה נותרה בראונית בכל הטמפרטורות (איור 5),
+ ולכן מדובר במגבלת בקרה שלנו והתרמומטר ולא בכשל פיזיקלי.
+ אנו מניחים שמדידה 
+\series bold
+אמינה
+\series default
+ ובזמן אמת של טמפרטורת התמיסה הייתה מאפשרת הערכת צמיגות מדויקת יותר וקבוע בולצמן קרוב יותר לערכו האמיתי.
+ 
 \end_layout
 
 \end_body
