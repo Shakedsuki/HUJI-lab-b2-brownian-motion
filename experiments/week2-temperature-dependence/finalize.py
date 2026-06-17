@@ -64,6 +64,9 @@ def main():
     print("\n[finalize] building kb_strip (per-bead k_B by run headline) ...", flush=True)
     import kb_strip
     kb_strip.main()
+    print("\n[finalize] building D_vs_T (diffusion coefficient vs temperature) ...", flush=True)
+    import plot_D_vs_T
+    plot_D_vs_T.main()
 
     # 3. representative run per temperature (max free beads) -> per-bead figures
     summ = pd.read_csv(os.path.join(paths.FIGURES_DIR, "kb_grid_summary.csv"))

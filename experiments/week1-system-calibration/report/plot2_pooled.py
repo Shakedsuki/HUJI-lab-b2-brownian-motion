@@ -138,8 +138,8 @@ def draw_panel(ax, res, args, *, full=True, xmax=None, ymax=None,
     for r in res["runs"]:
         g = free[free["run"] == r]
         if len(g):
-            ax.plot(g["inv_r"], g["D_um2_s"], "o", ms=4, alpha=0.7,
-                    color=RUN_COLORS.get(r, "#444444"), mec="none",
+            ax.plot(g["inv_r"], g["D_um2_s"], "o", ms=4.5, alpha=0.8,
+                    color=RUN_COLORS.get(r, "#444444"), mec="white", mew=0.4,
                     label=f"{r} (n={len(g)})")
 
     xhi = xmax if xmax is not None else free["inv_r"].max() * 1.08
@@ -201,6 +201,10 @@ def build_figure(runs, args, eta_cP, eta_Pa_s, r_star, pooled, out):
     out = os.path.abspath(out)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     fig.savefig(out, bbox_inches="tight")
+    try:
+        fig.savefig(out[:-4] + ".pdf", bbox_inches="tight")
+    except PermissionError:
+        pass
     print(f"saved -> {out}")
 
 

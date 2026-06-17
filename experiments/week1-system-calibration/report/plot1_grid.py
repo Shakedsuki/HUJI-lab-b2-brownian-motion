@@ -50,15 +50,16 @@ def build_curves(run, min_frames, max_lag_s, fit_lag_s, beads=None):
     curves = []
     for (p, r_um), col, mk in zip(chosen, COLORS, MARKERS):
         sub = traj.loc[traj["particle"] == p].sort_values("frame")
-        lags, msd_px2, npairs = p1.time_averaged_msd(
+        lags, msd_px2, npairs, msd_sd_px2 = p1.time_averaged_msd(
             sub["frame"].values, sub["x"].values, sub["y"].values,
             max_lag_frames)
         tau = lags * dt
         msd = msd_px2 * px2um2
-        D, D_err, c, fmask = p1.fit_linear_msd(tau, msd, npairs, fit_lag_s)
+        sigma = p1.msd_sigma(lags, npairs, msd_sd_px2) * px2um2
+        D, D_err, c, fmask, cov = p1.fit_linear_msd(tau, msd, sigma, fit_lag_s)
         curves.append(dict(particle=p, r_um=r_um, tau=tau, msd=msd,
-                           fit_mask=fmask, D=D, D_err=D_err, c=c,
-                           color=col, marker=mk))
+                           sigma=sigma, fit_mask=fmask, D=D, D_err=D_err, c=c,
+                           cov=cov, color=col, marker=mk))
     return curves, f"fps={fps:.2f}"
 
 
@@ -67,12 +68,15 @@ def draw_panel(ax, curves, run):
         Ds, Des = p1.fmt_val_err(cv["D"], cv["D_err"])
         label = (rf"$r={cv['r_um']:.2f}\,\mu$m: "
                  rf"$D={Ds}\pm{Des}$")
-        ax.plot(cv["tau"], cv["msd"], cv["marker"], ls="none",
-                color=cv["color"], ms=4, alpha=0.9, label=label)
+        ax.errorbar(cv["tau"], cv["msd"], yerr=cv["sigma"], fmt=cv["marker"],
+                    ls="none", color=cv["color"], ms=4, alpha=0.9,
+                    ecolor=cv["color"], elinewidth=0.7, capsize=1.2, label=label)
         tf = cv["tau"][cv["fit_mask"]]
         tline = np.linspace(0, tf.max(), 50)
-        ax.plot(tline, 4 * cv["D"] * tline + cv["c"], "-",
-                color=cv["color"], lw=1.5)
+        line, sline = p1.msd_fit_band(tline, cv["D"], cv["c"], cv["cov"])
+        ax.fill_between(tline, line - sline, line + sline, color=cv["color"],
+                        alpha=0.15, lw=0)
+        ax.plot(tline, line, "-", color=cv["color"], lw=1.5)
 
     ax.set_xlim(left=0)
     ax.set_ylim(bottom=0)
@@ -118,7 +122,13 @@ def main():
     for ax in axes[:, 0]:
         ax.set_ylabel(r"MSD  $\langle r^2\rangle$  [$\mu$m$^2$]")
 
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0.06, 1, 1))
+    fig.text(0.5, 0.01,
+             r"Error bars: per-lag MSD SE $=\sigma_{\langle r^2\rangle}/"
+             r"\sqrt{N_{\rm indep}}$ ($N_{\rm indep}=N_{\rm pairs}/\tau$, "
+             r"independent intervals).  Bands: $\pm1\sigma$ of the "
+             r"$1/\sigma^2$-weighted fit $\langle r^2\rangle=4D\tau+c$.",
+             ha="center", va="bottom", fontsize=9, color="0.4")
 
     tag = "-".join(r.replace("run", "") for r in args.runs)
     out = args.out or os.path.join(p1.MEAS, os.pardir, "figures",
@@ -126,6 +136,10 @@ def main():
     out = os.path.abspath(out)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     fig.savefig(out, bbox_inches="tight")
+    try:
+        fig.savefig(out[:-4] + ".pdf", bbox_inches="tight")
+    except PermissionError:
+        pass
     print(f"\nsaved -> {out}\n")
 
 

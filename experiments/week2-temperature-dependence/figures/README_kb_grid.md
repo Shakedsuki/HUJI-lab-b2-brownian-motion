@@ -81,6 +81,12 @@ scatter) — both in `kb_grid_summary.csv` — plus robust median cross-check.
 3. `python kb_grid.py`            # rebuild grid + sweep (+ `finalize.py` for per-bead figs)
 
 ## Other outputs
+- `D_vs_T.png` — **diffusion coefficient vs temperature** (the radius-free view of
+  the sweep): per-T median D scaled to r = 1 µm (= D·r in µm²/s) vs the
+  parameter-free Stokes–Einstein curve D = k_B^acc·T/6πη(T)r at accepted k_B. The
+  measured medians stay ~flat (0.20–0.25 µm²/s) while the curve climbs ~55 % over
+  14→30 °C; the gap at each T **is** k_B/k_B^acc. Same gate-passing beads as the
+  grid (`plot_D_vs_T.py`, summary in `D_vs_T_summary.csv`).
 - `kb_sweep_uniform.png` — k_B vs T (invariance) + D·r vs T (SE temperature law).
 - `kb_grid_summary.csv` — per-run table (both error estimates, R², drift counts).
 - `measurements/<run>/pipeline/plot1_perbead.png` — per-bead MSD fits + R² +

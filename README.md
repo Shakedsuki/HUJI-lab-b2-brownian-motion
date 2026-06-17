@@ -68,6 +68,26 @@ aggregate.py    pool runs → combined k_B + error budget → figures/aggregate_
 Shared helpers: `physics.py` (constants, viscosity, Stokes-Einstein),
 `_paths.py` (per-week path resolver), `figure_style.py` (consistent figures).
 
+### Report figures (with uncertainties)
+
+`week1-system-calibration/report/` builds the publication figures, each carrying
+its uncertainty budget:
+
+- `plot1_grid.py` / `plot1_msd_vs_lag.py` — MSD vs lag with **per-lag error bars**
+  (independent-interval SE, σ/√(N_pairs/τ)) and a ±1σ band on the 1/σ²-weighted
+  fit ⟨r²⟩ = 4Dτ + c.
+- `plot2_grid.py` / `plot2_pooled.py` — D vs 1/r → k_B with x/y error bars and the
+  ±1σ slope band (robust per-bead median estimator).
+- `plot3_kb_strip.py` — per-bead k_B by run (free spheres r ≤ r\*; wall-pinned
+  shown but excluded), median ± SE crossbars vs the accepted k_B. Pooled room-T
+  free beads give **k_B = 1.01 ± 0.07 × accepted** (n = 44).
+
+Week 2 adds the temperature sweep, including `plot_D_vs_T.py` — the **diffusion
+coefficient vs temperature** (D scaled to r = 1 µm) against the parameter-free
+Stokes-Einstein curve; the measured D stays flat while the curve rises, showing
+the cell sat near ambient rather than at the setpoint (see the
+[week-2 figures README](experiments/week2-temperature-dependence/figures/README_kb_grid.md)).
+
 ---
 
 ## Week 3 — DLA by Cu electrodeposition
