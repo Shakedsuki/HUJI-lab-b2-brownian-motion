@@ -71,14 +71,14 @@
 \shortcut idx
 \color #008080
 \end_index
-\leftmargin 1cm
-\topmargin 1.5cm
-\rightmargin 1cm
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
 \bottommargin 2.54cm
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip medskip
 \is_math_indent 0
 \math_numbering_side default
 \quotes_style hebrew
