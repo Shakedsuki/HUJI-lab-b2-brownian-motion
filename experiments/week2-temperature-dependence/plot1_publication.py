@@ -164,7 +164,6 @@ def main():
 
     from matplotlib.lines import Line2D
     from matplotlib.patches import Patch
-    tfit0 = panels[0][8]
     leg = [Line2D([0], [0], marker="o", color=BLUE, mfc=BLUE, mec="white", ms=7,
                   ls="none", label=r"ensemble MSD $\pm$ SE"),
            Line2D([0], [0], color=RED, lw=2.2, label=r"fit $\langle r^2\rangle=4D\tau+c$"),
@@ -172,16 +171,7 @@ def main():
            Line2D([0], [0], color=RED, lw=1.4, ls="--", label="extrapolation (excl. from fit)")]
     fig.legend(handles=leg, loc="lower center", ncol=4, frameon=False,
                fontsize=9.0, bbox_to_anchor=(0.5, -0.04))
-    fig.text(0.5, -0.11, rf"One representative run per "
-             rf"temperature.  Error bars = per-lag bead-to-bead SE "
-             rf"($\mathrm{{std}}_{{\rm beads}}/\sqrt{{n}}$; grows with $\tau$ as "
-             rf"different-radius beads diverge).  "
-             rf"$\langle D\rangle\pm$SE = ensemble-MSD fit over the "
-             rf"SHORT-LAG window $\tau\leq{tfit0:.1f}$ s (band; free intercept "
-             rf"$c\approx$0 — localization $\lesssim$1 px, so $D$ is "
-             rf"unbiased).  Fig 2 $k_B$ uses the per-bead median $D$, which agrees "
-             rf"with $\langle D\rangle$ to within {100*max(devs):.0f}%.",
-             ha="center", va="top", fontsize=8.5, color="0.4")
+    # explanatory footnote intentionally omitted -- it lives in the report caption
     fig.tight_layout(rect=(0, 0.04, 1, 1.0))
     out = os.path.join(paths.FIGURES_DIR, "plot1_publication.png")
     fig.savefig(out, bbox_inches="tight", dpi=300)
