@@ -70,6 +70,10 @@ def main():
         p2.ROOT, "figures", f"plot2_grid_runs{tag}.png"))
     os.makedirs(os.path.dirname(out), exist_ok=True)
     fig.savefig(out, bbox_inches="tight")
+    try:
+        fig.savefig(out[:-4] + ".pdf", bbox_inches="tight")
+    except PermissionError:
+        pass
     print(f"\nsaved -> {out}\n")
 
 

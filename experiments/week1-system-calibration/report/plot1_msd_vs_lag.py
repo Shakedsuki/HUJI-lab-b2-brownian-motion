@@ -101,7 +101,9 @@ def time_averaged_msd(frames, x, y, max_lag):
     -------
     lags   : ndarray, lag in frames (1..max_lag)
     msd    : ndarray, mean squared displacement in px^2 (NaN where no pairs)
-    npairs : ndarray, number of contributing frame pairs (fit weight)
+    npairs : ndarray, number of contributing frame pairs (overlapping)
+    msd_sd : ndarray, sample std of the squared displacements in px^2 (NaN where
+             fewer than two pairs) -- the spread used to build the per-lag error
     """
     frames = np.asarray(frames, dtype=int)
     f0, f1 = frames.min(), frames.max()
@@ -115,6 +117,7 @@ def time_averaged_msd(frames, x, y, max_lag):
     max_lag = int(min(max_lag, n - 1))
     lags = np.arange(1, max_lag + 1)
     msd = np.full(max_lag, np.nan)
+    msd_sd = np.full(max_lag, np.nan)
     npairs = np.zeros(max_lag, dtype=int)
 
     for i, k in enumerate(lags):
@@ -126,19 +129,45 @@ def time_averaged_msd(frames, x, y, max_lag):
         npairs[i] = m
         if m:
             msd[i] = sq[good].mean()
-    return lags, msd, npairs
+        if m > 1:
+            msd_sd[i] = sq[good].std(ddof=1)
+    return lags, msd, npairs, msd_sd
 
 
-def fit_linear_msd(tau, msd, weights, t_max):
+def msd_sigma(lags, npairs, msd_sd):
+    """Honest standard error on the time-averaged MSD at each lag.
+
+    The overlapping frame pairs that build <r^2>(tau) are NOT independent: a
+    track of N frames supplies only ~N/k disjoint intervals at lag k, even though
+    it has N-k overlapping ones. Dividing the squared-displacement spread by the
+    full pair count (sqrt(npairs)) therefore understates the error -- exactly the
+    "optimistic lower bound" the old npairs-weighted fit warned about. We instead
+    divide by the number of INDEPENDENT intervals,
+
+        N_indep(k) = max(1, npairs(k) / k),
+
+    so sigma(k) = std(squared steps) / sqrt(N_indep). This is the standard
+    non-overlapping-interval error for single-track MSD (Qian-Sheetz-Elson /
+    Michalet) and feeds the 1/sigma^2 weights of the linear fit below.
+    """
+    lags = np.asarray(lags, float)
+    npairs = np.asarray(npairs, float)
+    n_indep = np.clip(npairs / np.clip(lags, 1.0, None), 1.0, None)
+    return msd_sd / np.sqrt(n_indep)
+
+
+def fit_linear_msd(tau, msd, sigma, t_max):
     """Fit <r^2> = 4 D tau + c over lags with tau <= t_max.
 
-    Weighted least squares (weights ~ number of independent pairs). Returns D,
-    its 1-sigma error, the intercept c, and the fit mask used.
+    Inverse-variance weighted least squares with w = 1/sigma^2, where sigma is
+    the honest per-lag MSD error (independent-interval SE from msd_sigma). Returns
+    D, its 1-sigma error, the intercept c, the fit mask, and the 2x2 parameter
+    covariance (rows/cols = slope a, intercept c) used to draw the fit band.
     """
-    mask = (tau <= t_max) & np.isfinite(msd) & (weights > 0)
+    mask = (tau <= t_max) & np.isfinite(msd) & np.isfinite(sigma) & (sigma > 0)
     t = tau[mask]
     m = msd[mask]
-    w = weights[mask].astype(float)
+    w = 1.0 / sigma[mask].astype(float) ** 2
 
     # Weighted linear regression m = a*t + c  ->  D = a/4.
     W = np.diag(w)
@@ -148,18 +177,35 @@ def fit_linear_msd(tau, msd, weights, t_max):
     coef = cov @ (AtW @ m)
     a, c = coef
 
-    # The weights are only relative (~ pair counts), so rescale the parameter
-    # covariance by the weighted residual variance s^2 = chi2/dof -- the usual
-    # "scaled" fit covariance (np.polyfit/curve_fit convention). The MSD points
-    # are correlated across lags, so this is still an optimistic lower bound on
-    # the true uncertainty, but it matches the pipeline's reported D_err.
+    # Rescale the parameter covariance by the reduced chi-square s^2 = chi2/dof
+    # (the usual "scaled" fit covariance). With the independent-interval sigma the
+    # weights are now absolute, so s^2 ~ 1 when the linear model + error model are
+    # right; s^2 > 1 means residual scatter beyond the per-lag SE (e.g. drift or
+    # lag-lag correlation) and inflates D_err accordingly.
     resid = m - A @ coef
     dof = max(len(t) - 2, 1)
     s2 = float((w * resid * resid).sum() / dof)
-    cov *= s2
-    a_err = np.sqrt(cov[0, 0])
+    cov = cov * s2
 
-    return a / 4.0, a_err / 4.0, c, mask
+    a_err = np.sqrt(cov[0, 0])
+    # covariance of (D=a/4, c): scale the a-row/col by 1/4
+    cov_Dc = cov.copy()
+    cov_Dc[0, :] /= 4.0
+    cov_Dc[:, 0] /= 4.0
+    return a / 4.0, a_err / 4.0, c, mask, cov_Dc
+
+
+def msd_fit_band(tau, D, c, cov_Dc):
+    """1-sigma prediction band of the fitted line 4 D tau + c.
+
+    Propagates the (D, c) covariance: Var[4 D tau + c] = 16 tau^2 Var[D]
+    + Var[c] + 8 tau Cov[D, c]. Returns (line, sigma_line) over the given tau.
+    """
+    tau = np.asarray(tau, float)
+    line = 4.0 * D * tau + c
+    var = (16.0 * tau ** 2 * cov_Dc[0, 0] + cov_Dc[1, 1]
+           + 8.0 * tau * cov_Dc[0, 1])
+    return line, np.sqrt(np.clip(var, 0.0, None))
 
 
 # --------------------------------------------------------------------------- #
@@ -322,23 +368,28 @@ def make_figure(curves, run, T_label):
     fig, (axL, axR) = plt.subplots(1, 2, figsize=(11, 4.4))
 
     for cv in curves:
-        tau, msd = cv["tau"], cv["msd"]
+        tau, msd, sig = cv["tau"], cv["msd"], cv["sigma"]
         col, mk = cv["color"], cv["marker"]
         Ds, Des = fmt_val_err(cv["D"], cv["D_err"])
         label = (rf"$r={cv['r_um']:.2f}\,\mu$m,  "
                  rf"$D={Ds}\pm{Des}\,\mu$m$^2$/s")
 
-        # ---- left: linear MSD + fit ----
-        axL.plot(tau, msd, marker=mk, ls="none", color=col, ms=4.5,
-                 alpha=0.9, label=label)
+        # ---- left: linear MSD (with per-lag error bars) + fit + 1-sigma band ----
+        axL.errorbar(tau, msd, yerr=sig, fmt=mk, ls="none", color=col, ms=4.5,
+                     alpha=0.9, ecolor=col, elinewidth=0.8, capsize=1.5,
+                     label=label)
         tf = tau[cv["fit_mask"]]
         tline = np.linspace(0, tf.max(), 50)
-        axL.plot(tline, 4 * cv["D"] * tline + cv["c"], "-", color=col, lw=1.6)
+        line, sline = msd_fit_band(tline, cv["D"], cv["c"], cv["cov"])
+        axL.fill_between(tline, line - sline, line + sline, color=col,
+                         alpha=0.15, lw=0)
+        axL.plot(tline, line, "-", color=col, lw=1.6)
 
-        # ---- right: log-log ----
+        # ---- right: log-log (error bars too) ----
         pos = msd > 0
-        axR.plot(tau[pos], msd[pos], marker=mk, ls="none", color=col, ms=4.5,
-                 alpha=0.9)
+        axR.errorbar(tau[pos], msd[pos], yerr=sig[pos], fmt=mk, ls="none",
+                     color=col, ms=4.5, alpha=0.9, ecolor=col, elinewidth=0.8,
+                     capsize=1.5)
 
     # slope-1 reference on the log-log panel: a pure tau^1 power law anchored to
     # the middle curve's geometric centre, so it tracks the data where the
@@ -368,7 +419,13 @@ def make_figure(curves, run, T_label):
 
     fig.suptitle(f"Brownian motion is normal diffusion  ({run}, {T_label})",
                  fontsize=12, y=1.02)
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0.05, 1, 1))
+    fig.text(0.5, 0.005,
+             r"Error bars: per-lag MSD SE $=\sigma_{\langle r^2\rangle}/"
+             r"\sqrt{N_{\rm indep}}$, $N_{\rm indep}=N_{\rm pairs}/\tau$ "
+             r"(independent intervals).  Band: $\pm1\sigma$ of the "
+             r"$1/\sigma^2$-weighted fit $\langle r^2\rangle=4D\tau+c$.",
+             ha="center", va="bottom", fontsize=8.5, color="0.4")
     return fig
 
 
@@ -415,17 +472,18 @@ def main():
           f"{'D[um2/s]':>10} {'D_err':>9} {'c[um2]':>9}")
     for (p, r_um), col, mk in zip(beads, colors, markers):
         sub = traj.loc[traj["particle"] == p].sort_values("frame")
-        lags, msd_px2, npairs = time_averaged_msd(
+        lags, msd_px2, npairs, msd_sd_px2 = time_averaged_msd(
             sub["frame"].values, sub["x"].values, sub["y"].values,
             max_lag_frames)
 
         tau = lags * dt
         msd = msd_px2 * px2um2
-        D, D_err, c, fmask = fit_linear_msd(tau, msd, npairs, args.fit_lag_s)
+        sigma = msd_sigma(lags, npairs, msd_sd_px2) * px2um2
+        D, D_err, c, fmask, cov = fit_linear_msd(tau, msd, sigma, args.fit_lag_s)
 
         curves.append(dict(particle=p, r_um=r_um, tau=tau, msd=msd,
-                           fit_mask=fmask, D=D, D_err=D_err, c=c,
-                           color=col, marker=mk))
+                           sigma=sigma, fit_mask=fmask, D=D, D_err=D_err, c=c,
+                           cov=cov, color=col, marker=mk))
         print(f"{p:>9} {r_um:>6.3f} {len(sub):>9} "
               f"{D:>10.4f} {D_err:>9.4f} {c:>9.4f}")
 
