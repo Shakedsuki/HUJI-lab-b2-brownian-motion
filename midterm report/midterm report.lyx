@@ -231,9 +231,9 @@ today
 \begin_layout Standard
 המשוואה לממוצע ריבוע ההעתק של חלקיק הנע בתנועה בראונית דו ממדית כתלות בזמן היא
 \begin_inset Formula 
-\[
+\begin{equation}
 \left\langle r^{2}\right\rangle \left(t\right)=4Dt
-\]
+\end{equation}
 
 \end_inset
 
@@ -248,9 +248,9 @@ today
 
  הוא
 \begin_inset Formula 
-\[
+\begin{equation}
 D=\frac{k_{b}T}{6\pi\eta a}
-\]
+\end{equation}
 
 \end_inset
 
@@ -338,7 +338,7 @@ status open
 \begin_inset Graphics
 	filename system diagram.png
 	lyxscale 10
-	scale 80
+	width 50col%
 
 \end_inset
 
@@ -397,7 +397,7 @@ status open
 \begin_inset Graphics
 	filename example.png
 	lyxscale 10
-	scale 40
+	width 50col%
 
 \end_inset
 
@@ -486,9 +486,9 @@ status open
  לכל תת סדרה הגדרנו את מיקום האפס כמיקום ההתחלתי של אותה הסדרה,
  ואז חישבנו בכל נקודת זמן אחרת את ההעתק בריבוע מנקודת ההתחלה
 \begin_inset Formula 
-\[
+\begin{equation}
 r^{2}\left(t\right)=\left(x\left(t\right)-x\left(t_{0}\right)\right)^{2}+\left(y\left(t\right)-y\left(t_{0}\right)\right)^{2}
-\]
+\end{equation}
 
 \end_inset
 
@@ -664,7 +664,7 @@ status open
 \begin_inset Graphics
 	filename plot1_snapshots_strip_runs3-4-6.png
 	lyxscale 20
-	width 90col%
+	width 100col%
 
 \end_inset
 
@@ -722,7 +722,7 @@ status open
 \begin_inset Graphics
 	filename plot2_grid_runs3-4-6.png
 	lyxscale 20
-	width 90col%
+	width 100col%
 
 \end_inset
 
@@ -986,7 +986,7 @@ status open
 \begin_inset Graphics
 	filename D_vs_T.png
 	lyxscale 20
-	width 75col%
+	width 80col%
 
 \end_inset
 
