@@ -1,9 +1,9 @@
-#LyX 2.5 created this file. For more info see https://www.lyx.org/
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
 \lyxformat 620
 \begin_document
 \begin_header
 \save_transient_properties true
-\origin "C:/dev/brownian-motion/midterm report/"
+\origin unavailable
 \textclass article
 \use_default_options true
 \maintain_unincluded_children no
@@ -177,6 +177,7 @@ status open
 
 \begin_layout Plain Layout
 
+
 \backslash
 today
 \end_layout
@@ -232,15 +233,11 @@ today
 \end_layout
 
 \begin_layout Standard
-כאשר מפתחים אותה ממשוואת לנג'ווין והנחה שהכוח רנדומלי והתוחלת מתאפסת.
- מחוק סטוקס ויחס איינשטיין מקבלים את מקדם הדיפוזיה 
-\begin_inset Formula $D$
-\end_inset
-
-
+כאשר מפתחים אותה ממשוואת לנג'ווין תחת ההנחה שהכוח רנדומלי ותוחלתו מתאפסת.
+ מחוק סטוקס ויחס איינשטיין מקבלים את מקדם הדיפוזיה
 \begin_inset Formula 
 \begin{equation}
-D=\frac{k_{b}T}{6\pi\eta a}
+D=\frac{k_{B}T}{6\pi\eta a}
 \end{equation}
 
 \end_inset
@@ -249,7 +246,7 @@ D=\frac{k_{b}T}{6\pi\eta a}
 \end_layout
 
 \begin_layout Standard
-עבור 
+כאשר 
 \begin_inset Formula $\eta$
 \end_inset
 
@@ -260,7 +257,7 @@ D=\frac{k_{b}T}{6\pi\eta a}
 
  הטמפרטורה,
  
-\begin_inset Formula $k_{b}$
+\begin_inset Formula $k_{B}$
 \end_inset
 
  קבוע בולצמן ו
@@ -300,7 +297,7 @@ D=\frac{k_{b}T}{6\pi\eta a}
 \end_layout
 
 \begin_layout Standard
-לצורך הניתוח נעזרנו בהנחה הארגודית הטוענת כי ממוצע בזמן של פרמטר סטטיסטי של חלקיק לאורך זמן רב שקול לממוצע הפרמטר בין של אוסף של חלקיקים רבים.
+לצורך הניתוח נעזרנו בהנחה הארגודית הטוענת כי ממוצע בזמן של פרמטר סטטיסטי של חלקיק לאורך זמן רב שקול לממוצע הפרמטר על פני אוסף של חלקיקים רבים.
  הנחה זאת מאפשרת להסיק מדגימה ארוכה של חלקיק אחד על התנהגות המערכת.
 \end_layout
 
@@ -313,47 +310,9 @@ D=\frac{k_{b}T}{6\pi\eta a}
 \end_layout
 
 \begin_layout Standard
-מערכת הניסוי התבססה על מיקרוסקופ אופטי שאליו קושרה מצלמה דיגיטלית מהירה.
+מערכת הניסוי התבססה על מיקרוסקופ אופטי המחובר למצלמה דיגיטלית.
  על גבי זכוכית הנושא של המיקרוסקופ הונחה טיפה המכילה תרחיף של חלקיקי פוליאתילן כדוריים בקטרים שונים,
  הצפים בתוך תמיסה צמיגה של מים מזוקקים וגליצרול (ראו איור 1).
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-placement H
-alignment center
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Graphics
-	filename system diagram.png
-	lyxscale 10
-	width 50col%
-
-\end_inset
-
-
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-דיאגרמה של מערכת הניסוי.
- המערכת מורכבת ממקור אור המאיר על טיפת נוזל ובתוכה חלקיקים,
- ומהצד השני מצלמה המחוברת למיקרוסקופ מצלמת סרטון של תנועת החלקיקים.
- בנוסף,
- קיים בקר טמפרטורה המחובר למשטח עליו יושבת דגימה הנוזל,
- ואיתו שלטנו בטמפרטורה של הטיפה.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -375,11 +334,50 @@ status open
 ,
  בוצעו מספר מדידות באזורים שונים של הטיפה שבהם נלכדו חלקיקים בגדלים שונים.
  משך התיעוד של כל דגימה עמד על כ-2 דקות.
+ 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
-placement H
+placement document
+alignment center
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename system diagram.png
+	lyxscale 10
+	width 50col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+דיאגרמה של מערכת הניסוי.
+ המערכת מורכבת ממקור אור המאיר על טיפת נוזל ובתוכה חלקיקים,
+ ומהצד השני מצלמה המחוברת למיקרוסקופ מצלמת סרטון של תנועת החלקיקים.
+ בנוסף,
+ קיים בקר טמפרטורה המחובר למשטח עליו יושבת דגימת הנוזל,
+ ואיתו שלטנו בטמפרטורה של הטיפה.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
 alignment center
 wide false
 sideways false
@@ -422,7 +420,7 @@ status open
 \end_inset
 
 .
- כדי למצוא את הטמפרטורה של הטיפה באופן מדוייק,
+ כדי למצוא את הטמפרטורה של הטיפה באופן מדויק,
  חיברנו מד טמפרטורה ישירות לזכוכית עליה הייתה מונחת הטיפה.
 \end_layout
 
@@ -453,7 +451,7 @@ status open
 
 \begin_layout Standard
 לאחר שקיבלנו מספר סדרות של מיקומי חלקיקים בזמן והרדיוסים שלהם,
- רצינו לחלץ את המיקום בריבוע הממוצע.
+ רצינו לחלץ את ממוצע ריבוע ההעתק.
  לצורך כך לקחנו את סדרת המיקומים של חלקיק אחד וחילקנו אותה ל
 \begin_inset Formula $10$
 \end_inset
@@ -468,8 +466,8 @@ status open
 \end_inset
 
  תתי הסדרות כהרצות שונות של חלקיק באותו הרדיוס.
- ניתוח זה מוצדק מההנחה שהמערכת שוכחת את תנאי ההתחלה שלה בקצב גבוה ביחס לאורך בזמן של תת הסדרה,
- שכן מסת החלקיקים וצמיגות הנוזל גבוהה.
+ ניתוח זה מוצדק מההנחה שהמערכת שוכחת את תנאי ההתחלה שלה בקצב גבוה ביחס למשך הזמן של תת הסדרה,
+ שכן מסת החלקיקים והצמיגות הגבוהה של הנוזל.
  
 \end_layout
 
@@ -562,34 +560,120 @@ r^{2}\left(t\right)=\left(x\left(t\right)-x\left(t_{0}\right)\right)^{2}+\left(y
 \begin_layout Standard
 
 \series bold
+מודל ממוצע ריבוע ההעתק ורעש מדידה
+\end_layout
+
+\begin_layout Standard
+המודל המקובל לממוצע ריבוע ההעתק הוא 
+\begin_inset Formula $\left\langle r^{2}\right\rangle =4Dt$
+\end_inset
+
+ כפי שהוסבר במבוא.
+ אך במדידות המיקומים במערכת זאת קיימים רעשים במדידת המיקום של החלקיקים.
+ היות ואנו לא "באמת" יודעים מהו מרכז החלקיקים שאנו מודדים,
+ כל מיקום נמדד נושא איתו שגיאה אקראית הנובעת משיקולים אופטיים (כגון עקיפה),
+ רעשים ברמת הפיקסל,
+ וכדומה.
+ 
+\end_layout
+
+\begin_layout Standard
+אם נסמן את אותה שגיאה אקראית בציר 
+\begin_inset Formula $x$
+\end_inset
+
+ ב-
+\begin_inset Formula $\varepsilon_{x}$
+\end_inset
+
+,
+ אזי מיקום החלקיק שאנחנו מודדים הינו הלכה למעשה 
+\begin_inset Formula $x_{meas}=x_{true}+\varepsilon_{x}$
+\end_inset
+
+,
+ ומכאן שמדידת המיקום לאורך צעדי הזמן הינה 
+\begin_inset Formula $\Delta x_{meas}=\Delta x_{true}+\Delta\varepsilon_{x}$
+\end_inset
+
+.
+ נוכל לראות כי כאשר נעלה הביטוי בריבוע ונמצע נקבל:
+\begin_inset Formula 
+\begin{equation}
+\left\langle \Delta x_{meas}^{2}\right\rangle =\left\langle \Delta x_{true}^{2}\right\rangle +2\cancelto{0}{\left\langle \Delta x_{true}\Delta\varepsilon_{x}\right\rangle }+\left\langle \Delta\varepsilon_{x}^{2}\right\rangle =\left\langle \Delta x_{true}^{2}\right\rangle +\left\langle \Delta\varepsilon_{x}^{2}\right\rangle 
+\end{equation}
+
+\end_inset
+
+ כאשר האיבר המעורב מתאפס בשל חוסר התלות הסטטיסטית בין התנועה לרעש המדידה,
+ והתאפסות תוחלת הרעש 
+\begin_inset Formula $\left\langle \Delta x_{true}\Delta\varepsilon_{x}\right\rangle =\left\langle \Delta x_{true}\right\rangle \left\langle \Delta\varepsilon_{x}\right\rangle =0$
+\end_inset
+
+.
+ נרחיב זאת לדו-ממד ונקבל:
+\begin_inset Formula 
+\begin{equation}
+\left\langle r_{meas}^{2}\right\rangle =\underbrace{\left\langle \Delta x_{meas}^{2}\right\rangle }_{2Dt+\left\langle \Delta\varepsilon_{x}^{2}\right\rangle }+\underbrace{\left\langle \Delta y_{meas}^{2}\right\rangle }_{2Dt+\left\langle \Delta\varepsilon_{y}^{2}\right\rangle }=4Dt+\left\langle \Delta\varepsilon_{x}^{2}\right\rangle +\left\langle \Delta\varepsilon_{y}^{2}\right\rangle 
+\end{equation}
+
+\end_inset
+
+ מכיוון שהרעש איזוטרופי מתקיים 
+\begin_inset Formula $\left\langle \Delta\varepsilon_{x}^{2}\right\rangle =\left\langle \Delta\varepsilon_{y}^{2}\right\rangle $
+\end_inset
+
+.
+ נסמן 
+\begin_inset Formula $\frac{1}{2}c\equiv\left\langle \Delta\varepsilon_{x}^{2}\right\rangle =\left\langle \Delta\varepsilon_{y}^{2}\right\rangle $
+\end_inset
+
+ ומכאן
+\begin_inset Formula 
+\begin{equation}
+\left\langle r_{meas}^{2}\right\rangle =4Dt+c
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+לכן במקרה שלנו הוספנו אפשרות לקבוע בהתאמות שביצענו.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
 שגיאות:
 \end_layout
 
 \begin_layout Standard
-קיימות שגיאות שיטטיות של הערכת רדיוס החלקיק ומיקום החלקיק הנובעות מהדיסקרטיציה של הפיקסלים,
+קיימות שגיאות שיטתיות של הערכת רדיוס החלקיק ומיקום החלקיק הנובעות מהדיסקרטיזציה של הפיקסלים,
  והן נכנסו להערכות השגיאות.
- בנוסף היו שגיאות ברדיוס החלקיק הנבעו מאפקטים אופטיים של מיקום מוקד העדשה ביחס למיקום החלקיק (בציר האנכי למישור התנועה שבחנו של החלקיק).
+ בנוסף היו שגיאות ברדיוס החלקיק שנבעו מאפקטים אופטיים של מיקום מוקד העדשה ביחס למיקום החלקיק (בציר האנכי למישור התנועה שבחנו של החלקיק).
 \end_layout
 
 \begin_layout Standard
 בנוסף,
- לעיתים נתקלנו בבעייה שהשפיעה באופן משמעותי,
+ לעיתים נתקלנו בבעיה שהשפיעה באופן משמעותי,
  והיא סחף של הנוזל.
- ייתכן כי זה נבע שהמשטח עליו הונחה הטיפה היה בזווית קלה ולא מקביל לאופק,
- מה שגרם לנוזל לזוז במרוד השיפוע.
+ ייתכן כי זה נבע מכך שהמשטח עליו הונחה הטיפה היה בזווית קלה ולא מקביל לאופק,
+ מה שגרם לנוזל לזוז במורד השיפוע.
 \end_layout
 
 \begin_layout Standard
-כדי לזהות אפקט זה בוצע חישוב למתואר מעלה,
- אך בו חישבנו את ההעתק הממוצע 
-\begin_inset Formula $\left\langle r\right\rangle \left(t\right)$
+כדי לזהות אפקט זה בוצע חישוב כמתואר מעלה,
+ אך בו חישבנו את ההעתקים הממוצעים 
+\begin_inset Formula $\left\langle x\right\rangle \left(t\right),\left\langle y\right\rangle \left(t\right)$
 \end_inset
 
 .
  בהתאם להנחת האיזוטרופיות של המערכת (הכוח הממוצע מתאפס) היינו מצפים שתוחלת ההעתק תנוע סביב האפס.
  אך במקרים בהם היה סחף,
  תוחלת ההעתק צפויה לא לנוע סביב האפס,
- אלה סביב ישר כלשהו,
+ אלא סביב ישר כלשהו,
  ששיפועו נובע ממהירות הסחף.
  מתוך כך,
  יכולנו לחלץ את מהירות הסחף ולחסר אותה מההעתקים שחישבנו,
@@ -601,7 +685,8 @@ r^{2}\left(t\right)=\left(x\left(t\right)-x\left(t_{0}\right)\right)^{2}+\left(y
 \end_layout
 
 \begin_layout Standard
-ראשית בחנו את ממוצע ריבוע ההעתק של החלקיקים לאורך זמן בטמפרטורת החדר,
+ראשית,
+ בחנו את ממוצע ריבוע ההעתק של החלקיקים לאורך זמן בטמפרטורת החדר,
  כפי שרואים באיור
 \family roman
 \series medium
@@ -634,6 +719,16 @@ r^{2}\left(t\right)=\left(x\left(t\right)-x\left(t_{0}\right)\right)^{2}+\left(y
 3
 \numeric off
 .
+ התאמנו את המשוואה הלינארית 
+\begin_inset Formula $\left\langle r_{meas}^{2}\right\rangle =4D\tau+c$
+\end_inset
+
+ (משוואה 
+\numeric on
+6
+\numeric off
+),
+ הכוללת איבר היסט כפי שפותח בפרק עיבוד נתונים.
  מצאנו כי קיימת תלות לינארית ברוב המקרים,
  וכן כי השיפועים שונים בעבור חלקיקים ברדיוסים שונים,
  כפי שהיינו מצפים מהנוסחאות שפיתחנו.
@@ -684,7 +779,7 @@ status open
 \begin_inset Formula $c$
 \end_inset
 
- משקף ארטיפאקטים מתהליך הטראקינג שלנו ואינו נובע מהדיפוזיה עצמה.
+ משקף ארטיפאקטים מתהליך המדידה ואינו נובע מתהליך הדיפוזיה עצמו.
 \end_layout
 
 \end_inset
@@ -695,205 +790,6 @@ status open
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-נשים לב כי באיור
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\nospellcheck off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
- 
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\numeric on
-\nospellcheck default
-\bar default
-\strikeout default
-\xout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-3
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\numeric off
-\nospellcheck off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
- 
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\nospellcheck default
-\bar default
-\strikeout default
-\xout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-לעיל התאמנו את המשוואה הליניארית 
-\begin_inset Formula $\left\langle r^{2}\right\rangle =4D\tau+c$
-\end_inset
-
-,
- בעוד שבספרות נהוג לתאר את התנועה הבראונית הדו-ממדית כאשר 
-\begin_inset Formula $c=0$
-\end_inset
-
- והישר עובר דרך ראשית הצירים.
- מקור היסט זה מגיע מרעשים במדידת המיקום של החלקיקים,
- היות ואנו לא 
-\begin_inset Quotes dld
-\end_inset
-
-באמת
-\begin_inset Quotes drd
-\end_inset
-
- יודעים מהו מרכז החלקיקים שאנו מודדים,
- ולכן כל מיקום שאנו מודדים נושא איתו שגיאה אקראית הנובעת משיקולים אופטיים (כגון דיפרקציה),
- מהרעשים בתמונה עצמה ברמת הפיקסל,
- וכו.
- אם נסמן את אותה שגיאה אקראית ב-
-\begin_inset Formula $\varepsilon$
-\end_inset
-
- אזי מיקום החלקיק שאנחנו מודדים הינו הלכה למעשה 
-\begin_inset Formula $x_{meas}=x_{true}+\varepsilon$
-\end_inset
-
-,
- ומכאן שמדידת המיקום לאורך צעדי הזמן הינה 
-\begin_inset Formula $\Delta x_{meas}=\Delta x_{true}+\Delta\varepsilon$
-\end_inset
-
-.
- נוכל לראות כי כאשר נעלה הביטוי בריבוע ונמצע נקבל
-\begin_inset Formula 
-\begin{equation}
-\left\langle \Delta x^{2}_{meas}\right\rangle =\left\langle \Delta x^{2}_{true}\right\rangle +2\cancelto{0}{\left\langle \Delta x_{true}\Delta\varepsilon\right\rangle }+\left\langle \Delta\varepsilon^{2}\right\rangle =\left\langle \Delta x^{2}_{true}\right\rangle +\left\langle \Delta\varepsilon^{2}\right\rangle 
-\end{equation}
-
-\end_inset
-
- כאשר הביטוי המעורב מתאפס היותו מההנחה הארגודית 
-\begin_inset Formula $\left\langle \varepsilon_{x}\right\rangle =0$
-\end_inset
-
- (הרעש לא אמור להיות תלוי בתנועה).
- נרחיב זאת לדו-ממד ונקבל
-\begin_inset Formula 
-\begin{equation}
-\left\langle r^{2}_{meas}\right\rangle =\underbrace{\left\langle \Delta x^{2}_{meas}\right\rangle }_{2D\tau+\Delta\varepsilon^{2}_{x}}+\underbrace{\left\langle \Delta y^{2}_{meas}\right\rangle }_{2D\tau+\Delta\varepsilon^{2}_{y}}=4D\tau+\Delta\varepsilon^{2}_{x}+\Delta\varepsilon^{2}_{y}
-\end{equation}
-
-\end_inset
-
- מכיוון ש- 
-\begin_inset Formula $\Delta\varepsilon^{2}_{x}=\Delta\varepsilon^{2}_{y}$
-\end_inset
-
- נסמן 
-\begin_inset Formula $\frac{1}{2}c\equiv\Delta\varepsilon^{2}_{x}=\Delta\varepsilon^{2}_{y}$
-\end_inset
-
- ומכאן
-\begin_inset Formula 
-\begin{equation}
-\left\langle r^{2}_{meas}\right\rangle =4D\tau+c
-\end{equation}
-
-\end_inset
-
- ומכאן מקורו של האופסט 
-\begin_inset Formula $c$
-\end_inset
-
- המופיע באיור
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\nospellcheck off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
- 
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\numeric on
-\nospellcheck default
-\bar default
-\strikeout default
-\xout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-3
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\numeric off
-\nospellcheck off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
- 
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\nospellcheck default
-\bar default
-\strikeout default
-\xout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-לעיל.
- 
 \end_layout
 
 \begin_layout Standard
@@ -929,41 +825,16 @@ status open
 \end_inset
 
 .
- כל גרף מציג את המקדם שחושב מחלקיקים בדגימות שונות.
+ כל גרף מציג את מקדמי הדיפוזיה שחושבו עבור חלקיקים בדגימות שונות.
  בקו האדום מותאם מקדם הדיפוזיה 
-\begin_inset Formula $D=\left(k_{B}T/6\pi\eta\right)\left(1/a\right)$
-\end_inset
-
-.
- השיפועים יצאו בהתאמה 
-\begin_inset Formula $\left(0.236±0.016,0.239±0.022,0.212±0.013\right)$
+\begin_inset Formula $D=\left(\frac{k_{B}T}{6\pi\eta}\right)\cdot\frac{1}{a}$
 \end_inset
 
 .
  הפס מסביב לפיט מתאר את סטיית התקן שלו.
- קבוע בולצמן חולץ מהשיפוע לפי 
-\begin_inset Formula $k_{B}=6\pi\eta/T\cdot\left(\text{slope}\right)$
-\end_inset
-
- עבור טמפרטורת החדר 
-\begin_inset Formula $T=25^{\circ}$
-\end_inset
-
- ובצמיגות מים מזוקקים 
-\begin_inset Formula $\eta=0.89cP$
-\end_inset
-
-.
- מהדגימות קיבלנו את הערכים 
-\begin_inset Formula $k_{b}\approx\left(1.33\pm0.09\right)\times10^{-23}\text{J/K},\left(1.34\pm0.12\right)\times10^{-23}\text{J/K},\left(1.19\pm0.07\right)\times10^{-23}\text{J/K}$
-\end_inset
-
-.
- אחוזי ההתאמה ביחס לערך המוכר בספרות של קבוע בולצמן הן 
-\begin_inset Formula $96\%,97\%,86\%$
-\end_inset
-
- בהתאמה.
+ מתוך שיפועי הגרפים,
+ יחד עם נתוני הטמפרטורה והצמיגות,
+ חולצו ערכי קבוע בולצמן המפורטים בגוף הדוח.
 \end_layout
 
 \end_inset
@@ -1047,21 +918,21 @@ status open
 
 \begin_layout Standard
 בנוסף,
- בעזרת בצמיגות הנוזל 
+ בעזרת צמיגות הנוזל 
 \begin_inset Formula $\eta=0.89cP$
 \end_inset
 
- ובטמפרטורת החדר 
-\begin_inset Formula $T=25^{\circ}$
+ וטמפרטורת החדר 
+\begin_inset Formula $T=25^{\circ}C$
 \end_inset
 
  יכולנו לחלץ את קבוע בולצמן.
  קיבלנו את הערכים 
-\begin_inset Formula $k_{b}\approx\left(1.33\pm0.09\right)\times10^{-23}\text{J/K},\left(1.34\pm0.12\right)\times10^{-23}\text{J/K},\left(1.19\pm0.07\right)\times10^{-23}\text{J/K}$
+\begin_inset Formula $k_{B}\approx\left(1.33\pm0.09\right)\times10^{-23}\text{J/K},\left(1.34\pm0.12\right)\times10^{-23}\text{J/K},\left(1.19\pm0.07\right)\times10^{-23}\text{J/K}$
 \end_inset
 
 ,
- ואחוזי ההתאמה ביחס לערך המוכר בספרות של קבוע בולצמן הן 
+ ואחוזי ההתאמה ביחס לערך המוכר בספרות של קבוע בולצמן הם 
 \begin_inset Formula $96\%,97\%,86\%$
 \end_inset
 
@@ -1069,8 +940,9 @@ status open
 \end_layout
 
 \begin_layout Standard
-לאחר מכן עברנו לדגימות שנעשו בטמפרטורת שונות.
- ראשית וידאנו כי עדיין מתקיימת ההתאמה הלינארית לממוצע ריבוע ההעתק של החלקיקים,
+לאחר מכן עברנו לדגימות שנעשו בטמפרטורות שונות.
+ ראשית וידאנו כי תנועת החלקיקים עדיין בראונית,
+ וכי עדיין מתקיימת ההתאמה הלינארית לממוצע ריבוע ההעתק של החלקיקים,
  כפי שרואים באיור
 \family roman
 \series medium
@@ -1103,9 +975,23 @@ status open
 5
 \numeric off
 .
- קיבלנו התאמה יחסית טובה,
- למעט הגרף האחרון בו ייתכן שהיו התנגשויות בשולחן עליו הונח המיקרוסקופ,
- מה שגרם להפרעות.
+\end_layout
+
+\begin_layout Standard
+לסיום,
+ בחנו את תלות מקדם הדיפוזיה (לאחר נרמול לרדיוס החלקיק) בטמפרטורת המערכת,
+ כפי שמוצג באיור 6.
+ בעוד שהתחזית התיאורטית של מודל סטוקס-איינשטיין מנבאת עלייה של כ-
+\begin_inset Formula $55\%$
+\end_inset
+
+ בערך מקדם הדיפוזיה בטווח הטמפרטורות הנמדד (
+\begin_inset Formula $14-30^{\circ}C$
+\end_inset
+
+),
+ התוצאות מראות כי מקדם הדיפוזיה הנמדד בפועל נותר כמעט קבוע.
+ חוסר התאמה זה ומשמעותו יידונו בהרחבה בפרק הדיון.
 \end_layout
 
 \begin_layout Standard
@@ -1141,10 +1027,11 @@ status open
 \end_inset
 
  בעבור טמפרטורות שונות.
- כל גרף מתאים לדגימה הנעשתה בטמפרטורה שונה המצויינת ליד הגרף.
- הטמפרטורה המצוינת לצד כל אחת מהמדידות מציינת את הטמפרטורה ההתחלתית של התמיסה כפי שנמדדה באמצעות התרמומטר (ראו דיון בהמשך בנושא זה).
- ניתן לראות כי הגרף הכחול שהוא ממוצע ההעתק בריבוע על פני חלקיקים רבים,
- יחסית מתאים להתאמה הלינארית באדום.
+ כל גרף מתאים לדגימה הנעשתה בטמפרטורה שונה.
+ הטמפרטורה המצוינת לצד כל מדידה מציינת את הערך שנמדד בתרמומטר.
+ הקו הכחול מייצג את ממוצע ריבוע ההעתק על פני צבר החלקיקים בדגימה,
+ וניתן לראות כי הוא מתיישב היטב עם ההתאמה הליניארית (הקו האדום),
+ מה שמאשר את קיום התנועה הבראונית בכל תנאי הטמפרטורה שנבדקו.
 \end_layout
 
 \end_inset
@@ -1182,75 +1069,42 @@ status open
 \begin_inset Formula $D$
 \end_inset
 
- כתלות בטמפרטורת הדגימה.
- מאחר שמקדם הדיפוזיה תלוי גם ברדיוס החלקיק 
-\begin_inset Formula $a$
-\end_inset
-
-,
- נירמלנו כל חלקיק לרדיוס אחיד 
+ המנורמל כתלות בטמפרטורת הדגימה.
+ כדי לנטרל את תלות מקדם הדיפוזיה ברדיוס החלקיק,
+ הנתונים נורמלו לרדיוס אחיד של 
 \begin_inset Formula $a_{\mathrm{ref}}=1\,\mu m$
 \end_inset
 
- (כלומר הצגנו את הגודל 
+ (כלומר מוצג הגודל המנורמל 
 \begin_inset Formula $D\cdot a/a_{\mathrm{ref}}$
 \end_inset
 
- שאינו תלוי ברדיוס).
- כל נקודה כחולה היא חציון מקדמי הדיפוזיה של החלקיקים החופשיים בטמפרטורה נתונה;
+).
+ כל נקודה כחולה היא חציון מקדמי הדיפוזיה של החלקיקים בדגימה;
  שגיאת המדידה האנכית היא שגיאת החציון,
  והאופקית היא אי-הוודאות בטמפרטורה (
 \begin_inset Formula $\pm1^{\circ}C$
 \end_inset
 
 ).
- הקו הירוק הוא התאמה לסטוקס-איינשטיין 
-\begin_inset Formula $D=k_{B}T/6\pi\eta(T)a$
+ הקו הירוק מציג את הערך התיאורטי של מודל סטוקס-איינשטיין 
+\begin_inset Formula $D=\frac{k_{B}T}{6\pi\eta(T)a}$
 \end_inset
 
- עבור הערך המקובל של קבוע בולצמן,
- ללא פרמטרים חופשיים.
- ניתן לראות כי בעוד ההתאמה לסטוקס-אינשטיין עולה בכ-
-\begin_inset Formula $55\%$
-\end_inset
-
- בין 
-\begin_inset Formula $14^{\circ}C$
-\end_inset
-
- ל-
-\begin_inset Formula $30^{\circ}C$
-\end_inset
-
-,
- מקדם הדיפוזיה הנמדד נותר כמעט קבוע.
- הדבר מצביע על כך שטמפרטורת התמיסה לא הגיעה לערך שאליו כויל התרמומטר,
- אלא נותרה קרובה לטמפרטורת הסביבה.
- הסטייה מהקו הירוק בכל טמפרטורה שקולה ליחס 
-\begin_inset Formula $k_{B}/k^{\mathrm{acc}}_{B}$
+ עבור הערך המקובל של קבוע בולצמן.
+ הסטייה של המדידות מקו זה שקולה ליחס 
+\begin_inset Formula $k_{B}/k_{B}^{\mathrm{acc}}$
 \end_inset
 
 .
+ ניתן לראות חוסר התאמה בין התוצאות שנמדדו למודל,
+ והיא כנראה נובעת מחוסר דיוק בטמפרטורה המשוערת.
 \end_layout
 
 \end_inset
 
 
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Newpage pagebreak
-\end_inset
-
-
-\begin_inset Formula 
-\[
-\]
 
 \end_inset
 
@@ -1268,21 +1122,24 @@ status open
 \begin_layout Standard
 
 \series bold
-תנועה בראונית ויחס סטוקס-איינשטיין.
+תנועה בראונית ויחס סטוקס-איינשטיין
+\end_layout
 
-\series default
- מצאנו כי 
+\begin_layout Standard
+מצאנו כי ההעתק הממוצע בריבוע,
+ 
 \begin_inset Formula $\left\langle r^{2}\right\rangle $
 \end_inset
 
- לינארי בזמן (איור 3) וכי 
+,
+ לינארי בזמן (איור 3) וכי מתקיים היחס 
 \begin_inset Formula $D\propto1/a$
 \end_inset
 
- (איור 4):
- התנועה בראונית,
- היחס מתקיים,
- וקבוע בולצמן בטמפרטורת החדר תואם את הערך המקובל עד כדי 
+ (איור 4).
+ תוצאות אלו תומכות כי אכן מדובר בתנועה בראונית וכי היחס התיאורטי מתקיים.
+ כמו כן,
+ קבוע בולצמן שחולץ מהמדידות בטמפרטורת החדר תואם את הערך הספרותי המקובל עד כדי שגיאה יחסית של 
 \begin_inset Formula $5\text{-}15\%$
 \end_inset
 
@@ -1292,95 +1149,94 @@ status open
 \begin_layout Standard
 
 \series bold
-מהו הרדיוס האמיתי?
+אי-הוודאות בקביעת רדיוס החלקיק
+\end_layout
 
-\series default
- האתגר המרכזי היה להגדיר מהו 
-\begin_inset Quotes dld
-\end_inset
-
-באמת
-\begin_inset Quotes drd
-\end_inset
-
- רדיוס החלקיקים שמופיעים במיקרוסקופ:
- עקב עקיפה ודיפרקציה במיקרוסקופ החלקיק נראה כדורי בעל 
-\begin_inset Quotes dld
-\end_inset
-
-ליבה
-\begin_inset Quotes drd
-\end_inset
-
- בהירה שעטופה בטבעת/הילה,
- ולא ברור היכן נגמר החלקיק והיכן מתחילה האופטיקה.
- מכיוון ש-
+\begin_layout Standard
+האתגר המרכזי במערכת היה להגדיר מהו "באמת" הרדיוס של החלקיקים הנצפים.
+ עקב תופעות של עקיפה במיקרוסקופ (
+\lang english
+Diffraction
+\lang hebrew
+),
+ החלקיק נראה כדורי בעל "ליבה" בהירה העטופה בטבעות הילה,
+ כך שלא ניתן להגדיר במדויק היכן מסתיים החלקיק והיכן מתחילה התופעה האופטית.
+ כיוון שהקשר שנבחן הוא 
 \begin_inset Formula $D\propto1/a$
 \end_inset
 
 ,
- זה בדיוק המקור המרכזי לשגיאות ככה שהיסט של לערך 
-\begin_inset Formula $\sim0.3\,\mu m$
+ אי וודאות זו היא מקור מרכזי לשגיאות.
+ שגיאה של כ-
+\begin_inset Formula $0.3\,\mu m$
 \end_inset
 
- בקצה שקולה לכ-
+ ברדיוס החלקיק שקולה לשגיאה של כ-
 \begin_inset Formula $15\%$
 \end_inset
 
  בקבוע בולצמן.
- לדעתנו,
+ להערכתנו,
  זה מסביר את עיקר הפיזור שראינו:
- השגיאות משקפים פיזור פיזיקלי אמיתי ולא רעש סטטיסטי.
+ השגיאות משקפות פיזור פיזיקלי אמיתי בחילוץ גודל החלקיקים עקב מגבלות אופטיות,
+ ולא רק רעש סטטיסטי.
 \end_layout
 
 \begin_layout Standard
 
 \series bold
-טמפרטורה וצמיגות.
+טמפרטורה וצמיגות
+\end_layout
 
-\series default
- בטמפרטורות הנמוכות התקבלה הערכת-יתר של קבוע בולצמן ובגבוהות הערכת-חסר (איור 6;
+\begin_layout Standard
+בטמפרטורות הנמוכות התקבלה הערכת-יתר של קבוע בולצמן ואילו בגבוהות הערכת-חסר (איור 6;
  הסטייה מעקומת סטוקס-איינשטיין שווה ליחס 
-\begin_inset Formula $k_{B}/k^{\mathrm{acc}}_{B}$
+\begin_inset Formula $k_{B}/k_{B}^{\mathrm{acc}}$
 \end_inset
 
 ).
- לדעתנו מקורה בצמיגות,
- שבה תלוי קבוע בולצמן ישירות (
-\begin_inset Formula $k_{B}=6\pi\eta aD/T$
+ לדעתנו מקור הסטייה בטמפרטורה ובצמיגות,
+ שכן שגיאה בהם תוביל לשגיאה בהערכת קבוע בולצמן לפי הביטוי
+\begin_inset Formula 
+\begin{equation}
+k_{B}=\frac{6\pi\eta aD}{T}
+\end{equation}
+
 \end_inset
 
-):
- את הצמיגות חישבנו לפי הטמפרטורה שכיוונו בתרמומטר,
+
+\end_layout
+
+\begin_layout Standard
+הטמפרטורה הנמדדת התקבלה מקריאת התרמומטר,
  ולא לפי טמפרטורת הטיפה בפועל.
- אך מאחר שהמכשיר מעולם לא התייצב על הטמפרטורה שקבענו לו אלא תמיד 
-\begin_inset Quotes dld
+ עקב מגבלות טכניות,
+ המגע בין התרמומטר לפיסת הזכוכית עליו הייתה הטיפה לא היה טוב מספיק.
+ בנוסף,
+ מוליכות החום של זכוכית נמוכה יחסית.
+ מסיבות אלו,
+ סביר להניח כי במדידות הקרות התמיסה הייתה חמה יותר משמדדנו.
+ כלומר,
+ הטמפרטורה האמיתית 
+\begin_inset Formula $T$
 \end_inset
 
-שאף
-\begin_inset Quotes drd
-\end_inset
-
- לעברה רשמנו רק את הטמפרטורה ההתחלתית (לאחר שהתייצבה מספיק עד כדי 
-\begin_inset Formula $\pm0.01^{\circ}C$
-\end_inset
-
- ואת טמפרטורת היעד,
- במדידות הקרות התמיסה הייתה ככל הנראה חמה מהיעד שהגדרנו,
- ולכן הצמיגות האמיתית 
+ גבוהה יותר וכתוצאה מכך הצמיגות האמיתית 
 \begin_inset Formula $\eta\left(T\right)$
 \end_inset
 
- נמוכה יותר,
- כלומר הערכנו צמיגות גבוהה מדי ומכאן קבוע בולצמן גבוה;
- ובמדידות החמות קרה ההפך.
- התנועה עצמה נותרה בראונית בכל הטמפרטורות (איור 5),
- ולכן מדובר במגבלת בקרה שלנו והתרמומטר ולא בכשל פיזיקלי.
- אנו מניחים שמדידה 
-\series bold
-אמינה
-\series default
- ובזמן אמת של טמפרטורת התמיסה הייתה מאפשרת הערכת צמיגות מדויקת יותר וקבוע בולצמן קרוב יותר לערכו האמיתי.
+ נמוכה יותר.
+ שתי שגיאות אלו הובילו לשגיאה בחישוב קבוע בולצמן,
+ באופן שיצא גבוה מהצפוי;
+ ובמדידות החמות התרחש התהליך ההפוך.
+\end_layout
+
+\begin_layout Standard
+התנועה עצמה נותרה בראונית באופן מובהק בכל הטמפרטורות (איור 5),
+ ולכן אנו חושבים כי מדובר במגבלה טכנית של מערכת הבקרה והמדידה,
+ ולא בכשל פיזיקלי.
+ אנו מניחים שמדידה אמינה בזמן אמת של טמפרטורת התמיסה הייתה מאפשרת הערכת צמיגות מדויקת יותר,
+ ומובילה לקבוע בולצמן קרוב יותר לערכו בספרות.
  
 \end_layout
 
