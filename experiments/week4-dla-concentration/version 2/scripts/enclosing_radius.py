@@ -242,6 +242,12 @@ def deposit_mask(bgr, ref_gray, hi=HYST_HI, lo=HYST_LO):
     changed = darkened > CHANGE_THR
     m = (m & changed).astype(np.uint8)
     occ = occluder_mask(bgr)
+    # consistency rule: a pixel darkened > HOLE_DARK vs the reference is
+    # showing deposit and cannot be opaque bright glare -- the heated copper
+    # deposit (warm, bright-ish, smooth when defocused) matches the glare
+    # signature and was being hidden until hole-filling enclosed it, which
+    # stepped the enclosing circle discontinuously (run 2, t = 179.5 s)
+    occ = (occ & (darkened <= HOLE_DARK)).astype(np.uint8)
     m[occ > 0] = 0
     m[blue_grid_mask(bgr) > 0] = 0
     n, lab, stats, _ = cv2.connectedComponentsWithStats(m)
@@ -414,13 +420,35 @@ def measure(run, frames, ref, seed, px_per_mm, video_out=None):
             f = cv2.imread(str(p))
             base = deposit_mask(f, ref)
             tree = cluster_gate(base, seed, connector=occluder_mask(f))
-            if memory.any() and base.any():
-                n, lab = cv2.connectedComponents(base)
-                memd = cv2.dilate(memory, disk(8))
-                hit = np.unique(lab[(memd > 0) & (lab > 0)])
-                if len(hit):
-                    tree = (tree | (np.isin(lab, hit) & (base > 0))).astype(np.uint8)
+            if base.any():
+                n, lab, stats_c, cent = cv2.connectedComponentsWithStats(base)
+                keep = np.zeros(n, bool)
+                if memory.any():
+                    memd = cv2.dilate(memory, disk(8))
+                    for i in np.unique(lab[(memd > 0) & (lab > 0)]):
+                        keep[i] = True
+                # disc admission: a strong-cored component inside the aggregate
+                # disc joins the moment it APPEARS -- connectivity through a
+                # wide occluded corridor can lag by many frames and step the
+                # enclosing circle discontinuously (run 2, t = 179.5 s: a lobe
+                # on the graph paper, cut off by the heated-glare patch)
+                circ_ref = (tree | memory)
+                if circ_ref.any():
+                    ys0, xs0 = np.nonzero(circ_ref)
+                    rmax = float(np.hypot(xs0 - sx, ys0 - sy).max())
+                    for i in range(1, n):
+                        if keep[i] or stats_c[i, cv2.CC_STAT_AREA] < 200:
+                            continue
+                        if np.hypot(cent[i, 0] - sx, cent[i, 1] - sy) <= 1.15 * rmax + HUB_BRIDGE:
+                            keep[i] = True
+                if keep.any():
+                    tree = (tree | (keep[lab] & (base > 0))).astype(np.uint8)
             memory |= tree
+            # the deposit is permanent, so the ENCLOSING CIRCLE is computed
+            # over the memory (everything ever validly detected): monotone by
+            # construction.  A marginally-darkened frontier region otherwise
+            # flickers around threshold and oscillates R by ~0.8 mm (run 2,
+            # t = 187-199 s).  M / Rg stay current-frame quantities.
             ys, xs = np.nonzero(tree)
             if len(xs) < 5:
                 rows.append((t, 0, 0, 0, 0, 0, 0, 0, 0, 0))
@@ -430,9 +458,10 @@ def measure(run, frames, ref, seed, px_per_mm, video_out=None):
             d = np.hypot(xs - sx, ys - sy)
             cx_m, cy_m = xs.mean(), ys.mean()
             rg = float(np.sqrt(((xs - cx_m) ** 2 + (ys - cy_m) ** 2).mean()))
-            ccx, ccy, cr = enclosing_circle(tree)
-            edge = int((xs.min() <= EDGE_PAD) or (ys.min() <= EDGE_PAD) or
-                       (xs.max() >= W - 1 - EDGE_PAD) or (ys.max() >= H - 1 - EDGE_PAD))
+            ccx, ccy, cr = enclosing_circle(memory)
+            mys, mxs = np.nonzero(memory)
+            edge = int((mxs.min() <= EDGE_PAD) or (mys.min() <= EDGE_PAD) or
+                       (mxs.max() >= W - 1 - EDGE_PAD) or (mys.max() >= H - 1 - EDGE_PAD))
             rows.append((t, int(tree.sum()), rg, float(np.percentile(d, 95)),
                          float(d.max()), ccx, ccy, cr, edge,
                          int(cv2.connectedComponents(tree)[0] - 1)))

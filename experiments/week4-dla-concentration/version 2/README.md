@@ -36,12 +36,12 @@ segmentation does not transfer to them as-is; they are not analysed here.
 | nucleation t₀ | 7 s | 4 s | 6 s | 3 s |
 | early radius law β | 0.35 | 0.32 | 0.31 | 0.37 |
 | late front (linear) | ≈27 µm/s | ≈25 µm/s | ≈29 µm/s | ≈23 µm/s |
-| kinetic M∝Rg^D | 1.91 | 1.99 | (2.33 — blur-biased) | 2.07 |
-| **fractal D (stills)** | **1.88 ± 0.04** | **1.94 ± 0.06** | **1.89 ± 0.03** | **1.88 ± 0.03** |
+| kinetic M∝Rg^D | 1.91 | 2.09 | (2.33 — blur-biased) | 2.07 |
+| **fractal D (stills)** | **1.88 ± 0.04** | **1.97 ± 0.08** | **1.89 ± 0.03** | **1.88 ± 0.03** |
 | first edge contact | 198 s | 149 s | 139 s | 212 s |
-| final enclosing R (lower bound) | 11.7 mm | 9.8 mm | 11.1 mm | 7.5 mm |
+| final enclosing R (lower bound) | 11.9 mm | 10.2 mm | 11.1 mm | 7.5 mm |
 
-**The finding:** at 0.15–0.56 the fractal dimension is **flat at D ≈ 1.9** —
+**The finding:** at 0.15–0.56 the measured dimension is **flat at D ≈ 1.9** —
 the morphology has saturated in the dense/compact regime, and every run shows
 the dense-branching signature of a **constant-velocity envelope** after an
 early transient (the β values fit the transient; the honest late-time model is
@@ -49,6 +49,24 @@ linear R(t)). Nucleation is near-instant. Combined with week 5
 (0.02 → 0.06: D = 1.54 → 1.97), the full series reads: D rises steeply from
 1.54 at 0.02, crosses the 2D-DLA 1.71 around ~0.03–0.04, and plateaus at ≈1.9
 from 0.06 through 0.56.
+
+**How to quote D (window-scan verdict, `figures/windowscan_*.png` +
+`scripts/fractalD_window_scan.py`).** The measured D is *window-stable* in
+every run — refitting over a grid of physical windows (s_min 0.08–0.4 mm ×
+s_max 0.6–2.5 mm) moves it only within 1.84–1.94, with no drift toward 1.71;
+a 1-px mask erosion shifts it ≤ 0.05; and the mass-radius occlusion correction
+on/off is indistinguishable. That rules out fit-window choice, edge dilation
+and correction residuals as sources of the offset above 1.71. But the sharper
+diagnostic — the local slope d(logN)/d(logs) — shows a true scale-free plateau
+only for week 5's sparse 0.02% cluster (D ≈ 1.6, the control proving the
+pipeline reads sub-1.71 when the morphology is sparse). For 0.04–0.56 the
+local slope declines with scale (≈1.95 at 0.1 mm → ≈1.8 at 0.5–0.6 mm) without
+settling before finite-size noise: the quoted values are an **effective
+dimension at the accessible 0.1–1 mm scales of a morphology still crossing
+over from compact toward fractal** — consistent with migration/convection-
+driven dense-branching growth (independently evidenced by the linear fronts),
+with the asymptotic regime unreached at these cluster sizes. Branch widths
+(distance-transform ridge): 0.16 / 0.61 / 1.32 / 0.70 mm for runs 1–4.
 
 **Kinetic vs static D — a real distinction, not a bug.** Run 4 (clean) gives
 kinetic M∝Rg^2.07 along the growth trajectory but static D = 1.88 from the
@@ -89,6 +107,22 @@ effective current density differ).
 5. **Multi-frame calibration** — the grid strip can be unreadable in a single
    frame; several sample times are tried (and the base-peak window widened to
    20–70 px for this week's zoom).
+6. **Continuity of the enclosing circle** (v2.1, after review caught steps in
+   R(t)): (a) a pixel darkened > 40 gray levels cannot be opaque glare — the
+   heated copper deposit shares the glare's colour+smoothness signature and a
+   whole crescent was being hidden until hole-filling enclosed it, stepping R
+   at run-2 t = 179.5 s; (b) a strong-cored component inside the aggregate
+   disc is admitted the moment it appears (connectivity through occluded
+   corridors can lag); (c) the circle and the edge flag are computed over the
+   cluster MEMORY — the deposit is permanent, so R is non-decreasing by
+   construction, and marginally-darkened frontier regions can no longer
+   oscillate it. Result: zero R decreases in all four runs; the single
+   remaining step (+0.8 mm, run 2 t = 187.5 s, inside the edge-censored
+   lower-bound regime) is a first-detection event of a semi-transparent front
+   measured at darkening 31 (< the 40 threshold) two frames earlier — steps in
+   the faded regime are occlusion/detection reveals, not growth events.
+   (A 40/25 darkening hysteresis was tried and rejected: it floods the
+   drop-shadow ring, inflating the focused run's mask by 42%.)
 
 Verification battery as in week 5, per run: R(t)/M(t) monotone (worst R dip
 0.3 mm, on the defocused run 2), zero mass only before t₀, overlay stills

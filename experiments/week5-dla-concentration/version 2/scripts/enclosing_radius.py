@@ -57,7 +57,7 @@ FIGS = ROOT / "figures"
 VIDS = ROOT / "overlays"   # not "videos/": .gitignore drops mp4s there
 VIDEO_DIR = Path(os.environ.get(
     "WEEK5_VIDEO_DIR",
-    r"C:\dev\brownian-motion\experiments\week-5-last-measurements-with-shlomo"))
+    r"C:\dev\brownian-motion\experiments\week5-dla-concentration\raw-videos"))
 
 FPS = 60000 / 1001
 SAMPLE_FPS = 2.0            # measurement cadence [Hz]
