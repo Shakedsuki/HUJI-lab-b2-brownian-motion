@@ -1,0 +1,28 @@
+[
+ {
+  "tag": "run1",
+  "conc": 0.02,
+  "D_box": 1.606,
+  "dD_box": 0.021,
+  "D_massradius": 1.332,
+  "dD_massradius": 0.006,
+  "note": "D_mr unreliable: sparse anisotropic cluster"
+ },
+ {
+  "tag": "run2",
+  "conc": 0.04,
+  "D_box": 1.842,
+  "dD_box": 0.013,
+  "D_massradius": 1.856,
+  "dD_massradius": 0.007
+ },
+ {
+  "tag": "run3",
+  "conc": 0.06,
+  "D_box": 1.88,
+  "dD_box": 0.007,
+  "D_massradius": 1.97,
+  "dD_massradius": 0.004,
+  "note": "D_mr biased by dark central drop in raw mass"
+ }
+]
