@@ -280,6 +280,7 @@ def measure_run(run, k0=0, k1=None):
     H, W = ref.shape
     k1 = len(frames) if k1 is None else min(k1, len(frames))
 
+    hulls = {}
     if k0 == 0:
         acc = np.zeros((H, W), np.uint8)
         raw1 = raw2 = None
@@ -322,6 +323,8 @@ def measure_run(run, k0=0, k1=None):
         hull = cv2.convexHull(pts)               # minEnclosingCircle is O(n) but
         (cx, cy), R = cv2.minEnclosingCircle(    # slow on 10^5 pts; hull ~ 10^2
             hull.reshape(-1, 2).astype(np.float32))
+        hulls[k] = hull.reshape(-1, 2).tolist()  # farthest-point queries for ANY
+                                                 # fixed centre need only the hull
         rg = float(np.sqrt(((xs - xs.mean()) ** 2 + (ys - ys.mean()) ** 2).mean()))
         d = np.hypot(xs - seed[0], ys - seed[1])
         clipped = int((xs.min() <= EDGE_PX) or (ys.min() <= EDGE_PX) or
@@ -337,25 +340,45 @@ def measure_run(run, k0=0, k1=None):
     parts.mkdir(exist_ok=True)
     with open(parts / f"{tag}_{k0:05d}.csv", "w", newline="") as fh:
         csv.writer(fh).writerows(rows)
+    with open(parts / f"hull_{tag}_{k0:05d}.json", "w") as fh:
+        json.dump(hulls, fh)
     print(f"[{tag}] measured {k0}..{k1}", flush=True)
 
 
 def merge_run(run):
-    """Concatenate part CSVs -> data/radius_<tag>.csv + circles json."""
+    """Concatenate part CSVs -> data/radius_<tag>.csv + circles json.
+
+    The published circle uses the FIXED per-run centre (meta "center_fixed",
+    the enclosing-circle centre of the final deposit): R_fix(k) = distance
+    from that centre to the farthest hull vertex of frame k.  The centre
+    never moves during a run (it marks the deposition site)."""
     tag = run["tag"]
-    parts = sorted((TMP / "parts").glob(f"{tag}_*.csv"))
+    meta = json.load(open(DATA / f"meta_{tag}.json"))
+    Cx, Cy = meta.get("center_fixed", meta["seed"])
+    hulls = {}
+    for p in sorted((TMP / "parts").glob(f"hull_{tag}_*.json")):
+        hulls.update(json.load(open(p)))
+    parts = sorted((TMP / "parts").glob(f"{tag}_[0-9]*.csv"))
     allrows = {}
     for p in parts:
         with open(p) as fh:
             for row in csv.reader(fh):
                 if row:
                     allrows[int(row[0])] = [float(v) for v in row[1:]]
-    circ = {k: (v[3], v[4], v[2]) for k, v in allrows.items() if v[2] > 0}
+    for k, v in allrows.items():
+        h = hulls.get(str(k))
+        if h and v[2] > 0:
+            pts = np.asarray(h, float)
+            rfix = float(np.hypot(pts[:, 0] - Cx, pts[:, 1] - Cy).max())
+        else:
+            rfix = 0.0
+        v.append(rfix)
+    circ = {k: (Cx, Cy, v[-1]) for k, v in allrows.items() if v[-1] > 0}
     with open(DATA / f"radius_{tag}.csv", "w", newline="") as fh:
         wr = csv.writer(fh)
         wr.writerow(["t_s", "M_px", "Renc_px", "cx_px", "cy_px",
                      "Rg_px", "R95_px", "clipped", "npix", "dx_px", "dy_px",
-                     "moved"])
+                     "moved", "Rfix_px"])
         for k in sorted(allrows):
             wr.writerow(allrows[k])
     with open(TMP / f"circles_{tag}.json", "w") as fh:
@@ -599,7 +622,12 @@ def radius_figure():
         rows = np.genfromtxt(DATA / f"radius_{tag}.csv", delimiter=",", names=True)
         meta = json.load(open(DATA / f"meta_{tag}.json"))
         mm = meta["mm_per_px"]
-        t, R, M, cl = rows["t_s"], rows["Renc_px"], rows["M_px"], rows["clipped"]
+        t, R, M, cl = rows["t_s"], rows["Rfix_px"], rows["M_px"], rows["clipped"]
+        # NOTE: the displayed circle radius is about the FIXED centre (offset
+        # from the nucleation point), which adds a constant at early times and
+        # breaks the pure power law -- beta is therefore fitted on the
+        # minimum-enclosing radius Renc, as published
+        Rfit = rows["Renc_px"]
         mv = rows["moved"] if "moved" in rows.dtype.names else np.zeros_like(cl)
         good = (R > 0) & (cl == 0) & (mv == 0) & hampel_inliers(R)
         clipped = (R > 0) & (cl == 1) & (mv == 0)
@@ -612,9 +640,9 @@ def radius_figure():
         Mref = np.percentile(M[M > 0], 98)
         w = good & (M > 0.08 * Mref) & (M < 0.75 * Mref) & (t - t0 > 0)
         if w.sum() >= 6:
-            beta, dbeta, b = fit_loglog(t[w] - t0, R[w])
+            beta, dbeta, b = fit_loglog(t[w] - t0, Rfit[w])
             tau = np.geomspace((t[w] - t0).min(), (t[w] - t0).max(), 50)
-            axs[1].loglog(t[w] - t0, R[w] * mm, ".", ms=4, color=f"C{i}",
+            axs[1].loglog(t[w] - t0, Rfit[w] * mm, ".", ms=4, color=f"C{i}",
                           label=f"{run['label']}: β = {beta:.2f} ± {dbeta:.2f}")
             axs[1].loglog(tau, np.exp(b) * tau ** beta * mm, "-", lw=1,
                           color=f"C{i}")
@@ -622,11 +650,11 @@ def radius_figure():
                                 beta=float(beta), dbeta=float(dbeta),
                                 R_final_mm=float(np.max(R[good]) * mm)))
     axs[0].set_xlabel("t [s]"); axs[0].set_ylabel("bounding-circle radius R [mm]")
-    axs[0].set_title("R(t) — minimum enclosing circle of the deposit\n"
+    axs[0].set_title("R(t) — bounding circle about the fixed deposition centre\n"
                      "(× = deposit clipped by frame edge: lower bound)")
     axs[0].legend(fontsize=9)
     axs[1].set_xlabel("t − t₀ [s]"); axs[1].set_ylabel("R [mm]")
-    axs[1].set_title("growth window, log–log:  R ∝ (t−t₀)^β")
+    axs[1].set_title("growth window, log–log:  R ∝ (t−t₀)^β  (min-enclosing R)")
     axs[1].legend(fontsize=9)
     fig.tight_layout()
     fig.savefig(FIGS / "radius_vs_time_all.png", dpi=130); plt.close(fig)
