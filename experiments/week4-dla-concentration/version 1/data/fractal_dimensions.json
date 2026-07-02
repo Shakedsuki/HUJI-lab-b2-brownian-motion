@@ -1,0 +1,34 @@
+[
+ {
+  "tag": "run1",
+  "conc": 0.56,
+  "D_box": 1.9,
+  "dD_box": 0.007,
+  "D_massradius": 2.711,
+  "mr_note": "unreliable: halo+compact"
+ },
+ {
+  "tag": "run2",
+  "conc": 0.45,
+  "D_box": 1.905,
+  "dD_box": 0.009,
+  "D_massradius": 1.779,
+  "mr_note": "unreliable: defocus"
+ },
+ {
+  "tag": "run3",
+  "conc": 0.3,
+  "D_box": 1.876,
+  "dD_box": 0.007,
+  "D_massradius": 2.387,
+  "mr_note": "unreliable: halo+compact"
+ },
+ {
+  "tag": "run4",
+  "conc": 0.15,
+  "D_box": 1.847,
+  "dD_box": 0.007,
+  "D_massradius": 2.018,
+  "mr_note": "unreliable: halo+compact"
+ }
+]
