@@ -24,7 +24,7 @@ Instructor deliverables:
 |---|---|---|---|
 | morphology | sparse 3-arm dendrite | dense radial | near-compact disc |
 | nucleation t₀ | 13 s | 12 s | 31 s |
-| radius law (early) | R ∝ t^**0.51±0.03** | R ∝ t^0.37±0.01 | power law fails; late front **linear, ≈26 µm/s** |
+| radius law | R ∝ t^**0.51±0.03** (throughout) | early t^0.37, then **linear 12.0 µm/s** (150–600 s, R²=0.997) | early transient, then **linear 18.6 µm/s** (150–418 s, R²=0.998) |
 | mass law α (M ∝ t^α) | 0.87 | 0.75 | 0.53 |
 | kinetic D (M ∝ Rg^D) | 1.57 ± 0.02 | 1.83 ± 0.02 | 1.99 ± 0.05 |
 | **fractal D (stills)** | **1.54 ± 0.09** | **1.89 ± 0.05** | **1.97 ± 0.21** |
@@ -35,8 +35,11 @@ Instructor deliverables:
 rate. At 0.02 the growth is DLA-like — anisotropic branches, R ∝ t^½ (DLA
 predicts t^(1/D)), D well below the 2D-DLA 1.71. With increasing concentration
 D rises through ≈1.9 and saturates at ≈2, and the envelope crosses over to the
-**constant-velocity compact front** of the dense-branching regime — run 3's
-R(t) is linear over its last 500 s. Week 3 (0.29%, same voltage) gave
+**constant-velocity front** of the dense-branching regime — already at 0.04
+the late R(t) is cleanly linear (12.0 µm/s), and at 0.06 faster still
+(18.6 µm/s); only the 0.02 run stays diffusion-like (t^0.5) throughout.
+Front speed rises monotonically with concentration through week 4's runs
+(22–30 µm/s at 0.15–0.56). Week 3 (0.29%, same voltage) gave
 D = 1.65 ± 0.04, between the trend's low end and its plateau.
 
 The quoted fractal D per concentration is the mean over

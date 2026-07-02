@@ -35,7 +35,7 @@ segmentation does not transfer to them as-is; they are not analysed here.
 |---|---|---|---|---|
 | nucleation t₀ | 7 s | 4 s | 6 s | 3 s |
 | early radius law β | 0.35 | 0.32 | 0.31 | 0.37 |
-| late front (linear) | ≈27 µm/s | ≈25 µm/s | ≈29 µm/s | ≈23 µm/s |
+| late front (linear, pre-edge fit, R²>0.975) | 28.2 µm/s | 30.3 µm/s | 23.1 µm/s | 22.3 µm/s |
 | kinetic M∝Rg^D | 1.91 | 2.09 | (2.33 — blur-biased) | 2.07 |
 | **fractal D (stills)** | **1.88 ± 0.04** | **1.97 ± 0.08** | **1.89 ± 0.03** | **1.88 ± 0.03** |
 | first edge contact | 198 s | 149 s | 139 s | 212 s |
@@ -44,7 +44,7 @@ segmentation does not transfer to them as-is; they are not analysed here.
 **The finding:** at 0.15–0.56 the measured dimension is **flat at D ≈ 1.9** —
 the morphology has saturated in the dense/compact regime, and every run shows
 the dense-branching signature of a **constant-velocity envelope** after an
-early transient (the β values fit the transient; the honest late-time model is
+early transient (front speeds fit strictly before first frame-edge contact) (the β values fit the transient; the honest late-time model is
 linear R(t)). Nucleation is near-instant. Combined with week 5
 (0.02 → 0.06: D = 1.54 → 1.97), the full series reads: D rises steeply from
 1.54 at 0.02, crosses the 2D-DLA 1.71 around ~0.03–0.04, and plateaus at ≈1.9
