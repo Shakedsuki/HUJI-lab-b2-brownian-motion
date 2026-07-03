@@ -225,7 +225,7 @@ def main():
             for frac in FRAME_FRACS:
                 t_s = frac * t_last
                 img = grab(path, t_s, tmp)
-                wire = er.wire_mask(img)
+                wire = er.occluder_mask(img)
                 for hi in THRESH_SCAN:
                     mask = disc_gate(
                         er.deposit_mask(img, ref, hi=hi, lo=er.HYST_LO), seed)

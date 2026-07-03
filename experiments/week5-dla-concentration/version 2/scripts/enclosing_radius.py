@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Week 5 - DLA vs CuSO4 concentration: enclosing-circle radius R(t),
-overlay videos, and growth kinetics.
+overlay videos, and growth kinetics.  v2.2 pipeline (developed and validated
+on week 4): absolute-darkening pathway, interior hole filling, glare occluder
+with darkening override, permanent-memory circle with disc admission, and the
+speed-capped envelope estimator (reported R rise <= 90 um/s; raw envelope in
+circ_R_raw_px; growth-law fits on the raw envelope).
 
 Three depositions were recorded at CuSO4 concentrations 0.02 / 0.04 / 0.06
-(same cell, ~12 V, central cathode wire), 1280x720 @ 59.94 fps, 11-16 min each.
+(same cell, 12 V, central cathode wire), 1280x720 @ 59.94 fps, 11-16 min each.
 Deliverables (per the instructor):
 
   1. enclosing-circle radius vs time for every sample,
@@ -23,8 +27,7 @@ cluster gate) with two week-5 fixes:
     drift over the paper can never masquerade as growth.
 
 The mm-graph paper in frame gives a real px->mm calibration (autocorrelation
-of the blue-line profile; ~34.6 px/mm, identical for the three runs since the
-camera was not moved).  R(t) is reported in mm.
+of the blue-line profile; ~48-50 px/mm, measured per run).  R(t) is reported in mm.
 
 The enclosing circle is cv2.minEnclosingCircle of the seed-connected deposit.
 Frames where the deposit touches the frame border are flagged (`edge`): from
@@ -60,6 +63,12 @@ VIDEO_DIR = Path(os.environ.get(
     r"C:\dev\brownian-motion\experiments\week5-dla-concentration\raw-videos"))
 
 FPS = 60000 / 1001
+VCAP_UMPS = 90              # continuity prior on the reported enclosing radius:
+                            # the front cannot advance faster than ~30 um/s
+                            # (fastest measured, run 2); the reported R may rise
+                            # at most 3x that, so a batch detection reveal
+                            # becomes a maximal-slope ramp, never a step.  The
+                            # uncapped envelope is kept in circ_R_raw_px.
 SAMPLE_FPS = 2.0            # measurement cadence [Hz]
 REF_N = 12                  # frames median-ed into the static reference
 OVERLAY_FPS = 30            # playback rate of the overlay video (x15 real time)
@@ -74,6 +83,16 @@ H_WIRE_LO, H_WIRE_HI = 25, 95   # week-5 fix: green only, spare the copper hues
 WIRE_DILATE = 18
 BLUE_THR = 10               # B - (G+R)/2 above this = blue grid paper, not deposit
 MIN_SIZE = 10
+HOLE_DARK = 40              # week-4 addition: enclosed regions darkened by more
+                            # than this (gray levels vs reference) are deposit
+                            # interior.  The filled high-concentration deposits
+                            # are far wider than the flat-field scale, so their
+                            # interiors have no LOCAL contrast and the week-5
+                            # hysteresis alone leaves holes (measured: interiors
+                            # darken 55-92, the shadow/halo zone 15-40).  Holes
+                            # are identified topologically (enclosed by deposit),
+                            # so the boundary drop-shadow -- which can darken as
+                            # much as the interior -- stays excluded.
 HUB_BRIDGE = 30
 GAP_CLOSE = 4
 CONNECT_NEAR = 24           # px; wire conducts connectivity only this close to deposit
@@ -108,9 +127,9 @@ def grid_pitch_px_per_mm(bgr, strip_w=130, max_lag=400):
     top = min(max_lag, len(ac) - 2)
     peaks = [l for l in range(6, top)
              if ac[l] > ac[l - 1] and ac[l] >= ac[l + 1] and ac[l] > 0.05]
-    base = [l for l in peaks if 20 <= l <= 50]
+    base = [l for l in peaks if 20 <= l <= 70]
     if not base:
-        raise RuntimeError("no grid-pitch peak in the 20-50 px window")
+        raise RuntimeError("no grid-pitch peak in the 20-70 px window")
     pitch = float(base[0])
     lags, ks = [], []
     for k in range(1, 9):
@@ -144,6 +163,9 @@ def wire_mask(bgr, dilate=WIRE_DILATE):
     Hue band restricted to green so the copper-brown deposit is spared."""
     hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
     h, s, v = hsv[..., 0], hsv[..., 1], hsv[..., 2]
+    # week 5: no lamp, no tint on the deposit -- the original validated v > 60
+    # wire exclusion applies (week 4 needs v > 185 because its lamp glow tints
+    # the deposit into the wire hue band)
     w = ((s > S_WIRE) & (h > H_WIRE_LO) & (h < H_WIRE_HI) & (v > 60)).astype(np.uint8)
     n, lab, stats, _ = cv2.connectedComponentsWithStats(w)
     out = np.zeros_like(w)
@@ -151,6 +173,51 @@ def wire_mask(bgr, dilate=WIRE_DILATE):
         if stats[i, cv2.CC_STAT_AREA] >= 400:
             out[lab == i] = 1
     return cv2.dilate(out, disk(dilate)) if dilate else out
+
+
+def glare_mask(bgr, dilate=6):
+    """The wire's out-of-focus glow (week 4: it sprawls over the deposit).
+    Physically the same occluder as the wire.  Separation measured on run 1/2
+    late frames: glare s>=136, v>=151 (p10); paper s<=69; the dark deposit
+    fails v>140.  Hue does NOT separate (both warm) and is only sanity-capped."""
+    hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
+    h, sat, v = hsv[..., 0], hsv[..., 1], hsv[..., 2]
+    # out-of-focus glow is SMOOTH; brightly-lit deposit passes the same HSV
+    # cut but is textured (measured local-std: glare p50 2.1 / p90 5.5,
+    # lit deposit p10 5-6, p50 10-13)
+    gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY).astype(np.float32)
+    mu = cv2.boxFilter(gray, -1, (9, 9))
+    mu2 = cv2.boxFilter(gray * gray, -1, (9, 9))
+    smooth = np.sqrt(np.maximum(mu2 - mu * mu, 0)) < 4.5
+    g = ((sat > 110) & (v > 140) & (h < 40) & smooth).astype(np.uint8)
+    n, lab, stats, _ = cv2.connectedComponentsWithStats(g)
+    out = np.zeros_like(g)
+    for i in range(1, n):
+        if stats[i, cv2.CC_STAT_AREA] >= 400:
+            out[lab == i] = 1
+    return cv2.dilate(out, disk(dilate)) if dilate else out
+
+
+def occluder_mask(bgr):
+    """Everything that hides the deposit from the camera: wire + its glow."""
+    return (wire_mask(bgr) | glare_mask(bgr)).astype(np.uint8)
+
+
+def static_wire_zone(bgr, dilate=12):
+    """Where the wire lies at the start of the run (green-hued, any
+    brightness), dilated to cover its wobble.  Excluded from the ENVELOPE:
+    the dark wire body passes the see-through tint rule by design, and its
+    slight movements otherwise shed changed-vs-reference edge slivers that
+    read as strong deposit."""
+    hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
+    h, sat = hsv[..., 0], hsv[..., 1]
+    w = ((sat > 80) & (h > H_WIRE_LO) & (h < H_WIRE_HI)).astype(np.uint8)
+    n, lab, stats, _ = cv2.connectedComponentsWithStats(w)
+    out = np.zeros_like(w)
+    for i in range(1, n):
+        if stats[i, cv2.CC_STAT_AREA] >= 400:
+            out[lab == i] = 1
+    return cv2.dilate(out, disk(dilate))
 
 
 def blue_grid_mask(bgr):
@@ -173,7 +240,7 @@ def _flatfield_bg(gray, sigma=FLAT_SIGMA, scale=0.25):
     return cv2.resize(sb, (gray.shape[1], gray.shape[0]), interpolation=cv2.INTER_LINEAR)
 
 
-def deposit_mask(bgr, ref_gray, hi=HYST_HI, lo=HYST_LO):
+def deposit_mask(bgr, ref_gray, hi=HYST_HI, lo=HYST_LO, return_strong=False, static_occ=None):
     """New dark deposit = flat-field-dark AND darkened-since-start AND
     not-wire AND not-blue-grid, despeckled.
 
@@ -186,12 +253,53 @@ def deposit_mask(bgr, ref_gray, hi=HYST_HI, lo=HYST_LO):
     gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY).astype(np.float32)
     bg = _flatfield_bg(gray)
     score = 1.0 - gray / (bg + 1e-6)
-    m = _hysteresis(score, hi, lo)
     offset = np.median(gray) - np.median(ref_gray)
-    changed = (ref_gray - (gray - offset)) > CHANGE_THR
+    darkened = ref_gray - (gray - offset)
+    # week-4 defocus pathway: an out-of-focus deposit is a SMOOTH dark blob --
+    # blur destroys local contrast (the hysteresis sees only its sharp fringe,
+    # which mis-seeded and mis-centred run 1's early circle) but not absolute
+    # darkening: deposit darkens >= 40-90 gray levels, shadows/halo 15-40.
+    m = (_hysteresis(score, hi, lo) | (darkened > HOLE_DARK)).astype(np.uint8)
+    changed = darkened > CHANGE_THR
     m = (m & changed).astype(np.uint8)
-    m[wire_mask(bgr) > 0] = 0
-    m[blue_grid_mask(bgr) > 0] = 0
+    occ = occluder_mask(bgr)
+    # consistency rule: a pixel darkened > HOLE_DARK vs the reference is
+    # showing deposit and cannot be opaque bright glare -- the heated copper
+    # deposit (warm, bright-ish, smooth when defocused) matches the glare
+    # signature and was being hidden until hole-filling enclosed it, which
+    # stepped the enclosing circle discontinuously (run 2, t = 179.5 s)
+    occ = (occ & (darkened <= HOLE_DARK)).astype(np.uint8)
+    grid_all = blue_grid_mask(bgr)
+    m[occ > 0] = 0
+    m[grid_all > 0] = 0
+    # strong-evidence mask: pixels unambiguously deposit (well past every
+    # measured shadow/halo level: shadows reach score 0.21 / darkening 40,
+    # deposit cores >= 0.38 / 55).  The ENVELOPE (enclosing circle) is
+    # measured on this mask only -- every R(t) step traced in review came
+    # from marginal evidence entering in batches (weak-score floods,
+    # hole-fill median flips, threshold-hovering fronts), none of which can
+    # touch a strong-only boundary that advances ~1 px/frame with the front.
+    # per-pixel UNAMBIGUOUS deposit (envelope fuel): measured shadow/halo
+    # tops out at score 0.21 / darkening ~50; deposit cores are >= 0.38 / 55.
+    # The aerial wire's shadow band crosses score 0.15 / darkening 40
+    # transiently, which with permanent memory ratchets a false streak.
+    strong = ((score > STRONG_CORE) | (darkened > 50)) & changed
+    strong = strong.astype(np.uint8)
+    strong[occ > 0] = 0
+    # envelope-only rules: (a) grid lines yield to strong darkening (else a
+    # lobe over the paper is shredded into sub-admission fragments and enters
+    # in one batch when they merge -- run 2, t=152 s); (b) the wire's initial
+    # position is excluded statically (the dark wire body passes the v>185
+    # tint rule, and its wobble sheds 'changed' edge slivers -- run 2, t=28 s)
+    strong[(grid_all & (darkened <= HOLE_DARK)) > 0] = 0
+    if static_occ is not None:
+        strong[static_occ > 0] = 0
+    ns, labs, stats_s, _ = cv2.connectedComponentsWithStats(strong)
+    strong_out = np.zeros_like(strong)
+    for i in range(1, ns):
+        if stats_s[i, cv2.CC_STAT_AREA] >= MIN_SIZE:
+            strong_out[labs == i] = 1
+
     n, lab, stats, _ = cv2.connectedComponentsWithStats(m)
     out = np.zeros_like(m)
     for i in range(1, n):
@@ -200,6 +308,25 @@ def deposit_mask(bgr, ref_gray, hi=HYST_HI, lo=HYST_LO):
         sel = lab == i
         if score[sel].max() >= STRONG_CORE:
             out[sel] = 1
+    # fill strongly-darkened interior regions of the filled deposits.  A
+    # non-mask region counts as OUTSIDE only if it contains genuinely
+    # undarkened paper; regions with no bright pixels are deposit interior
+    # (this also keeps bubbles and the bright glare corridor excluded, and --
+    # unlike border-based hole filling -- works where the deposit overflows
+    # the frame, so an interior can touch the border through off-frame
+    # deposit).  4-connectivity so a diagonal gap cannot leak a hole out.
+    dark = ref_gray - (gray - offset)
+    inv = (out == 0).astype(np.uint8)
+    ninv, labi, stats_i, _ = cv2.connectedComponentsWithStats(inv, connectivity=4)
+    for i in range(1, ninv):
+        if stats_i[i, cv2.CC_STAT_AREA] < 200:
+            continue                     # specks: not worth filling
+        sel = labi == i
+        if np.median(dark[sel]) < 15:
+            continue                     # mostly undarkened paper: outside
+        out[sel & (dark > HOLE_DARK)] = 1
+    if return_strong:
+        return out, strong_out
     return out
 
 
@@ -331,6 +458,15 @@ def measure(run, frames, ref, seed, px_per_mm, video_out=None):
     sx, sy = seed
     H, W = ref.shape
     memory = np.zeros_like(ref, dtype=np.uint8)
+    env = np.zeros_like(ref, dtype=np.uint8)      # unambiguous-pixel envelope
+    prev_rep = None                               # last reported (capped) R
+    # week 5: the wire lies exposed over the paper for the whole run, and its
+    # moving shadow occasionally darkens past the deposit threshold next to
+    # the NW branch -- with permanent memory this RATCHETS a false streak
+    # leftward along the wire (run 1: final R inflated 9.8 -> 11.7 mm).  The
+    # wire's initial corridor is excluded statically and conducts connectivity
+    # like the other occluders.
+    szone = static_wire_zone(cv2.imread(str(frames[0][1])), dilate=20)
     enc = None
     if video_out is not None:
         enc = subprocess.Popen(
@@ -343,29 +479,57 @@ def measure(run, frames, ref, seed, px_per_mm, video_out=None):
     try:
         for t, p in frames:
             f = cv2.imread(str(p))
-            base = deposit_mask(f, ref)
-            tree = cluster_gate(base, seed, connector=wire_mask(f))
-            if memory.any() and base.any():
-                n, lab = cv2.connectedComponents(base)
-                memd = cv2.dilate(memory, disk(8))
-                hit = np.unique(lab[(memd > 0) & (lab > 0)])
-                if len(hit):
-                    tree = (tree | (np.isin(lab, hit) & (base > 0))).astype(np.uint8)
+            base, base_strong = deposit_mask(f, ref, return_strong=True,
+                                             static_occ=szone)
+            base[szone > 0] = 0
+            tree = cluster_gate(base, seed,
+                                connector=(occluder_mask(f) | szone))
+            if base.any():
+                n, lab, stats_c, cent = cv2.connectedComponentsWithStats(base)
+                keep = np.zeros(n, bool)
+                if memory.any():
+                    memd = cv2.dilate(memory, disk(8))
+                    for i in np.unique(lab[(memd > 0) & (lab > 0)]):
+                        keep[i] = True
+                # disc admission: a strong-cored component inside the aggregate
+                # disc joins the moment it APPEARS -- connectivity through a
+                # wide occluded corridor can lag by many frames and step the
+                # enclosing circle discontinuously (run 2, t = 179.5 s: a lobe
+                # on the graph paper, cut off by the heated-glare patch)
+                circ_ref = (tree | memory)
+                if circ_ref.any():
+                    ys0, xs0 = np.nonzero(circ_ref)
+                    rmax = float(np.hypot(xs0 - sx, ys0 - sy).max())
+                    for i in range(1, n):
+                        if keep[i] or stats_c[i, cv2.CC_STAT_AREA] < 200:
+                            continue
+                        if np.hypot(cent[i, 0] - sx, cent[i, 1] - sy) <= 1.15 * rmax + HUB_BRIDGE:
+                            keep[i] = True
+                if keep.any():
+                    tree = (tree | (keep[lab] & (base > 0))).astype(np.uint8)
             memory |= tree
+            env |= (tree & base_strong).astype(np.uint8)
             ys, xs = np.nonzero(tree)
             if len(xs) < 5:
-                rows.append((t, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+                rows.append((t, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
                 if enc is not None:
                     enc.stdin.write(f.tobytes())
                 continue
             d = np.hypot(xs - sx, ys - sy)
             cx_m, cy_m = xs.mean(), ys.mean()
             rg = float(np.sqrt(((xs - cx_m) ** 2 + (ys - cy_m) ** 2).mean()))
-            ccx, ccy, cr = enclosing_circle(tree)
-            edge = int((xs.min() <= EDGE_PAD) or (ys.min() <= EDGE_PAD) or
-                       (xs.max() >= W - 1 - EDGE_PAD) or (ys.max() >= H - 1 - EDGE_PAD))
+            circ_src = env if env.any() else memory
+            ccx, ccy, cr = enclosing_circle(circ_src)
+            cr_raw = cr
+            if prev_rep is not None:
+                cap = prev_rep + (VCAP_UMPS / 1000.0) * px_per_mm / SAMPLE_FPS
+                cr = float(np.clip(cr, prev_rep, cap))
+            prev_rep = cr
+            mys, mxs = np.nonzero(circ_src)
+            edge = int((mxs.min() <= EDGE_PAD) or (mys.min() <= EDGE_PAD) or
+                       (mxs.max() >= W - 1 - EDGE_PAD) or (mys.max() >= H - 1 - EDGE_PAD))
             rows.append((t, int(tree.sum()), rg, float(np.percentile(d, 95)),
-                         float(d.max()), ccx, ccy, cr, edge,
+                         float(d.max()), ccx, ccy, cr, cr_raw, edge,
                          int(cv2.connectedComponents(tree)[0] - 1)))
             if enc is not None:
                 vis = draw_overlay(f, tree, seed, (ccx, ccy, cr), t, px_per_mm, edge)
@@ -425,8 +589,18 @@ def process(run, sample_fps, render_video):
     tmp = Path(tempfile.mkdtemp(prefix=f"w5_{run['tag']}_"))
     try:
         ref, frames = extract_frames(path, tmp, sample_fps)
-        first = cv2.imread(str(frames[0][1]))
-        px_per_mm, dpitch = grid_pitch_px_per_mm(first)
+        # the grid strip can be unreadable in a single frame (glare, shadow,
+        # occlusion) -- try several sample times and use the first that works
+        px_per_mm = dpitch = None
+        for k in (0, 4, 10, 30, 60, 120, len(frames) // 2):
+            f = cv2.imread(str(frames[min(k, len(frames) - 1)][1]))
+            try:
+                px_per_mm, dpitch = grid_pitch_px_per_mm(f)
+                break
+            except RuntimeError:
+                continue
+        if px_per_mm is None:
+            raise RuntimeError(f"{run['tag']}: no readable grid frame for calibration")
         seed = find_seed(frames, ref)
         video_out = (VIDS / f"overlay_{run['tag']}.mp4") if render_video else None
         if video_out is not None:
@@ -439,13 +613,14 @@ def process(run, sample_fps, render_video):
     with open(DATA / f"radius_{run['tag']}.csv", "w", newline="") as fh:
         wr = csv.writer(fh)
         wr.writerow(["t_s", "M_px", "Rg_px", "R95seed_px", "Rmaxseed_px",
-                     "circ_cx_px", "circ_cy_px", "circ_R_px", "edge", "n_comp"])
+                     "circ_cx_px", "circ_cy_px", "circ_R_px", "circ_R_raw_px",
+                     "edge", "n_comp"])
         wr.writerows(rows)
         fh.write(f"# px_per_mm = {px_per_mm:.3f} +/- {dpitch:.3f}\n")
         fh.write(f"# seed = {seed}\n")
 
-    t, M, Rg, R95, Rmax, ccx, ccy, cR, edge, ncomp = rows.T
-    res = dict(run=run, t=t, M=M, Rg=Rg, Rc=cR, edge=edge, seed=seed,
+    t, M, Rg, R95, Rmax, ccx, ccy, cR, cRraw, edge, ncomp = rows.T
+    res = dict(run=run, t=t, M=M, Rg=Rg, Rc=cR, Rcraw=cRraw, edge=edge, seed=seed,
                px_per_mm=px_per_mm, dpitch=dpitch)
     w = growth_window(M, Rg, edge)
     t0 = nucleation_time(t, M)
@@ -454,7 +629,7 @@ def process(run, sample_fps, render_video):
     m = w & (tau > 0)
     if m.sum() >= 8:
         res["alpha"], res["dalpha"], _ = fit_loglog(tau[m], M[m])
-        res["beta"], res["dbeta"], _ = fit_loglog(tau[m], cR[m])
+        res["beta"], res["dbeta"], _ = fit_loglog(tau[m], cRraw[m])
         res["betaRg"], res["dbetaRg"], _ = fit_loglog(tau[m], Rg[m])
         res["D"], res["dD"], _ = fit_loglog(Rg[m], M[m])
         # window systematic
@@ -463,7 +638,7 @@ def process(run, sample_fps, render_video):
             ww = growth_window(M, Rg, edge, lo, hi) & (tau > 0)
             if ww.sum() >= 8:
                 Ds.append(fit_loglog(Rg[ww], M[ww])[0])
-                bs.append(fit_loglog(tau[ww], cR[ww])[0])
+                bs.append(fit_loglog(tau[ww], cRraw[ww])[0])
         half = lambda a: (max(a) - min(a)) / 2 if len(a) > 1 else 0.0
         res["D_sys"], res["beta_sys"] = half(Ds), half(bs)
     return res
