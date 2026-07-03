@@ -115,14 +115,19 @@ effective current density differ).
    disc is admitted the moment it appears (connectivity through occluded
    corridors can lag); (c) the circle and the edge flag are computed over the
    cluster MEMORY — the deposit is permanent, so R is non-decreasing by
-   construction, and marginally-darkened frontier regions can no longer
-   oscillate it. Result: zero R decreases in all four runs; the single
-   remaining step (+0.8 mm, run 2 t = 187.5 s, inside the edge-censored
-   lower-bound regime) is a first-detection event of a semi-transparent front
-   measured at darkening 31 (< the 40 threshold) two frames earlier — steps in
-   the faded regime are occlusion/detection reveals, not growth events.
-   (A 40/25 darkening hysteresis was tried and rejected: it floods the
-   drop-shadow ring, inflating the focused run's mask by 42%.)
+   construction — and (d) the REPORTED R carries a physical continuity prior:
+   it may rise at most 90 µm/s (3× the fastest measured front speed), so a
+   batch detection reveal — a region of real deposit crossing the darkening
+   threshold together, e.g. a semi-transparent front patch — becomes a
+   maximal-slope ramp, never a step. The uncapped envelope is stored alongside
+   in `circ_R_raw_px`, growth-law fits (β) use the raw envelope so the cap
+   never enters an exponent, and reported and raw converge whenever the cap
+   releases (final values identical in all four runs). Census: zero R
+   decreases anywhere; max per-sample rise = the cap, by construction.
+   (Rejected alternatives, each tested: a 40/25 darkening hysteresis floods
+   the drop-shadow ring, +42% mask on the focused run; a strong-evidence-only
+   envelope trades late smoothness for ~1 mm steps during the semi-transparent
+   nucleation burst.)
 
 Verification battery as in week 5, per run: R(t)/M(t) monotone (worst R dip
 0.3 mm, on the defocused run 2), zero mass only before t₀, overlay stills
