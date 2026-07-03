@@ -4,7 +4,23 @@ Cu electrodeposition in the quasi-2D cell at **12 V** (same as week 3), varying
 **only the CuSO₄ concentration**: run 1 = **0.02**, run 2 = **0.04**,
 run 3 = **0.06**. Each run was filmed close-up (1280×720 @ 59.94 fps,
 11–16 min); the raw videos live in
-`experiments/week-5-last-measurements-with-shlomo/` (outside git).
+`experiments/week5-dla-concentration/raw-videos/` (outside git).
+
+**v2.2 (re-analysis on the pipeline developed and validated on week 4):**
+absolute-darkening pathway, interior hole filling, occluders with darkening
+override, permanent-memory circle with disc admission, and the
+**speed-capped envelope estimator** — the reported enclosing radius rises at
+most 90 µm/s (3× the fastest measured front), so R(t) is monotone and
+continuous by construction (census: zero decreases, max per-sample rise =
+the cap, in all three runs); the uncapped envelope is stored in
+`circ_R_raw_px` and all growth-law fits use it. Week-5-specific additions,
+each traced to a diagnosed failure: a **static wire-zone exclusion** and the
+**unambiguous-pixel envelope** (circle pixels must individually have
+local-contrast score > 0.25 or darkening > 50) — the wire here lies exposed
+over the paper for the whole run, and its moving shadow (score ≤ 0.21,
+darkening ≤ ~50) otherwise ratchets a false streak into the permanent
+envelope (run 1's final R inflated 9.8 → 11.7 mm before the fix; 9.97 mm
+after, resting on real branches only).
 Millimetre graph paper in frame gives a real px→mm calibration:
 **35.5–36.0 px/mm**, measured per run from the autocorrelation harmonics of
 the blue grid-line profile (±0.5%; camera fixed between runs).
@@ -23,21 +39,21 @@ Instructor deliverables:
 | | run 1 — 0.02 | run 2 — 0.04 | run 3 — 0.06 |
 |---|---|---|---|
 | morphology | sparse 3-arm dendrite | dense radial | near-compact disc |
-| nucleation t₀ | 13 s | 12 s | 31 s |
-| radius law | R ∝ t^**0.51±0.03** (throughout) | early t^0.37, then **linear 12.0 µm/s** (150–600 s, R²=0.997) | early transient, then **linear 18.6 µm/s** (150–418 s, R²=0.998) |
-| mass law α (M ∝ t^α) | 0.87 | 0.75 | 0.53 |
-| kinetic D (M ∝ Rg^D) | 1.57 ± 0.02 | 1.83 ± 0.02 | 1.99 ± 0.05 |
-| **fractal D (stills)** | **1.54 ± 0.09** | **1.89 ± 0.05** | **1.97 ± 0.21** |
-| first frame-edge contact | 400 s | 600 s | 418 s |
-| final enclosing R (lower bound) | 9.8 mm | 13.7 mm | 15.4 mm |
+| nucleation t₀ | 13 s | 18 s | 31 s |
+| radius law (raw-envelope fits) | R ∝ t^**0.54±0.05** (throughout) | early t^0.44, then **linear 12.1 µm/s** (150–597 s, R²=0.998) | early transient, then **linear 19.4 µm/s** (150–414 s, R²=0.996) |
+| mass law α (M ∝ t^α) | 0.87 | 0.91 | 0.76 |
+| kinetic D (M ∝ Rg^D) | 1.58 ± 0.02 | 2.04 ± 0.03 | 2.27 ± 0.01 |
+| **fractal D (stills)** | **1.52 ± 0.13** | **1.82 ± 0.09** | **1.95 ± 0.16** |
+| first frame-edge contact | 403 s | 597 s | 414 s |
+| final enclosing R (lower bound) | 9.97 mm | 13.66 mm | 15.42 mm |
 
 **The finding:** concentration changes the *morphology class*, not just the
 rate. At 0.02 the growth is DLA-like — anisotropic branches, R ∝ t^½ (DLA
 predicts t^(1/D)), D well below the 2D-DLA 1.71. With increasing concentration
 D rises through ≈1.9 and saturates at ≈2, and the envelope crosses over to the
 **constant-velocity front** of the dense-branching regime — already at 0.04
-the late R(t) is cleanly linear (12.0 µm/s), and at 0.06 faster still
-(18.6 µm/s); only the 0.02 run stays diffusion-like (t^0.5) throughout.
+the late R(t) is cleanly linear (12.1 µm/s), and at 0.06 faster still
+(19.4 µm/s); only the 0.02 run stays diffusion-like (t^0.5) throughout.
 Front speed rises monotonically with concentration through week 4's runs
 (22–30 µm/s at 0.15–0.56). Week 3 (0.29%, same voltage) gave
 D = 1.65 ± 0.04, between the trend's low end and its plateau.
@@ -45,12 +61,13 @@ D = 1.65 ± 0.04, between the trend's low end and its plateau.
 The quoted fractal D per concentration is the mean over
 {3 late frames} × {3 segmentation thresholds} × {box-counting, mass-radius}
 (18 estimates); its error is the measured spread ⊕ a ±0.03 threshold
-systematic — **not** the (much smaller) fit error. The independent kinetic
-exponent D(M~Rg), measured from the whole growth history rather than a single
-frame, agrees with the stills for all three runs — the main correctness check.
-Run 3's ±0.21 is honest: its mass-radius estimate (2.11) exceeds 2 because the
-compact deposit's centre is occluded (wire + bubble); box counting (1.84) and
-the kinetic route (1.99) bracket the compact limit.
+systematic — **not** the (much smaller) fit error. The kinetic exponent
+D(M~Rg) agrees with the stills at 0.02 (1.58 vs 1.52); at 0.04–0.06 it reads
+higher (2.04 / 2.27) because the v2.2 masks recover interior mass and the
+growth there is not self-similar — the interior densifies while the envelope
+advances (same effect as week 4) — so the static box-counting/mass-radius
+values are the quoted D. Run 3's ±0.16 reflects its occluded centre
+(wire + bubble) pushing mass-radius (2.02) above box counting (1.89).
 
 ## Method (scripts/enclosing_radius.py)
 
@@ -134,5 +151,5 @@ the branch-width and finite-size regimes.
 
 **`D_vs_concentration.png`** — The deliverable-3 summary: combined D (±
 spread ⊕ systematic) vs concentration, with the individual estimators and the
-2D-DLA reference 1.71. The rise 1.54 → 1.89 → 1.97 and the run-3 saturation at
+2D-DLA reference 1.71. The rise 1.52 → 1.82 → 1.95 and the run-3 saturation at
 the compact limit D = 2 is the concentration → morphology-transition result.
