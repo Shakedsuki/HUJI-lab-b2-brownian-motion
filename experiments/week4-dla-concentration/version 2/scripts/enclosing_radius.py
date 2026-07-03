@@ -61,6 +61,12 @@ VIDEO_DIR = Path(os.environ.get(
     r"C:\dev\brownian-motion\experiments\week4-dla-no-shlomo"))
 
 FPS = 60000 / 1001
+VCAP_UMPS = 90              # continuity prior on the reported enclosing radius:
+                            # the front cannot advance faster than ~30 um/s
+                            # (fastest measured, run 2); the reported R may rise
+                            # at most 3x that, so a batch detection reveal
+                            # becomes a maximal-slope ramp, never a step.  The
+                            # uncapped envelope is kept in circ_R_raw_px.
 SAMPLE_FPS = 2.0            # measurement cadence [Hz]
 REF_N = 12                  # frames median-ed into the static reference
 OVERLAY_FPS = 30            # playback rate of the overlay video (x15 real time)
@@ -199,6 +205,23 @@ def occluder_mask(bgr):
     return (wire_mask(bgr) | glare_mask(bgr)).astype(np.uint8)
 
 
+def static_wire_zone(bgr, dilate=12):
+    """Where the wire lies at the start of the run (green-hued, any
+    brightness), dilated to cover its wobble.  Excluded from the ENVELOPE:
+    the dark wire body passes the see-through tint rule by design, and its
+    slight movements otherwise shed changed-vs-reference edge slivers that
+    read as strong deposit."""
+    hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
+    h, sat = hsv[..., 0], hsv[..., 1]
+    w = ((sat > 80) & (h > H_WIRE_LO) & (h < H_WIRE_HI)).astype(np.uint8)
+    n, lab, stats, _ = cv2.connectedComponentsWithStats(w)
+    out = np.zeros_like(w)
+    for i in range(1, n):
+        if stats[i, cv2.CC_STAT_AREA] >= 400:
+            out[lab == i] = 1
+    return cv2.dilate(out, disk(dilate))
+
+
 def blue_grid_mask(bgr):
     """The blue mm-grid lines of the graph paper (B well above G,R)."""
     b, g, r = bgr[..., 0].astype(np.int16), bgr[..., 1].astype(np.int16), bgr[..., 2].astype(np.int16)
@@ -219,7 +242,7 @@ def _flatfield_bg(gray, sigma=FLAT_SIGMA, scale=0.25):
     return cv2.resize(sb, (gray.shape[1], gray.shape[0]), interpolation=cv2.INTER_LINEAR)
 
 
-def deposit_mask(bgr, ref_gray, hi=HYST_HI, lo=HYST_LO):
+def deposit_mask(bgr, ref_gray, hi=HYST_HI, lo=HYST_LO, return_strong=False, static_occ=None):
     """New dark deposit = flat-field-dark AND darkened-since-start AND
     not-wire AND not-blue-grid, despeckled.
 
@@ -248,8 +271,33 @@ def deposit_mask(bgr, ref_gray, hi=HYST_HI, lo=HYST_LO):
     # signature and was being hidden until hole-filling enclosed it, which
     # stepped the enclosing circle discontinuously (run 2, t = 179.5 s)
     occ = (occ & (darkened <= HOLE_DARK)).astype(np.uint8)
+    grid_all = blue_grid_mask(bgr)
     m[occ > 0] = 0
-    m[blue_grid_mask(bgr) > 0] = 0
+    m[grid_all > 0] = 0
+    # strong-evidence mask: pixels unambiguously deposit (well past every
+    # measured shadow/halo level: shadows reach score 0.21 / darkening 40,
+    # deposit cores >= 0.38 / 55).  The ENVELOPE (enclosing circle) is
+    # measured on this mask only -- every R(t) step traced in review came
+    # from marginal evidence entering in batches (weak-score floods,
+    # hole-fill median flips, threshold-hovering fronts), none of which can
+    # touch a strong-only boundary that advances ~1 px/frame with the front.
+    strong = ((score > hi) | (darkened > HOLE_DARK)) & changed
+    strong = strong.astype(np.uint8)
+    strong[occ > 0] = 0
+    # envelope-only rules: (a) grid lines yield to strong darkening (else a
+    # lobe over the paper is shredded into sub-admission fragments and enters
+    # in one batch when they merge -- run 2, t=152 s); (b) the wire's initial
+    # position is excluded statically (the dark wire body passes the v>185
+    # tint rule, and its wobble sheds 'changed' edge slivers -- run 2, t=28 s)
+    strong[(grid_all & (darkened <= HOLE_DARK)) > 0] = 0
+    if static_occ is not None:
+        strong[static_occ > 0] = 0
+    ns, labs, stats_s, _ = cv2.connectedComponentsWithStats(strong)
+    strong_out = np.zeros_like(strong)
+    for i in range(1, ns):
+        if stats_s[i, cv2.CC_STAT_AREA] >= MIN_SIZE:
+            strong_out[labs == i] = 1
+
     n, lab, stats, _ = cv2.connectedComponentsWithStats(m)
     out = np.zeros_like(m)
     for i in range(1, n):
@@ -275,6 +323,8 @@ def deposit_mask(bgr, ref_gray, hi=HYST_HI, lo=HYST_LO):
         if np.median(dark[sel]) < 15:
             continue                     # mostly undarkened paper: outside
         out[sel & (dark > HOLE_DARK)] = 1
+    if return_strong:
+        return out, strong_out
     return out
 
 
@@ -406,6 +456,7 @@ def measure(run, frames, ref, seed, px_per_mm, video_out=None):
     sx, sy = seed
     H, W = ref.shape
     memory = np.zeros_like(ref, dtype=np.uint8)
+    prev_rep = None                               # last reported (capped) R
     enc = None
     if video_out is not None:
         enc = subprocess.Popen(
@@ -444,14 +495,9 @@ def measure(run, frames, ref, seed, px_per_mm, video_out=None):
                 if keep.any():
                     tree = (tree | (keep[lab] & (base > 0))).astype(np.uint8)
             memory |= tree
-            # the deposit is permanent, so the ENCLOSING CIRCLE is computed
-            # over the memory (everything ever validly detected): monotone by
-            # construction.  A marginally-darkened frontier region otherwise
-            # flickers around threshold and oscillates R by ~0.8 mm (run 2,
-            # t = 187-199 s).  M / Rg stay current-frame quantities.
             ys, xs = np.nonzero(tree)
             if len(xs) < 5:
-                rows.append((t, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+                rows.append((t, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
                 if enc is not None:
                     enc.stdin.write(f.tobytes())
                 continue
@@ -459,11 +505,16 @@ def measure(run, frames, ref, seed, px_per_mm, video_out=None):
             cx_m, cy_m = xs.mean(), ys.mean()
             rg = float(np.sqrt(((xs - cx_m) ** 2 + (ys - cy_m) ** 2).mean()))
             ccx, ccy, cr = enclosing_circle(memory)
+            cr_raw = cr
+            if prev_rep is not None:
+                cap = prev_rep + (VCAP_UMPS / 1000.0) * px_per_mm / SAMPLE_FPS
+                cr = float(np.clip(cr, prev_rep, cap))
+            prev_rep = cr
             mys, mxs = np.nonzero(memory)
             edge = int((mxs.min() <= EDGE_PAD) or (mys.min() <= EDGE_PAD) or
                        (mxs.max() >= W - 1 - EDGE_PAD) or (mys.max() >= H - 1 - EDGE_PAD))
             rows.append((t, int(tree.sum()), rg, float(np.percentile(d, 95)),
-                         float(d.max()), ccx, ccy, cr, edge,
+                         float(d.max()), ccx, ccy, cr, cr_raw, edge,
                          int(cv2.connectedComponents(tree)[0] - 1)))
             if enc is not None:
                 vis = draw_overlay(f, tree, seed, (ccx, ccy, cr), t, px_per_mm, edge)
@@ -547,13 +598,14 @@ def process(run, sample_fps, render_video):
     with open(DATA / f"radius_{run['tag']}.csv", "w", newline="") as fh:
         wr = csv.writer(fh)
         wr.writerow(["t_s", "M_px", "Rg_px", "R95seed_px", "Rmaxseed_px",
-                     "circ_cx_px", "circ_cy_px", "circ_R_px", "edge", "n_comp"])
+                     "circ_cx_px", "circ_cy_px", "circ_R_px", "circ_R_raw_px",
+                     "edge", "n_comp"])
         wr.writerows(rows)
         fh.write(f"# px_per_mm = {px_per_mm:.3f} +/- {dpitch:.3f}\n")
         fh.write(f"# seed = {seed}\n")
 
-    t, M, Rg, R95, Rmax, ccx, ccy, cR, edge, ncomp = rows.T
-    res = dict(run=run, t=t, M=M, Rg=Rg, Rc=cR, edge=edge, seed=seed,
+    t, M, Rg, R95, Rmax, ccx, ccy, cR, cRraw, edge, ncomp = rows.T
+    res = dict(run=run, t=t, M=M, Rg=Rg, Rc=cR, Rcraw=cRraw, edge=edge, seed=seed,
                px_per_mm=px_per_mm, dpitch=dpitch)
     w = growth_window(M, Rg, edge)
     t0 = nucleation_time(t, M)
@@ -562,7 +614,7 @@ def process(run, sample_fps, render_video):
     m = w & (tau > 0)
     if m.sum() >= 8:
         res["alpha"], res["dalpha"], _ = fit_loglog(tau[m], M[m])
-        res["beta"], res["dbeta"], _ = fit_loglog(tau[m], cR[m])
+        res["beta"], res["dbeta"], _ = fit_loglog(tau[m], cRraw[m])
         res["betaRg"], res["dbetaRg"], _ = fit_loglog(tau[m], Rg[m])
         res["D"], res["dD"], _ = fit_loglog(Rg[m], M[m])
         # window systematic
@@ -571,7 +623,7 @@ def process(run, sample_fps, render_video):
             ww = growth_window(M, Rg, edge, lo, hi) & (tau > 0)
             if ww.sum() >= 8:
                 Ds.append(fit_loglog(Rg[ww], M[ww])[0])
-                bs.append(fit_loglog(tau[ww], cR[ww])[0])
+                bs.append(fit_loglog(tau[ww], cRraw[ww])[0])
         half = lambda a: (max(a) - min(a)) / 2 if len(a) > 1 else 0.0
         res["D_sys"], res["beta_sys"] = half(Ds), half(bs)
     return res
