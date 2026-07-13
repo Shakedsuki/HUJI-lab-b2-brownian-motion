@@ -18,9 +18,13 @@ window-stability sweep (D stable to ±0.05 as cutoffs vary):
 | 0.06 % | **1.87 ± 0.04** | dense / compact (cleanest plateau) |
 | 0.15 % | **1.87 ± 0.06** | dense / compact |
 
-The **defocused** runs (0.30 / 0.45 / 0.56 %) are **not reliably measurable** —
-the mask captures a smooth blob, local D just reads ≈2. Excluded from any
-quantitative claim.
+The **defocused** runs (0.30 / 0.45 / 0.56 %) were re-audited (see
+`NOTES_defocused_runs_recovery.md`): 0.56 % turned out to be *sharper than the
+anchor* and gives a reliable **1.86 ± 0.06**; 0.45 % (mild ~1.6 px blur) gives
+**1.93 ± 0.07** (validated window rule + Richardson–Lucy on a static median
+stack); only 0.30 % remains **unrecoverable as a scaling exponent** (<0.7
+decade after the blur cutoff; compact, D → 2; boundary D_b ≈ 1.3 ± 0.1 as a
+distinct quantity).
 
 These values agree with the original pipeline (0.02→1.61, dense→~1.89) to within
 ±0.05, so the interior-hole-fill artefact was real but small; it did **not**
