@@ -139,6 +139,17 @@ def lamp_star(ax, x, y, dx=-13, dy=2):
                 fontweight="bold")
 
 
+def conc_log_axis(ax, concs):
+    """Log x with a labelled tick at every measured concentration: the
+    concentrations are log-spaced, so linear ticks leave 0.02/0.04/0.06
+    unreadable and unmapped."""
+    ax.set_xscale("log")
+    ax.set_xticks(list(concs))
+    ax.set_xticklabels([f"{c:.2f}" for c in concs], rotation=30, ha="right")
+    ax.xaxis.set_minor_locator(plt.NullLocator())
+    ax.set_xlabel("CuSO$_4$ concentration [%]  (log scale)")
+
+
 # --------------------------------------------------------------- loaders ---
 
 def load_run(run):
@@ -296,7 +307,7 @@ def fig_fill_fraction(runs):
             lamp_star(ax, c, m)
     ax.plot([], [], ls="none", marker="$*$", ms=13, color="k",
             label=LAMP_LABEL)
-    ax.set_xlabel("CuSO$_4$ concentration [%]")
+    conc_log_axis(ax, concs)
     ax.set_ylabel(r"occupancy  $\phi = M / \pi R^2$")
     ax.grid(alpha=0.3)
     ax.legend(loc="lower right")
@@ -333,9 +344,9 @@ def _plot_D(ax, reliable):
             lamp_star(ax, c, reliable[c][0])
     ax.plot([], [], ls="none", marker="$*$", ms=13, color="k",
             label=LAMP_LABEL)
-    ax.set_xlabel("CuSO$_4$ concentration [%]")
+    conc_log_axis(ax, concs)
     ax.set_ylabel("effective fractal dimension  D")
-    ax.set_xlim(-0.01, 0.62); ax.set_ylim(1.45, 2.07)
+    ax.set_ylim(1.45, 2.07)
     ax.grid(alpha=0.3)
     ax.legend(loc="lower right")
     return concs, D
@@ -477,13 +488,7 @@ def fig_growth_rate(runs):
             lamp_star(ax, r["conc"], g)
     ax.plot([], [], ls="none", marker="$*$", ms=13, color="k",
             label=LAMP_LABEL)
-    # log x with a tick at every measured concentration: the concentrations
-    # are log-spaced, so linear ticks leave 0.02/0.04/0.06 unreadable
-    ax.set_xscale("log")
-    ax.set_xticks(concs)
-    ax.set_xticklabels([f"{c:.2f}" for c in concs], rotation=30, ha="right")
-    ax.xaxis.set_minor_locator(plt.NullLocator())
-    ax.set_xlabel("CuSO$_4$ concentration [%]  (log scale)")
+    conc_log_axis(ax, concs)
     ax.set_ylabel("mean growth rate  dR/dt [µm/s]")
     ax.grid(alpha=0.3)
     ax.legend(loc="lower right")
