@@ -4,7 +4,14 @@
 Merges the two measurement sessions into single report-ready figures:
 
   * week 5 v2  -> 0.02 / 0.04 / 0.06 %  (sparse regime, focused anchor)
-  * week 4 v2  -> 0.15 / 0.30 / 0.45 / 0.56 %  (dense/compact plateau)
+  * week 4 v2  -> 0.15 / 0.45 / 0.56 %  (dense/compact plateau)
+
+0.30 % is EXCLUDED from the dataset: its video is defocused (blur sigma
+2.5-3 px) and the deposit offers <0.6 decades of scaling range at every
+moment of the run -- below the box-counting estimator's validated regime;
+all salvage routes failed their controls (NOTES_defocused_runs_recovery.md).
+0.45 / 0.56 % were recovered by the same audit and carry reliable D values
+in data/fractalD_reliable.csv.
 
 Everything is rebuilt from the saved per-run `radius_*.csv` and the two
 `fractalD_summary.csv` files -- NO video decode, so this runs in seconds and
@@ -108,18 +115,15 @@ RUNS = [
          video=VDIR5 / "run3_0.06C.mov", tmeas=413),
     dict(conc=0.15, week=4, csv=W4 / "data" / "radius_run4_c0.15.csv",
          video=VDIR4 / "run4_0.15.mov", tmeas=212),
-    dict(conc=0.30, week=4, csv=W4 / "data" / "radius_run3_c0.30.csv",
-         video=VDIR4 / "run 3 0.3.mov", tmeas=138),
+    # 0.30 % (run 3 0.3.mov) intentionally absent: excluded for defocus --
+    # see module docstring.
     dict(conc=0.45, week=4, csv=W4 / "data" / "radius_run2_c0.45.csv",
          video=VDIR4 / "run 2 0.45 concen.mov", tmeas=148),
     dict(conc=0.56, week=4, csv=W4 / "data" / "radius_run1_c0.56.csv",
          video=VDIR4 / "run 1 0.56 Concertation.mov", tmeas=198),
 ]
 
-# systematic floor on box-counting D (the per-frame std is not recoverable
-# from the summary CSV -- it needs the video frames -- so we quote the
-# pipeline's documented systematic floor; see README).
-D_SYS_FLOOR = 0.03
+EXCLUDED_CONC = 0.30    # annotated on the D figure so the gap is explained
 
 
 # --------------------------------------------------------------- loaders ---
@@ -142,26 +146,10 @@ def load_run(run):
     return out
 
 
-def load_boxcount_D():
-    """conc -> box-counting D, from both weeks' fractalD_summary.csv."""
-    d = {}
-    for wk in (W4, W5):
-        with open(wk / "data" / "fractalD_summary.csv") as fh:
-            for row in csv.DictReader(fh):
-                d[round(float(row["conc"]), 2)] = float(row["D_boxcount"])
-    return d
-
-
-# focused runs = the reliable bucket (structure optically resolved); the
-# defocused runs are not reliably measurable and are shown greyed / pending.
-FOCUSED_CONCS = (0.02, 0.04, 0.06, 0.15)
-DEFOCUSED_CONCS = (0.30, 0.45, 0.56)
-
-
 def load_reliable():
-    """conc -> (D, uncertainty) for the focused runs, from the verified
-    reliable-bucket CSV (box-counting on the faithful mask, window-stability
-    checked)."""
+    """conc -> (D, uncertainty) for every run in the dataset, from the
+    verified reliable-bucket CSV (box-counting on the faithful mask,
+    window-stability checked; 0.45/0.56 recovered per the defocus audit)."""
     d = {}
     p = ROOT / "data" / "fractalD_reliable.csv"
     for row in csv.DictReader(l for l in open(p) if not l.startswith("#")):
@@ -271,29 +259,34 @@ def fig_fill_fraction(runs):
 
 
 def _plot_D(ax, reliable):
-    """Draw the reliable-bucket D-vs-concentration scatter (focused runs only,
-    effective box-counting dimension), with the defocused range greyed out as
-    pending. Shared by the standalone figure and the with-crops composite."""
+    """Draw the reliable D-vs-concentration scatter (effective box-counting
+    dimension, window-stability verified). The excluded 0.30 % slot is
+    annotated so the gap is explained. Shared by the standalone figure and
+    the with-crops composite."""
     concs = sorted(reliable)
     D = [reliable[c][0] for c in concs]
     U = [reliable[c][1] for c in concs]
     ax.errorbar(concs, D, yerr=U, fmt="o", ms=9, capsize=4, lw=1.6,
-                color="C0", label="reliable D (focused runs)")
+                color="C0", label="effective box-counting D")
     ax.plot(concs, D, "-", color="C0", alpha=0.4, lw=1.4)
+    ax.axhline(2.0, color="gray", ls=":", lw=1.4,
+               label="space-filling limit: D = 2")
     ax.axhline(1.71, color="k", ls="--", lw=1.4, label="2D DLA theory: 1.71")
     for i, (c, d) in enumerate(zip(concs, D)):
-        dy = 14 if i % 2 == 0 else -20      # stagger to avoid label collisions
+        # stagger: odd points labelled left-below, even right-above (the 0.04
+        # and 0.06 points are close enough that same-side labels collide)
+        dx, dy = (9, 14) if i % 2 == 0 else (-48, -22)
         ax.annotate(f"{d:.2f}", (c, d), textcoords="offset points",
-                    xytext=(9, dy), fontsize=LABEL_FS, color="C0")
-    # defocused runs: not reliably measurable -> greyed placeholder region
-    ax.axvspan(0.22, 0.62, color="0.6", alpha=0.13)
-    ax.text(0.42, 1.66, "defocused runs\n(0.30 / 0.45 / 0.56 %)\nD not yet reliable",
-            ha="center", va="center", color="0.4", fontsize=12, style="italic")
+                    xytext=(dx, dy), fontsize=LABEL_FS, color="C0")
+    # excluded 0.30 % run: defocused video, <0.6 decades of scaling range
+    ax.text(EXCLUDED_CONC, 1.63, "0.30 % excluded\n(defocused)",
+            ha="center", va="center", color="0.45", fontsize=11.5,
+            style="italic")
     ax.set_xlabel("CuSO$_4$ concentration [%]")
     ax.set_ylabel("effective fractal dimension  D")
-    ax.set_xlim(-0.01, 0.62); ax.set_ylim(1.45, 2.05)
+    ax.set_xlim(-0.01, 0.62); ax.set_ylim(1.45, 2.07)
     ax.grid(alpha=0.3)
-    ax.legend(loc="upper right")
+    ax.legend(loc="lower right")
     return concs, D
 
 
@@ -349,9 +342,8 @@ def grab_crop(run, pad=1.15):
 
 
 def fig_D_with_crops(runs, reliable):
-    """Composite: the reliable D-vs-conc plot on top, then the 7 grounded-frame
-    crops in a 4-over-3 grid. Focused crops are captioned with their reliable D;
-    defocused crops are marked 'defocused'."""
+    """Composite: the reliable D-vs-conc plot on top, then the 6 grounded-frame
+    crops in a 3-over-3 grid, each captioned with its reliable D."""
     # ensure crops exist (grab from video if present, else reuse saved PNGs)
     crops = {}
     for r in runs:
@@ -372,9 +364,11 @@ def fig_D_with_crops(runs, reliable):
     _plot_D(ax_plot, reliable)
 
     order = sorted(runs, key=lambda r: r["conc"])
-    # row 1: first 4 (each spans 3 of 12 cols); row 2: last 3 (each spans 4)
-    slots = ([ (1, slice(3 * i, 3 * i + 3)) for i in range(4) ] +
-             [ (2, slice(4 * i, 4 * i + 4)) for i in range(3) ])
+    # split the crops over two rows on the 12-column grid (6 runs -> 3 + 3)
+    top = (len(order) + 1) // 2
+    bot = len(order) - top
+    slots = ([(1, slice((12 // top) * i, (12 // top) * (i + 1))) for i in range(top)] +
+             [(2, slice((12 // bot) * i, (12 // bot) * (i + 1))) for i in range(bot)])
     for run, (row, cols) in zip(order, slots):
         c = run["conc"]
         ax = fig.add_subplot(gs[row, cols])
@@ -434,8 +428,9 @@ def fig_growth_rate(runs):
 
 def fig_R_dRdt_grid(runs):
     """One clean panel per concentration: R(t) [mm] on the left axis,
-    dR/dt [um/s] on the right, plus a combined R(t) overlay in the 8th slot."""
-    fig, axes = plt.subplots(4, 2, figsize=(17, 20))
+    dR/dt [um/s] on the right, plus a combined R(t) overlay in the last slot."""
+    nrows = (len(runs) + 2) // 2            # runs + 1 overlay, 2 columns
+    fig, axes = plt.subplots(nrows, 2, figsize=(17, 5 * nrows))
     axes = axes.ravel()
     for ax, r in zip(axes, runs):
         m = edge_free(r)
@@ -464,18 +459,20 @@ def fig_R_dRdt_grid(runs):
         h2, l2 = axd.get_legend_handles_labels()
         ax.legend(h1 + h2, l1 + l2, fontsize=12, loc="upper left", framealpha=0.9)
 
-    # 8th slot: all runs' R(t) overlaid, coloured by concentration
-    ax = axes[7]
+    # next slot: all runs' R(t) overlaid, coloured by concentration
+    ax = axes[len(runs)]
     for r in runs:
         m = edge_free(r)
         t = r["t"][m]; R = smooth(r["Rc"][m] / r["ppm"], 9)
         ax.plot(t, R, color=color(r["conc"]), lw=1.8, label=f"{r['conc']:.2f} %")
     ax.set_xlabel("time [s]"); ax.set_ylabel("enclosing R [mm]")
     ax.text(0.97, 0.06, "all runs", transform=ax.transAxes, ha="right",
-            va="bottom", fontweight="bold", fontsize=17, color=color(0.30))
+            va="bottom", fontweight="bold", fontsize=17, color="0.25")
     ax.grid(alpha=0.25)
     ax.legend(fontsize=12.5, title="CuSO$_4$", title_fontsize=13, ncol=2, loc="upper left")
 
+    for ax in axes[len(runs) + 1:]:         # blank any unused grid slots
+        ax.axis("off")
     fig.tight_layout()
     return save(fig, "R_and_dRdt_grid")
 
@@ -496,7 +493,7 @@ def main():
     for c, m, lo, hi in fill:
         print(f"  {c:.2f}% : {m:.4f}  [{lo:.4f}, {hi:.4f}]")
 
-    print("\n=== reliable fractal D vs conc (focused runs) ===")
+    print("\n=== reliable fractal D vs conc (0.30 % excluded: defocus) ===")
     for c, d in Dvals:
         print(f"  {c:.2f}% : D = {d:.3f}")
 

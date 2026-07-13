@@ -1,10 +1,17 @@
-# Reliable-bucket fractal dimensions -- FOCUSED runs only, box-counting on the
-# faithful mask (no hole-fill), fit window [branch width, R/3], verified by a
+# Reliable fractal dimensions -- box-counting on the faithful mask (no
+# hole-fill), fit window [max(branch width, 3*sigma_blur), R/3], verified by a
 # window-stability sweep (D stable to ~+/-0.05 as cutoffs vary, excl. finite-size).
 # Sandbox estimator rejected for these (anisotropy-biased; failed on 0.06).
-# Defocused runs (0.30/0.45/0.56) are NOT reliably measurable and are excluded.
+# 0.45/0.56 recovered by the defocus audit (NOTES_defocused_runs_recovery.md):
+# 0.56 was never defocused (sigma 0.55 px); 0.45 (sigma ~1.6 px) via static
+# median stack + Richardson-Lucy, validated at that blur level on 0.56.
+# 0.30 is EXCLUDED from the dataset: defocused (sigma 2.5-3 px), <0.6 decades
+# of scaling range at every moment of the run; all salvage routes failed
+# their controls. No exponent is quoted for it.
 conc,D_reliable,unc,D_pipeline_old,branch_w_mm,window_decades,note
 0.02,1.69,0.05,1.611,0.24,1.07,open fractal near DLA; clean plateau ~1.66
 0.04,1.91,0.05,1.887,0.20,1.18,near space-filling; plateau ~1.9
 0.06,1.87,0.04,1.887,0.28,1.08,cleanest plateau of the four
 0.15,1.87,0.06,1.886,0.41,0.72,box-count 1.87 (sandbox 1.73 was anisotropy artifact)
+0.45,1.93,0.07,1.906,0.21,1.14,recovered: median stack + RL (validated); raw grounded frame 1.91
+0.56,1.86,0.06,1.866,0.13,1.26,recovered: never defocused (sigma 0.55px); stack cross-check 1.89
