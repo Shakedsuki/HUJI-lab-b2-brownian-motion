@@ -427,11 +427,14 @@ def fig_growth_rate(runs):
 
 
 def fig_R_dRdt_grid(runs):
-    """One clean panel per concentration: R(t) [mm] on the left axis,
-    dR/dt [um/s] on the right, plus a combined R(t) overlay in the last slot."""
-    nrows = (len(runs) + 2) // 2            # runs + 1 overlay, 2 columns
-    fig, axes = plt.subplots(nrows, 2, figsize=(17, 5 * nrows))
-    axes = axes.ravel()
+    """Two-part layout: a 3x2 block of per-concentration panels (R(t) [mm] on
+    the left axis, dR/dt [um/s] on the right) and, to its right, the combined
+    R(t) overlay as a single full-height panel."""
+    nrows = (len(runs) + 1) // 2            # per-run panels in 2 columns
+    fig = plt.figure(figsize=(25, 5.4 * nrows))
+    gs = GridSpec(nrows, 3, figure=fig, width_ratios=[1, 1, 1.15],
+                  hspace=0.30, wspace=0.42)
+    axes = [fig.add_subplot(gs[i // 2, i % 2]) for i in range(len(runs))]
     for ax, r in zip(axes, runs):
         m = edge_free(r)
         t = r["t"][m]
@@ -459,21 +462,18 @@ def fig_R_dRdt_grid(runs):
         h2, l2 = axd.get_legend_handles_labels()
         ax.legend(h1 + h2, l1 + l2, fontsize=12, loc="upper left", framealpha=0.9)
 
-    # next slot: all runs' R(t) overlaid, coloured by concentration
-    ax = axes[len(runs)]
+    # right column, full height: all runs' R(t) overlaid, coloured by conc
+    ax = fig.add_subplot(gs[:, 2])
     for r in runs:
         m = edge_free(r)
         t = r["t"][m]; R = smooth(r["Rc"][m] / r["ppm"], 9)
-        ax.plot(t, R, color=color(r["conc"]), lw=1.8, label=f"{r['conc']:.2f} %")
+        ax.plot(t, R, color=color(r["conc"]), lw=2.4, label=f"{r['conc']:.2f} %")
     ax.set_xlabel("time [s]"); ax.set_ylabel("enclosing R [mm]")
-    ax.text(0.97, 0.06, "all runs", transform=ax.transAxes, ha="right",
-            va="bottom", fontweight="bold", fontsize=17, color="0.25")
+    ax.text(0.97, 0.02, "all runs", transform=ax.transAxes, ha="right",
+            va="bottom", fontweight="bold", fontsize=19, color="0.25")
     ax.grid(alpha=0.25)
-    ax.legend(fontsize=12.5, title="CuSO$_4$", title_fontsize=13, ncol=2, loc="upper left")
-
-    for ax in axes[len(runs) + 1:]:         # blank any unused grid slots
-        ax.axis("off")
-    fig.tight_layout()
+    ax.legend(fontsize=14, title="CuSO$_4$", title_fontsize=15, ncol=1,
+              loc="upper left")
     return save(fig, "R_and_dRdt_grid")
 
 
