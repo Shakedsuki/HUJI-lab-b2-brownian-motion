@@ -553,7 +553,8 @@ def fig_R_dRdt_grid(runs):
         lab = f"{r['conc']:.2f} %" + ("*" if r.get("lamp") else "")
         ax.plot(t, R, color=c, lw=2.4, label=lab)
         dx, dy, ha = TIP[r["conc"]]
-        ax.annotate(f"{R[-1]:.1f} mm", (t[-1], R[-1]),
+        star = "*" if r.get("lamp") else ""
+        ax.annotate(f"{R[-1]:.1f} mm{star}", (t[-1], R[-1]),
                     textcoords="offset points", xytext=(dx, dy), ha=ha,
                     va="center", fontsize=13.5, color=c, fontweight="bold")
     ax.set_xlabel("time [s]"); ax.set_ylabel("enclosing R [mm]")
