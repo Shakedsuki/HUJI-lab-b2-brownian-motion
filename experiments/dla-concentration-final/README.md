@@ -22,49 +22,50 @@ python scripts/report_figures.py      # writes all four figures to figures/
 1. **`fill_fraction_vs_conc.png`** — *sanity check.* Deposit occupancy of the
    enclosing disc, φ = M / (πR²), vs concentration. Point = median over the
    developed (larger-half) edge-free frames; band = 16–84 percentile.
-2. **`D_vs_concentration.png`** — fractal dimension vs concentration, **both
-   sessions, box-counting only** (see note below).
+2. **`D_vs_concentration.png`** — **effective** box-counting fractal dimension vs
+   concentration, **reliable (focused) runs only**: 0.02→1.69, 0.04→1.91,
+   0.06→1.87, 0.15→1.87. The defocused runs (0.30/0.45/0.56) are greyed out as
+   not-yet-reliable (see note below and `NOTES_fractal_dimension_concentration.md`).
 3. **`growth_rate_vs_conc.png`** — mean late-time linear front speed dR/dt vs
    concentration.
 4. **`R_and_dRdt_grid.png`** — one clean panel per concentration: enclosing R(t)
    [mm] with its dR/dt [µm/s] on a twin axis, plus an all-runs R(t) overlay in
    the 8th slot. Polished replacement for the 7-panel working draft.
-5. **`D_vs_concentration_with_crops.png`** — the D-vs-concentration plot with a
-   **4-over-3 gallery of the grounded video frames** below it: for each run, the
-   frame at its `t_measured_s` (the fully-developed frame the box-counting D was
-   grounded on), cropped to a square of side 2·1.15·R centred on the enclosing
-   circle, with a 1 mm scale bar and a border matching the point's colour. The
-   sparse D≈1.6 cluster (0.02 %) vs the dense D≈1.9 morphologies (≥0.04 %) is
-   directly visible. Crops saved in `figures/crops/`.
+5. **`D_vs_concentration_with_crops.png`** — the reliable D-vs-concentration plot
+   with a **4-over-3 gallery of the grounded video frames** below it (frame at
+   each run's `t_measured_s`, cropped to a square of side 2·1.15·R, 1 mm scale
+   bar). The four **focused** crops are captioned with their reliable D and show
+   sharp branch structure; the three **defocused** crops are greyed and marked
+   "defocused" — visibly blurred blobs, which is *why* their D is not reliable.
+   The sparse open cluster (0.02 %, D≈1.7) vs the dense morphologies (≥0.04 %,
+   D≈1.9) is directly visible. Crops in `figures/crops/`.
 
 ## Method decisions (read before quoting numbers)
 
-**Fractal D is box-counting only.** The upstream pipeline quoted D as the mean
-of two estimators (box-counting + mass-radius); per the report split we drop
-mass-radius and quote **`D_boxcount`** straight from each week's
-`fractalD_summary.csv`. Effect on the quoted values:
+**Fractal D — the reliable bucket (focused runs only).** After an end-to-end
+audit (see `NOTES_fractal_dimension_concentration.md`), D is measured by
+**box-counting on a faithful mask** (interior hole-fill removed), fit over the
+window **[branch width, R/3]** (above the branch width, below finite-size),
+**verified by a window-stability sweep** (D stable to ±0.05). This is only
+trustworthy for the four **focused** runs; the values are in
+`data/fractalD_reliable.csv`:
 
-| conc | old (box+mr mean) | **box-only** | Δ |
+| conc | **D (reliable)** | old pipeline | focus |
 |---|---|---|---|
-| 0.02 | 1.517 | **1.611** | +0.094 |
-| 0.04 | 1.822 | **1.887** | +0.065 |
-| 0.06 | 1.951 | **1.887** | −0.064 |
-| 0.15 | 1.880 | **1.886** | +0.006 |
-| 0.30 | 1.888 | **1.892** | +0.004 |
-| 0.45 | 1.974 | **1.906** | −0.068 |
-| 0.56 | 1.879 | **1.866** | −0.013 |
+| 0.02 | **1.69 ± 0.05** | 1.611 | focused |
+| 0.04 | **1.91 ± 0.05** | 1.887 | focused |
+| 0.06 | **1.87 ± 0.04** | 1.887 | focused |
+| 0.15 | **1.87 ± 0.06** | 1.886 | focused |
+| 0.30 / 0.45 / 0.56 | **— (unreliable)** | 1.89 / 1.91 / 1.87 | **defocused** |
 
-Dropping mass-radius mainly tightens the two runs where the estimators disagreed
-most (0.02 sparse; 0.45 defocused+lamp-heated). The qualitative story is
-unchanged: **D rises from ~1.6 at 0.02 %, crosses the 2-D DLA value 1.71 by
-~0.04 %, and plateaus at ≈1.89 through 0.56 %.**
-
-**Error bar on D = ±0.03 (systematic floor).** The per-frame box-counting
-scatter is not recoverable from the summary CSVs (it needs the video frames), so
-the plotted bar is the pipeline's documented systematic floor. Independent
-window-scan stability is ±0.05 (week-4 README). If a purely statistical
-box-only error bar is wanted, re-run the upstream `fractal_dimension.py` against
-the videos and record `std(Ds_bc)`.
+Report D as an **effective** dimension over its stated window. **0.02 % is a
+genuine open DLA-like fractal (~1.7)**; 0.04–0.15 % are **compact / effectively
+space-filling (D → 2, read as ~1.9 at finite size)** — *not* genuine 1.9
+fractals. The plateau is the D = 2 ceiling plus limited resolving power; the
+driver is **concentration** (not voltage). Defocused runs are excluded (mask =
+smooth blob); box-counting (no centre) is preferred over sandbox for these
+anisotropic clusters. Corrected values match the original pipeline to ±0.05, so
+the earlier interior-hole-fill artefact was real but small.
 
 **Growth rate** = slope of a straight-line fit to R(t) [mm] over the edge-free
 frames past the early transient (upper 0.35–0.98 of each run's size), ×1000 →

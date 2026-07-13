@@ -152,6 +152,24 @@ def load_boxcount_D():
     return d
 
 
+# focused runs = the reliable bucket (structure optically resolved); the
+# defocused runs are not reliably measurable and are shown greyed / pending.
+FOCUSED_CONCS = (0.02, 0.04, 0.06, 0.15)
+DEFOCUSED_CONCS = (0.30, 0.45, 0.56)
+
+
+def load_reliable():
+    """conc -> (D, uncertainty) for the focused runs, from the verified
+    reliable-bucket CSV (box-counting on the faithful mask, window-stability
+    checked)."""
+    d = {}
+    p = ROOT / "data" / "fractalD_reliable.csv"
+    for row in csv.DictReader(l for l in open(p) if not l.startswith("#")):
+        d[round(float(row["conc"]), 2)] = (float(row["D_reliable"]),
+                                           float(row["unc"]))
+    return d
+
+
 # ------------------------------------------------------- small utilities ---
 
 def smooth(y, k=7):
@@ -252,30 +270,36 @@ def fig_fill_fraction(runs):
     return out, list(zip(concs, med, lo, hi))
 
 
-def _plot_D(ax, runs, Dbox):
-    """Draw the D-vs-concentration scatter onto a given axis (shared by the
-    standalone figure and the with-crops composite)."""
-    concs = np.array([r["conc"] for r in runs])
-    D = np.array([Dbox[r["conc"]] for r in runs])
-    ax.errorbar(concs, D, yerr=D_SYS_FLOOR, fmt="o", ms=9, capsize=4, lw=1.6,
-                color="C0", label="box-counting D")
+def _plot_D(ax, reliable):
+    """Draw the reliable-bucket D-vs-concentration scatter (focused runs only,
+    effective box-counting dimension), with the defocused range greyed out as
+    pending. Shared by the standalone figure and the with-crops composite."""
+    concs = sorted(reliable)
+    D = [reliable[c][0] for c in concs]
+    U = [reliable[c][1] for c in concs]
+    ax.errorbar(concs, D, yerr=U, fmt="o", ms=9, capsize=4, lw=1.6,
+                color="C0", label="reliable D (focused runs)")
     ax.plot(concs, D, "-", color="C0", alpha=0.4, lw=1.4)
     ax.axhline(1.71, color="k", ls="--", lw=1.4, label="2D DLA theory: 1.71")
     for i, (c, d) in enumerate(zip(concs, D)):
-        dy = 14 if i % 2 == 0 else -22      # stagger to avoid label collisions
+        dy = 14 if i % 2 == 0 else -20      # stagger to avoid label collisions
         ax.annotate(f"{d:.2f}", (c, d), textcoords="offset points",
                     xytext=(9, dy), fontsize=LABEL_FS, color="C0")
+    # defocused runs: not reliably measurable -> greyed placeholder region
+    ax.axvspan(0.22, 0.62, color="0.6", alpha=0.13)
+    ax.text(0.42, 1.66, "defocused runs\n(0.30 / 0.45 / 0.56 %)\nD not yet reliable",
+            ha="center", va="center", color="0.4", fontsize=12, style="italic")
     ax.set_xlabel("CuSO$_4$ concentration [%]")
-    ax.set_ylabel("fractal dimension  D")
-    ax.set_ylim(1.45, 2.05)
+    ax.set_ylabel("effective fractal dimension  D")
+    ax.set_xlim(-0.01, 0.62); ax.set_ylim(1.45, 2.05)
     ax.grid(alpha=0.3)
-    ax.legend(loc="lower right")
+    ax.legend(loc="upper right")
     return concs, D
 
 
-def fig_D_vs_conc(runs, Dbox):
+def fig_D_vs_conc(reliable):
     fig, ax = plt.subplots(figsize=(8.6, 6.2))
-    concs, D = _plot_D(ax, runs, Dbox)
+    concs, D = _plot_D(ax, reliable)
     out = save(fig, "D_vs_concentration")
     return out, list(zip(concs, D))
 
@@ -324,9 +348,10 @@ def grab_crop(run, pad=1.15):
     return dict(png=png, side_mm=(x1 - x0) / ppm, ppm=ppm)
 
 
-def fig_D_with_crops(runs, Dbox):
-    """Composite: the D-vs-conc plot on top, then the 7 grounded-frame crops
-    in a 4-over-3 grid, each captioned with its concentration and D."""
+def fig_D_with_crops(runs, reliable):
+    """Composite: the reliable D-vs-conc plot on top, then the 7 grounded-frame
+    crops in a 4-over-3 grid. Focused crops are captioned with their reliable D;
+    defocused crops are marked 'defocused'."""
     # ensure crops exist (grab from video if present, else reuse saved PNGs)
     crops = {}
     for r in runs:
@@ -344,10 +369,9 @@ def fig_D_with_crops(runs, Dbox):
     gs = GridSpec(3, 12, figure=fig, height_ratios=[1.35, 1, 1],
                   hspace=0.32, wspace=0.35)
     ax_plot = fig.add_subplot(gs[0, :])
-    _plot_D(ax_plot, runs, Dbox)
+    _plot_D(ax_plot, reliable)
 
     order = sorted(runs, key=lambda r: r["conc"])
-    D = {r["conc"]: Dbox[r["conc"]] for r in runs}
     # row 1: first 4 (each spans 3 of 12 cols); row 2: last 3 (each spans 4)
     slots = ([ (1, slice(3 * i, 3 * i + 3)) for i in range(4) ] +
              [ (2, slice(4 * i, 4 * i + 4)) for i in range(3) ])
@@ -370,10 +394,20 @@ def fig_D_with_crops(runs, Dbox):
             ax.imshow(img)
         ax.set_xticks([]); ax.set_yticks([])
         edge = dark(color(c))
+        focused = c in reliable
         for s in ax.spines.values():
-            s.set_edgecolor(edge); s.set_linewidth(3)
-        ax.set_title(f"{c:.2f} %   D = {D[c]:.2f}", fontsize=14,
-                     color=edge, fontweight="bold", pad=5)
+            s.set_edgecolor(edge if focused else "0.6")
+            s.set_linewidth(3)
+        if focused:
+            title = f"{c:.2f} %   D = {reliable[c][0]:.2f}"
+            tcol = edge
+        else:
+            title = f"{c:.2f} %   defocused"
+            tcol = "0.5"
+        ax.set_title(title, fontsize=14, color=tcol, fontweight="bold", pad=5)
+        if not focused:                      # grey wash over the unreliable crops
+            ax.add_patch(plt.Rectangle((0, 0), 1, 1, transform=ax.transAxes,
+                                       color="white", alpha=0.4, zorder=5))
     return save(fig, "D_vs_concentration_with_crops")
 
 
@@ -450,21 +484,21 @@ def fig_R_dRdt_grid(runs):
 
 def main():
     runs = [load_run(r) for r in RUNS]
-    Dbox = load_boxcount_D()
+    reliable = load_reliable()
 
     f1, fill = fig_fill_fraction(runs)
-    f2, Dvals = fig_D_vs_conc(runs, Dbox)
+    f2, Dvals = fig_D_vs_conc(reliable)
     f3, rates = fig_growth_rate(runs)
     f4 = fig_R_dRdt_grid(runs)
-    f5 = fig_D_with_crops(runs, Dbox)
+    f5 = fig_D_with_crops(runs, reliable)
 
     print("\n=== fill fraction phi = M/(pi R^2) (median, 16pct, 84pct) ===")
     for c, m, lo, hi in fill:
         print(f"  {c:.2f}% : {m:.4f}  [{lo:.4f}, {hi:.4f}]")
 
-    print("\n=== box-counting D vs conc (both weeks) ===")
+    print("\n=== reliable fractal D vs conc (focused runs) ===")
     for c, d in Dvals:
-        print(f"  {c:.2f}% : D = {d:.3f} +/- {D_SYS_FLOOR:.2f}")
+        print(f"  {c:.2f}% : D = {d:.3f}")
 
     print("\n=== growth rate [um/s] ===")
     for c, g, e in rates:
