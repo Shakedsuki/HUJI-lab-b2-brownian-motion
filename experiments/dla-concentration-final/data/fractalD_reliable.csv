@@ -1,0 +1,10 @@
+# Reliable-bucket fractal dimensions -- FOCUSED runs only, box-counting on the
+# faithful mask (no hole-fill), fit window [branch width, R/3], verified by a
+# window-stability sweep (D stable to ~+/-0.05 as cutoffs vary, excl. finite-size).
+# Sandbox estimator rejected for these (anisotropy-biased; failed on 0.06).
+# Defocused runs (0.30/0.45/0.56) are NOT reliably measurable and are excluded.
+conc,D_reliable,unc,D_pipeline_old,branch_w_mm,window_decades,note
+0.02,1.69,0.05,1.611,0.24,1.07,open fractal near DLA; clean plateau ~1.66
+0.04,1.91,0.05,1.887,0.20,1.18,near space-filling; plateau ~1.9
+0.06,1.87,0.04,1.887,0.28,1.08,cleanest plateau of the four
+0.15,1.87,0.06,1.886,0.41,0.72,box-count 1.87 (sandbox 1.73 was anisotropy artifact)
