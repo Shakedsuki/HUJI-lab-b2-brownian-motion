@@ -128,6 +128,15 @@ RUNS = [
 ]
 
 EXCLUDED_CONC = 0.30    # annotated on the D figure so the gap is explained
+LAMP_CONCS = tuple(r["conc"] for r in RUNS if r.get("lamp"))
+LAMP_LABEL = "heat-lamp on during run (convection)"
+
+
+def lamp_star(ax, x, y, dx=-13, dy=2):
+    """The asterisk marking a heat-lamp-affected point, for prose reference."""
+    ax.annotate("*", (x, y), textcoords="offset points", xytext=(dx, dy),
+                fontsize=26, color="k", ha="center", va="center",
+                fontweight="bold")
 
 
 # --------------------------------------------------------------- loaders ---
@@ -282,6 +291,11 @@ def fig_fill_fraction(runs):
         dy = 14 if i % 2 == 0 else -22     # stagger to avoid label collisions
         ax.annotate(f"{m:.2f}", (c, m), textcoords="offset points",
                     xytext=(9, dy), fontsize=LABEL_FS, color="C0")
+    for c, m in zip(concs, med):
+        if c in LAMP_CONCS:
+            lamp_star(ax, c, m)
+    ax.plot([], [], ls="none", marker="$*$", ms=13, color="k",
+            label=LAMP_LABEL)
     ax.set_xlabel("CuSO$_4$ concentration [%]")
     ax.set_ylabel(r"occupancy  $\phi = M / \pi R^2$")
     ax.grid(alpha=0.3)
@@ -314,6 +328,11 @@ def _plot_D(ax, reliable):
     ax.text(EXCLUDED_CONC, 1.63, "0.30 % excluded\n(defocused)",
             ha="center", va="center", color="0.45", fontsize=11.5,
             style="italic")
+    for c in LAMP_CONCS:
+        if c in reliable:
+            lamp_star(ax, c, reliable[c][0])
+    ax.plot([], [], ls="none", marker="$*$", ms=13, color="k",
+            label=LAMP_LABEL)
     ax.set_xlabel("CuSO$_4$ concentration [%]")
     ax.set_ylabel("effective fractal dimension  D")
     ax.set_xlim(-0.01, 0.62); ax.set_ylim(1.45, 2.07)
@@ -425,7 +444,8 @@ def fig_D_with_crops(runs, reliable):
             s.set_edgecolor(edge if focused else "0.6")
             s.set_linewidth(3)
         if focused:
-            title = f"{c:.2f} %   D = {reliable[c][0]:.2f}"
+            star = "*" if run.get("lamp") else ""
+            title = f"{c:.2f} %{star}   D = {reliable[c][0]:.2f}"
             tcol = edge
         else:
             title = f"{c:.2f} %   defocused"
@@ -454,12 +474,9 @@ def fig_growth_rate(runs):
     # (convection may inflate the transport-limited rate)
     for r, g in zip(runs, rate):
         if r.get("lamp"):
-            ax.annotate("*", (r["conc"], g), textcoords="offset points",
-                        xytext=(-13, 2), fontsize=26, color="k",
-                        ha="center", va="center", fontweight="bold")
-    if any(r.get("lamp") for r in runs):
-        ax.plot([], [], ls="none", marker="$*$", ms=13, color="k",
-                label="heat-lamp on during run (convection)")
+            lamp_star(ax, r["conc"], g)
+    ax.plot([], [], ls="none", marker="$*$", ms=13, color="k",
+            label=LAMP_LABEL)
     # log x with a tick at every measured concentration: the concentrations
     # are log-spaced, so linear ticks leave 0.02/0.04/0.06 unreadable
     ax.set_xscale("log")
@@ -501,8 +518,10 @@ def fig_R_dRdt_grid(runs):
         ax.set_xlabel("time [s]")
         ax.set_ylabel("enclosing R [mm]", color=c)
         ax.tick_params(axis="y", labelcolor=c)
-        # panel identifier (data label, not a title) in the top-right corner
-        ax.text(0.97, 0.06, f"{r['conc']:.2f} %", transform=ax.transAxes,
+        # panel identifier (data label, not a title) in the top-right corner;
+        # asterisk = heat-lamp-affected run (see growth-rate figure legend)
+        tag = f"{r['conc']:.2f} %" + ("*" if r.get("lamp") else "")
+        ax.text(0.97, 0.06, tag, transform=ax.transAxes,
                 ha="right", va="bottom", fontweight="bold", fontsize=17, color=c)
         ax.grid(alpha=0.25)
         axd = ax.twinx()
@@ -526,7 +545,8 @@ def fig_R_dRdt_grid(runs):
         m = edge_free(r) & detection_settled(r)
         t = r["t"][m]; R = smooth(r["Rraw"][m] / r["ppm"], 9)
         c = dark(color(r["conc"]))
-        ax.plot(t, R, color=c, lw=2.4, label=f"{r['conc']:.2f} %")
+        lab = f"{r['conc']:.2f} %" + ("*" if r.get("lamp") else "")
+        ax.plot(t, R, color=c, lw=2.4, label=lab)
         dx, dy, ha = TIP[r["conc"]]
         ax.annotate(f"{R[-1]:.1f} mm", (t[-1], R[-1]),
                     textcoords="offset points", xytext=(dx, dy), ha=ha,
