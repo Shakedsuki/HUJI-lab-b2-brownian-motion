@@ -41,7 +41,6 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import cm
-from matplotlib.colors import Normalize
 from matplotlib.gridspec import GridSpec
 
 HERE = Path(__file__).resolve().parent
@@ -221,10 +220,12 @@ def fill_fraction(run):
 
 # --------------------------------------------------------------- colours ---
 
-CONCS = [r["conc"] for r in RUNS]
-NORM = Normalize(vmin=min(CONCS), vmax=max(CONCS))
+CONCS = sorted(r["conc"] for r in RUNS)
 CMAP = cm.viridis
-color = lambda c: CMAP(NORM(c))
+# colour by RANK, not by value: the concentrations are log-spaced, so a
+# value-linear mapping squeezes 0.02/0.04/0.06 into near-identical purples.
+_POS = {c: i / (len(CONCS) - 1) for i, c in enumerate(CONCS)}
+color = lambda c: CMAP(_POS[round(c, 2)])
 
 
 def dark(rgba, f=0.72):
@@ -465,11 +466,20 @@ def fig_R_dRdt_grid(runs):
 
     # right column, full height: all runs' R(t) overlaid, coloured by conc
     ax = fig.add_subplot(gs[:, 2])
+    # per-run placement of the final-R tip label, chosen so no label sits on
+    # a neighbouring curve: (dx, dy) in points + horizontal alignment
+    TIP = {0.02: (7, -3, "left"), 0.04: (2, 12, "center"),
+           0.06: (7, -3, "left"), 0.15: (7, 8, "left"),
+           0.45: (-7, 2, "right"), 0.56: (7, 2, "left")}
     for r in runs:
         m = edge_free(r)
         t = r["t"][m]; R = smooth(r["Rc"][m] / r["ppm"], 9)
-        ax.plot(t, R, color=dark(color(r["conc"])), lw=2.4,
-                label=f"{r['conc']:.2f} %")
+        c = dark(color(r["conc"]))
+        ax.plot(t, R, color=c, lw=2.4, label=f"{r['conc']:.2f} %")
+        dx, dy, ha = TIP[r["conc"]]
+        ax.annotate(f"{R[-1]:.1f} mm", (t[-1], R[-1]),
+                    textcoords="offset points", xytext=(dx, dy), ha=ha,
+                    va="center", fontsize=13.5, color=c, fontweight="bold")
     ax.set_xlabel("time [s]"); ax.set_ylabel("enclosing R [mm]")
     ax.text(0.97, 0.02, "all runs", transform=ax.transAxes, ha="right",
             va="bottom", fontweight="bold", fontsize=19, color="0.25")
