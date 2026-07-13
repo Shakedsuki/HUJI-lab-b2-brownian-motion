@@ -39,13 +39,12 @@ python scripts/report_figures.py      # writes all four figures to figures/
    "defocused" — visibly blurred blobs, which is *why* their D is not reliable.
    The sparse open cluster (0.02 %, D≈1.7) vs the dense morphologies (≥0.04 %,
    D≈1.9) is directly visible. Crops in `figures/crops/`.
-6. **`screening_DLA_vs_dense.png`** — *explanatory (Discussion) figure:* why our
-   D exceeds the ideal DLA value 1.71. Side-by-side of our **real segmented
-   deposits** — the open 0.02 % run (strong screening, open interior, D=1.69 ≈
-   DLA) vs the dense 0.06 % run (weak screening, filled interior, D=1.87 →
-   compact) — with schematic incoming-ion arrows and our measured φ and D. A
-   bottom D-scale places all four focused runs between DLA (1.71) and compact
-   (2.0). Grounded on real data, not a simulation. Built by `screening_figure.py`.
+6. **`screening_masks.png` / `screening_crops.png`** — *open-vs-dense comparison*
+   (Discussion figure for why D > DLA 1.71): two clean panels, our real 0.02 %
+   deposit (open, D=1.69 ≈ DLA) vs 0.06 % (dense, D=1.87 → compact), with mm axes
+   and a minimal conc+D tag. Two versions — **masks** (black-on-white segmented
+   structure) and **crops** (colour video frame). All explanatory text lives in
+   the report caption, not on the figure. Built by `screening_figure.py`.
 
 ## Method decisions (read before quoting numbers)
 

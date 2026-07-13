@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Educational figure: idealized DLA vs our dense deposits — why D > 1.71.
+"""Open-vs-dense deposit comparison (why D > DLA 1.71) — two clean panels.
 
-Grounded on REAL segmented deposits (not a simulation): the open 0.02 % run
-(D=1.69, near DLA) vs the dense 0.06 % run (D=1.87). Overlays the screening
-mechanism (strong vs weak) and anchors on our measured occupancy phi and D.
-Needs WEEK5_VIDEO_DIR + ffmpeg.
+Bare scientific two-panel figure (no on-figure prose; caption goes in the
+report): our real 0.02 % deposit (open, D=1.69 ~ DLA) vs 0.06 % (dense, D=1.87).
+Two versions are written:
+  * screening_masks.png/pdf  -- black-on-white segmented deposit
+  * screening_crops.png/pdf  -- colour video crop
+Each panel has mm axes and a minimal "conc + D" tag. Needs WEEK5_VIDEO_DIR + ffmpeg.
 """
 
 import csv, importlib.util, os, shutil, subprocess, sys, tempfile
@@ -12,8 +14,6 @@ from pathlib import Path
 import cv2, numpy as np
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
-from matplotlib.patches import FancyArrowPatch
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
@@ -22,23 +22,21 @@ FIGS = ROOT / "figures"
 VDIR5 = Path(os.environ.get("WEEK5_VIDEO_DIR",
              r"C:\dev\brownian-motion\experiments\week5-dla-concentration\raw-videos"))
 
+plt.rcParams.update({
+    "figure.dpi": 300, "savefig.dpi": 300, "savefig.bbox": "tight",
+    "font.size": 14, "axes.labelsize": 15, "xtick.labelsize": 12,
+    "ytick.labelsize": 12, "axes.linewidth": 1.0,
+})
+
 
 def load_er(p, n):
     s = importlib.util.spec_from_file_location(n, p); m = importlib.util.module_from_spec(s)
     sys.modules[n] = m; s.loader.exec_module(m); return m
 ER = load_er(W5 / "scripts" / "enclosing_radius.py", "er_w5")
 
-# real measured values (reliable bucket + fill-fraction)
 PANELS = [
-    dict(conc=0.02, vid="run1_0.02con.mov", tag="run1_c0.02", D=1.69, phi=0.16,
-         kind="DIFFUSION-LIMITED  (ideal DLA)", accent="#1f77b4",
-         note="strong screening", detail="tips catch ions first — interior stays empty",
-         interior="open interior", branch="sparse, open branches", ref="≈ DLA 1.71"),
-    dict(conc=0.06, vid="run3_0.06C.mov", tag="run3_c0.06", D=1.87, phi=0.61,
-         kind="MIGRATION / CONVECTION-DRIVEN  (higher conc.)", accent="#d62728",
-         note="weak screening", detail="ions add throughout — interior fills in",
-         interior="filled interior", branch="dense, space-filling branches",
-         ref="→ compact 2"),
+    dict(letter="a", conc=0.02, vid="run1_0.02con.mov", tag="run1_c0.02", D=1.69),
+    dict(letter="b", conc=0.06, vid="run3_0.06C.mov", tag="run3_c0.06", D=1.87),
 ]
 
 
@@ -67,8 +65,8 @@ def faithful_mask(er, bgr, ref):
     return out
 
 
-def grab_mask(p):
-    t = ppm = None
+def grab(p):
+    ppm = None
     for line in open(W5 / "data" / f"radius_{p['tag']}.csv"):
         if line.startswith("# px_per_mm"):
             ppm = float(line.split("=")[1].split("+/-")[0])
@@ -84,97 +82,55 @@ def grab_mask(p):
     fp = tmp / "f.png"
     subprocess.run([ER.FFMPEG, "-hide_banner", "-loglevel", "error", "-ss", f"{t:.3f}",
                     "-i", str(path), "-frames:v", "1", str(fp)], check=True)
-    mask = faithful_mask(ER, cv2.imread(str(fp)), ref)
+    bgr = cv2.imread(str(fp))
+    mask = faithful_mask(ER, bgr, ref)
     shutil.rmtree(tmp, ignore_errors=True)
+    # common crop box = deposit bounding box + 8 % pad
     ys, xs = np.nonzero(mask)
-    pad = int(0.10 * max(np.ptp(ys), np.ptp(xs)))
-    y0, y1 = max(0, ys.min() - pad), ys.max() + pad
-    x0, x1 = max(0, xs.min() - pad), xs.max() + pad
-    return mask[y0:y1, x0:x1]
+    pad = int(0.08 * max(np.ptp(ys), np.ptp(xs)))
+    y0, y1 = max(0, ys.min() - pad), min(mask.shape[0], ys.max() + pad)
+    x0, x1 = max(0, xs.min() - pad), min(mask.shape[1], xs.max() + pad)
+    m = mask[y0:y1, x0:x1]
+    rgb = cv2.cvtColor(bgr[y0:y1, x0:x1], cv2.COLOR_BGR2RGB)
+    return dict(mask=m, rgb=rgb, ppm=ppm, **p)
 
 
-def draw_panel(ax, mask, p):
-    H, W = mask.shape
-    ax.imshow(mask, cmap="gray_r", vmin=0, vmax=1)
-    ax.set_xlim(-0.28 * W, 1.28 * W); ax.set_ylim(1.28 * H, -0.28 * H)
-    ax.set_xticks([]); ax.set_yticks([])
-    for s in ax.spines.values():
-        s.set_edgecolor(p["accent"]); s.set_linewidth(2.5)
-    cx, cy = W / 2, H / 2
-    R = 0.5 * max(H, W)
-    # incoming-ion arrows (schematic): 10 arrows aimed at the deposit
-    for k, th in enumerate(np.linspace(0, 2 * np.pi, 10, endpoint=False)):
-        r0, r1 = 1.24 * R, 1.03 * R
-        x0, y0 = cx + r0 * np.cos(th), cy + r0 * np.sin(th)
-        x1, y1 = cx + r1 * np.cos(th), cy + r1 * np.sin(th)
-        ax.add_patch(FancyArrowPatch((x0, y0), (x1, y1), arrowstyle="-|>",
-                     mutation_scale=11, lw=1.3, color=p["accent"], alpha=0.6))
-    # title + run label
-    ax.set_title(p["kind"], fontsize=13.5, color=p["accent"], fontweight="bold", pad=12)
-    ax.text(0.03, 0.98, f"our {p['conc']:.2f}% run", transform=ax.transAxes,
-            ha="left", va="top", fontsize=11.5, fontweight="bold",
-            bbox=dict(boxstyle="round,pad=0.25", fc="white", ec="0.8", lw=1))
-    ax.text(0.5, 0.02, "← incoming Cu²⁺ ions (random walk) →", transform=ax.transAxes,
-            ha="center", va="bottom", fontsize=9.5, color=p["accent"], style="italic")
-    # feature callouts to the real deposit
-    ax.annotate(p["branch"], xy=(cx + 0.35 * R, cy - 0.35 * R),
-                xytext=(1.05 * W, 0.12 * H), fontsize=10.5, color="0.15",
-                arrowprops=dict(arrowstyle="->", color="0.35", lw=1.3))
-    ax.annotate(p["interior"], xy=(cx, cy), xytext=(-0.27 * W, 0.95 * H),
-                fontsize=10.5, color="0.15",
-                arrowprops=dict(arrowstyle="->", color="0.35", lw=1.3))
-    # consolidated banner below the panel: screening -> mechanism -> our values
-    banner = (f"{p['note'].upper()}\n{p['detail'].replace(chr(10), ' ')}\n"
-              f"φ = {p['phi']:.2f}     D = {p['D']:.2f}  {p['ref']}")
-    ax.text(0.5, -0.06, banner, transform=ax.transAxes, ha="center", va="top",
-            fontsize=11.5, color=p["accent"], fontweight="bold", linespacing=1.5,
-            bbox=dict(boxstyle="round,pad=0.5", fc="white", ec=p["accent"], lw=1.8))
+def render(data, kind):
+    fig, axes = plt.subplots(1, 2, figsize=(11.5, 5.9))
+    for ax, d in zip(axes, data):
+        img = d["mask"] if kind == "mask" else d["rgb"]
+        H, W = img.shape[:2]
+        wmm, hmm = W / d["ppm"], H / d["ppm"]
+        img = np.flipud(img)                          # origin lower -> y increases up
+        if kind == "mask":
+            ax.imshow(img, cmap="gray_r", vmin=0, vmax=1, origin="lower",
+                      extent=[0, wmm, 0, hmm], interpolation="nearest")
+        else:
+            ax.imshow(img, origin="lower", extent=[0, wmm, 0, hmm])
+        ax.set_aspect("equal")
+        ax.set_xlabel("x [mm]"); ax.set_ylabel("y [mm]")
+        tagcol = "black" if kind == "mask" else "white"
+        ax.text(0.035, 0.965, f"({d['letter']})  {d['conc']:.2f} %   D = {d['D']:.2f}",
+                transform=ax.transAxes, ha="left", va="top", fontsize=13,
+                fontweight="bold", color=tagcol,
+                bbox=dict(boxstyle="round,pad=0.3", fc="black" if kind != "mask" else "white",
+                          ec="0.5", alpha=0.55 if kind != "mask" else 0.85, lw=0.8))
+    fig.tight_layout()
+    stem = f"screening_{'masks' if kind == 'mask' else 'crops'}"
+    fig.savefig(FIGS / f"{stem}.png"); fig.savefig(FIGS / f"{stem}.pdf")
+    plt.close(fig)
+    print(f"-> {FIGS / stem}.png/.pdf")
 
 
 def main():
-    masks = [grab_mask(p) for p in PANELS]
-    fig = plt.figure(figsize=(14.5, 10.5))
-    gs = GridSpec(2, 2, figure=fig, height_ratios=[3.2, 0.9], hspace=0.72, wspace=0.28)
-    for i, (p, m) in enumerate(zip(PANELS, masks)):
-        draw_panel(fig.add_subplot(gs[0, i]), m, p)
-
-    # middle transition arrow (figure coords)
-    fig.patches.append(FancyArrowPatch((0.47, 0.78), (0.53, 0.78),
-                       transform=fig.transFigure, arrowstyle="-|>",
-                       mutation_scale=26, lw=2.5, color="0.35"))
-    fig.text(0.5, 0.66, "more CuSO₄\n+ electric field\n→ migration &\nconvection\n→ weaker\nscreening",
-             ha="center", va="center", fontsize=10, color="0.3", style="italic",
-             bbox=dict(boxstyle="round,pad=0.4", fc="#f4f4f4", ec="0.7"))
-
-    # bottom: the D scale, where our deposits sit
-    ax = fig.add_subplot(gs[1, :])
-    ax.set_xlim(1.6, 2.03); ax.set_ylim(0, 1)
-    ax.axvspan(1.71, 2.0, color="0.88", alpha=0.6)
-    ax.axvline(1.71, color="k", ls="--", lw=1.6)
-    ax.text(1.71, 1.10, "ideal 2D DLA (1.71)", ha="center", va="bottom", fontsize=10.5)
-    ax.axvline(2.0, color="0.5", ls=":", lw=1.6)
-    ax.text(2.0, 1.10, "compact (2.0)", ha="center", va="bottom", fontsize=10.5)
-    # our points; 0.06 & 0.15 coincide at 1.87 -> merge
-    pts = [(1.69, "#1f77b4", "0.02%"), (1.87, "#c0392b", "0.06 & 0.15%"),
-           (1.91, "#7a2b2b", "0.04%")]
-    for d, col, lab in pts:
-        ax.plot(d, 0.5, "o", ms=14, color=col, zorder=5)
-        ax.annotate(lab, (d, 0.5), textcoords="offset points", xytext=(0, -26),
-                    ha="center", fontsize=10, color=col, fontweight="bold")
-    ax.set_yticks([])
-    ax.set_xlabel("measured effective fractal dimension  D", fontsize=12.5)
-    ax.set_title("all our deposits sit between ideal DLA and compact — none at 1.71 except the most dilute",
-                 fontsize=11.5, pad=26)
-    for s in ("left", "right", "top"):
-        ax.spines[s].set_visible(False)
-
-    fig.suptitle("Why our fractal dimension exceeds the ideal DLA value (1.71)",
-                 fontsize=16.5, fontweight="bold", y=0.995)
-    out = FIGS / "screening_DLA_vs_dense.png"
-    fig.savefig(out, dpi=200, bbox_inches="tight"); fig.savefig(out.with_suffix(".pdf"),
-                                                                bbox_inches="tight")
-    plt.close(fig)
-    print(f"-> {out}")
+    data = [grab(p) for p in PANELS]
+    render(data, "mask")
+    render(data, "crop")
+    # remove the old verbose figure
+    for ext in (".png", ".pdf"):
+        old = FIGS / f"screening_DLA_vs_dense{ext}"
+        if old.exists():
+            old.unlink()
 
 
 if __name__ == "__main__":
