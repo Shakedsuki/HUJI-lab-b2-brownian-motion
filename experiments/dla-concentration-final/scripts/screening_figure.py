@@ -85,28 +85,55 @@ def grab(p):
     bgr = cv2.imread(str(fp))
     mask = faithful_mask(ER, bgr, ref)
     shutil.rmtree(tmp, ignore_errors=True)
-    # common crop box = deposit bounding box + 8 % pad
     ys, xs = np.nonzero(mask)
-    pad = int(0.08 * max(np.ptp(ys), np.ptp(xs)))
-    y0, y1 = max(0, ys.min() - pad), min(mask.shape[0], ys.max() + pad)
-    x0, x1 = max(0, xs.min() - pad), min(mask.shape[1], xs.max() + pad)
-    m = mask[y0:y1, x0:x1]
-    rgb = cv2.cvtColor(bgr[y0:y1, x0:x1], cv2.COLOR_BGR2RGB)
-    return dict(mask=m, rgb=rgb, ppm=ppm, **p)
+    cy, cx = int(round(ys.mean())), int(round(xs.mean()))
+    ext = int(max(np.ptp(ys), np.ptp(xs)))
+    rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+    return dict(full_mask=mask, full_rgb=rgb, cx=cx, cy=cy, ext=ext, ppm=ppm, **p)
+
+
+def crop_square(arr, cx, cy, side, fill):
+    """A `side`x`side` window centred on (cx, cy), cut from the REAL frame so the
+    surround is genuine paper (no synthetic seam). Out-of-frame shortfall (rare)
+    is filled with `fill`."""
+    H, W = arr.shape[:2]
+    half = side // 2
+    y0, x0 = cy - half, cx - half
+    # keep the window inside the frame where it fits -> real paper, no fill strip
+    if side <= H:
+        y0 = min(max(y0, 0), H - side)
+    if side <= W:
+        x0 = min(max(x0, 0), W - side)
+    if arr.ndim == 2:
+        out = np.full((side, side), fill, arr.dtype)
+    else:
+        out = np.empty((side, side, 3), arr.dtype); out[:] = fill
+    vy0, vy1 = max(0, y0), min(H, y0 + side)
+    vx0, vx1 = max(0, x0), min(W, x0 + side)
+    out[vy0 - y0:vy1 - y0, vx0 - x0:vx1 - x0] = arr[vy0:vy1, vx0:vx1]
+    return out
 
 
 def render(data, kind):
     fig, axes = plt.subplots(1, 2, figsize=(11.5, 5.9))
+    # one common square window (px) + common calibration -> identical panel boxes,
+    # each deposit at its true relative size (directly comparable).
+    frame_min = min(min(d["full_mask"].shape) for d in data)
+    side = min(int(max(d["ext"] for d in data) * 1.15), frame_min)
+    ppm = float(np.mean([d["ppm"] for d in data]))
+    mm = side / ppm
     for ax, d in zip(axes, data):
-        img = d["mask"] if kind == "mask" else d["rgb"]
-        H, W = img.shape[:2]
-        wmm, hmm = W / d["ppm"], H / d["ppm"]
+        if kind == "mask":
+            img = crop_square(d["full_mask"], d["cx"], d["cy"], side, 0)
+        else:
+            fill = np.median(d["full_rgb"][:20], axis=(0, 1)).astype(d["full_rgb"].dtype)
+            img = crop_square(d["full_rgb"], d["cx"], d["cy"], side, fill)
         img = np.flipud(img)                          # origin lower -> y increases up
         if kind == "mask":
             ax.imshow(img, cmap="gray_r", vmin=0, vmax=1, origin="lower",
-                      extent=[0, wmm, 0, hmm], interpolation="nearest")
+                      extent=[0, mm, 0, mm], interpolation="nearest")
         else:
-            ax.imshow(img, origin="lower", extent=[0, wmm, 0, hmm])
+            ax.imshow(img, origin="lower", extent=[0, mm, 0, mm])
         ax.set_aspect("equal")
         ax.set_xlabel("x [mm]"); ax.set_ylabel("y [mm]")
         tagcol = "black" if kind == "mask" else "white"
