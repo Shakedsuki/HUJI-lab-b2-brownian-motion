@@ -95,10 +95,13 @@ limited, so the fit is artificially tight) — treat them as a lower bound.
   from 0.06–0.45 and the slight dip at 0.56 % mean φ is **not strictly monotone**
   in concentration; it saturates, mirroring the D plateau. Don't over-claim a
   linear φ(conc).
-- **The dR/dt plateau at ≈90 µm/s early in the dense runs is the continuity cap**
-  (3× the fastest front) in the reported envelope, not a physical constant —
-  growth-law exponents upstream use the uncapped `circ_R_raw_px`, so the cap
-  never enters a fit.
+- **The R/dR-dt grid and the growth-rate fit use the UNCAPPED envelope**
+  (`circ_R_raw_px`), with the initial detection transient trimmed and the
+  derivative masked around detection catch-up events (super-physical
+  single-sample jumps). The reported/capped series' fake ≈90 µm/s ramp and
+  hand-off drop therefore no longer appear anywhere; the capped series is
+  only used upstream where a monotone display envelope is wanted (overlay
+  videos).
 - **Do not read a down-turn at 0.56 %.** Its D (1.86) and growth rate (28 vs
   32 µm/s at 0.45 %) sit slightly below the 0.45 % values, but within errors;
   values inside the dense band are not rankable (window systematics overlap).

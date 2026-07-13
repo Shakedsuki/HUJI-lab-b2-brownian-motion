@@ -140,8 +140,8 @@ def load_run(run):
     r = list(csv.DictReader(body))
     g = lambda k: np.array([float(x[k]) for x in r])
     out = dict(run)
-    out.update(t=g("t_s"), M=g("M_px"), Rc=g("circ_R_px"), edge=g("edge"),
-               ppm=ppm)
+    out.update(t=g("t_s"), M=g("M_px"), Rc=g("circ_R_px"),
+               Rraw=g("circ_R_raw_px"), edge=g("edge"), ppm=ppm)
     return out
 
 
@@ -178,12 +178,38 @@ def edge_free(run):
     return (run["edge"] == 0) & (run["M"] > 0)
 
 
+def detection_settled(run, window_s=60.0, tol_px=2.0):
+    """boolean mask: past the initial detection transient.
+
+    Early on, segmentation admits the young deposit in a batch: the UNCAPPED
+    envelope steps super-physically (mm per sample) and the capped/reported R
+    replays the step as a fake 90 um/s ramp. Both series are corrupted until
+    they agree again (the hand-off). Frames before the last early frame where
+    the cap still lags the raw envelope are display/fit-worthless."""
+    lag = (run["Rraw"] - run["Rc"] > tol_px) & (run["t"] < window_s)
+    idx = np.where(lag)[0]
+    return run["t"] > (run["t"][idx[-1]] if len(idx) else -np.inf)
+
+
+def mask_catchup(dR, R_mm, t, ppm, step_px=4.0, half=5):
+    """NaN-out the derivative around detection catch-up events: single-sample
+    envelope jumps far beyond pixel quantisation (> step_px) are segmentation
+    admitting already-grown structure, not a growth speed. The smoothing
+    window spreads such a step over ~9 samples, so mask +/-`half` around it."""
+    jump = np.abs(np.diff(R_mm)) * ppm > step_px
+    out = dR.copy()
+    for i in np.where(jump)[0]:
+        out[max(0, i - half):i + half + 2] = np.nan
+    return out
+
+
 def growth_rate_umps(run):
     """Late-time linear front speed [um/s] from a straight-line fit of the
-    enclosing radius over the edge-free frames past the early transient.
-    Returns (rate, stderr) in um/s."""
-    m = edge_free(run)
-    t, R = run["t"][m], run["Rc"][m] / run["ppm"]   # s, mm
+    UNCAPPED enclosing radius over the edge-free frames past the detection
+    transient (the capped series' fake catch-up ramp would otherwise leak
+    ~+5% into the 0.45% fit). Returns (rate, stderr) in um/s."""
+    m = edge_free(run) & detection_settled(run)
+    t, R = run["t"][m], run["Rraw"][m] / run["ppm"]   # s, mm
     if len(t) < 6:
         return np.nan, np.nan
     Rmax = R.max()
@@ -437,12 +463,15 @@ def fig_R_dRdt_grid(runs):
                   hspace=0.30, wspace=0.42)
     axes = [fig.add_subplot(gs[i // 2, i % 2]) for i in range(len(runs))]
     for ax, r in zip(axes, runs):
-        m = edge_free(r)
+        # UNCAPPED envelope, past the detection transient: the capped series'
+        # fake 90 um/s ramp + hand-off drop never enter the figure
+        m = edge_free(r) & detection_settled(r)
         t = r["t"][m]
-        R = r["Rc"][m] / r["ppm"]                    # mm
+        R = r["Rraw"][m] / r["ppm"]                  # mm
         Rs = smooth(R, 9)
-        # derivative of the smoothed radius, in um/s
-        dR = np.gradient(Rs, t) * 1000.0
+        # derivative of the smoothed radius, in um/s; detection catch-up
+        # events (super-physical envelope jumps) are masked out
+        dR = mask_catchup(np.gradient(Rs, t) * 1000.0, R, t, r["ppm"])
         c = dark(color(r["conc"]))     # darkened: raw viridis yellow (0.56 %)
                                        # is barely visible on white
         ax.plot(t, R, color="0.75", lw=0.8, label="R (raw)")
@@ -472,8 +501,8 @@ def fig_R_dRdt_grid(runs):
            0.06: (7, -3, "left"), 0.15: (7, 8, "left"),
            0.45: (-7, 2, "right"), 0.56: (7, 2, "left")}
     for r in runs:
-        m = edge_free(r)
-        t = r["t"][m]; R = smooth(r["Rc"][m] / r["ppm"], 9)
+        m = edge_free(r) & detection_settled(r)
+        t = r["t"][m]; R = smooth(r["Rraw"][m] / r["ppm"], 9)
         c = dark(color(r["conc"]))
         ax.plot(t, R, color=c, lw=2.4, label=f"{r['conc']:.2f} %")
         dx, dy, ha = TIP[r["conc"]]

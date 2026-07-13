@@ -122,8 +122,20 @@ curve only at staircase corners.
 **Quantified ramp-leak check (2026-07-13):** refitting the growth rates
 with cap-limited frames excluded moves 0.45 % from 32.0 → 30.3 µm/s (~5 %,
 the largest shift — its ramp reaches into the fit window R ≥ 0.35 Rmax),
-0.02 % from 14.2 → 13.5, and all others by ≤ 0.2 µm/s. Within the stated
-systematics; quote 0.45 % as ~30–32 µm/s if pressed.
+0.02 % from 14.2 → 13.5, and all others by ≤ 0.2 µm/s.
+
+**FIX APPLIED (same day):** the artifacts were confirmed to be pure
+methodology — the UNCAPPED envelope (`circ_R_raw_px`) steps 0.5 → 1.9 mm in
+a single 0.5 s sample (~2700 µm/s, physically impossible), i.e. the ramp is
+detection latency replayed by the reporting cap, not clipped real growth.
+The grid figure now (a) plots the uncapped envelope, (b) trims the initial
+detection transient (frames where the capped series still lags the raw one),
+and (c) masks the derivative around detection catch-up events
+(single-sample envelope jumps > 4 px). The flat-tops, hand-off cliff, and
+fake stall no longer appear; dR/dt gaps mark where detection, not growth,
+moved the envelope. The growth-rate fit uses the same uncapped/trimmed
+series, so the quoted rates are now 14.2 / 12.0 / 19.2 / 22.4 / **30.2** /
+27.9 µm/s (0.45 % corrected from 32.0).
 
 **Do the radii match the expected concentration dependence?** Compare
 slopes and same-time radii, never final values: final R is set by run
