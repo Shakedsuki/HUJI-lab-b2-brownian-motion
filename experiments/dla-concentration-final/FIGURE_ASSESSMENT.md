@@ -59,9 +59,16 @@ what must not be over-claimed.
   mobility, only weakly by concentration. **Verify these citations against
   the originals before formal use.**
 - **Confound to disclose:** the 0.45 % run was lamp-heated throughout;
-  thermal convection enhances transport, so part of its 32 µm/s peak may be
-  heating, not concentration. The 0.45 → 0.56 "down-turn" (32 → 28) is
-  therefore not evidence of a real maximum.
+  thermal convection enhances transport, so part of its 30.2 µm/s peak may
+  be heating, not concentration. The 0.45 → 0.56 "down-turn" (30 → 28) is
+  therefore not evidence of a real maximum. The point carries an asterisk
+  on the figure for reference from the prose.
+- **Lamp audit (paper R/B colour ratio per run, all measured windows):**
+  0.45 % is the ONLY affected measurement — R/B ≈ 1.40 from t = 10 s to the
+  end vs 0.95–0.96 neutral everywhere else. 0.56 %'s lamp only comes on at
+  t ≈ 400 s (R/B 0.96 → 1.18), after its grounded frame (198 s) and after
+  the 200–330 s stack window, so none of its quoted numbers are affected;
+  the excluded 0.30 % and all three week-5 runs are neutral throughout.
 - The 0.02/0.04 inversion (14.2 vs 12.1) is within run-to-run systematics
   (cell gap, wire geometry) — the plotted ±1σ fit bars badly understate true
   uncertainty (reported R is smoothness-capped; treat bars as lower bounds).

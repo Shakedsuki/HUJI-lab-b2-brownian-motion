@@ -116,8 +116,13 @@ RUNS = [
          video=VDIR4 / "run4_0.15.mov", tmeas=212),
     # 0.30 % (run 3 0.3.mov) intentionally absent: excluded for defocus --
     # see module docstring.
+    # lamp=True: heat lamp on for the WHOLE run (paper R/B ~ 1.40 vs 0.95
+    # neutral) -> thermal convection may inflate its transport-limited
+    # numbers; flagged with an asterisk on the growth-rate figure. The only
+    # affected run: 0.56's lamp only comes on at t ~ 400 s, after every
+    # measured window; all other runs are neutral throughout.
     dict(conc=0.45, week=4, csv=W4 / "data" / "radius_run2_c0.45.csv",
-         video=VDIR4 / "run 2 0.45 concen.mov", tmeas=148),
+         video=VDIR4 / "run 2 0.45 concen.mov", tmeas=148, lamp=True),
     dict(conc=0.56, week=4, csv=W4 / "data" / "radius_run1_c0.56.csv",
          video=VDIR4 / "run 1 0.56 Concertation.mov", tmeas=198),
 ]
@@ -445,6 +450,16 @@ def fig_growth_rate(runs):
         dy = 14 if i % 2 == 0 else -22     # stagger to avoid label collisions
         ax.annotate(f"{g:.1f}", (c, g), textcoords="offset points",
                     xytext=(9, dy), fontsize=LABEL_FS, color="C3")
+    # heat-lamp-affected run(s): asterisk for reference from the prose
+    # (convection may inflate the transport-limited rate)
+    for r, g in zip(runs, rate):
+        if r.get("lamp"):
+            ax.annotate("*", (r["conc"], g), textcoords="offset points",
+                        xytext=(-13, 2), fontsize=26, color="k",
+                        ha="center", va="center", fontweight="bold")
+    if any(r.get("lamp") for r in runs):
+        ax.plot([], [], ls="none", marker="$*$", ms=13, color="k",
+                label="heat-lamp on during run (convection)")
     # log x with a tick at every measured concentration: the concentrations
     # are log-spaced, so linear ticks leave 0.02/0.04/0.06 unreadable
     ax.set_xscale("log")
