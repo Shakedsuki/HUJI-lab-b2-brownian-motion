@@ -474,7 +474,8 @@ def fig_R_dRdt_grid(runs):
         dR = mask_catchup(np.gradient(Rs, t) * 1000.0, R, t, r["ppm"])
         c = dark(color(r["conc"]))     # darkened: raw viridis yellow (0.56 %)
                                        # is barely visible on white
-        ax.plot(t, R, color="0.75", lw=0.8, label="R (raw)")
+        # (the unsmoothed series differs from the smoothed one only at
+        # staircase corners -- invisible under it, so it is not drawn)
         ax.plot(t, Rs, color=c, lw=2.0, label="R (smoothed)")
         ax.set_xlabel("time [s]")
         ax.set_ylabel("enclosing R [mm]", color=c)
