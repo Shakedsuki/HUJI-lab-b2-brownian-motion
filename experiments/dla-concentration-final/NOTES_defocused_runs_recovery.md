@@ -114,6 +114,50 @@ mass D (compact mass D → 2 with a rough coast 1 < D_b < 2), reported as
 such. Context: focused anchor D_b = 1.46, 0.56 % → 1.28, 0.45 % → 1.29.
 (figures/fractalD_perimeter.png)
 
+## 3a. Salvage attempts for 0.30 % — three more routes, all fail their controls
+
+(`scripts/salvage_c030.py`, `data/salvage_c030.csv`,
+`figures/salvage_c030.png`.) Laser-focused follow-up: can trimming,
+splitting, or re-estimating extract a faithful D for 0.30 %? Three
+independent routes were tried, each with a validation control that had to
+pass BEFORE looking at 0.30 %. All three controls fail, so no 0.30 % number
+is promoted:
+
+* **A. Time-ensemble D(t)** (D is time-invariant during self-similar growth,
+  and early 0.30 frames are sharper, σ 1.7–2). The 0.15 % anchor control
+  exposes the killer fact: **box-counting saturates at ≈2.0 whenever the fit
+  window is below ~0.5–0.6 decades, regardless of the true D** — the
+  anchor's own mid-growth frames (true D 1.84) read median 2.09. Accuracy
+  returns only at ≥0.6 dec (anchor: 1.826). The 0.30 % deposit **never
+  reaches 0.6 decades at any time in the video** (max 0.50, two frames at
+  0.5 read 1.95–1.99). So the ~2.0 readings for 0.30 % are estimator
+  saturation, not a measurement — and no frame exists where the estimator is
+  in its validated regime.
+* **B. Sector (quadrant) trimming** (measure only the clean, glare-free
+  parts). Control fails: the anchor's own occluder-free quadrants scatter
+  1.85–2.02 (±0.15 spread) against its full-mask 1.845 — quadrants shrink
+  the window and break homogeneity at this cluster size. The one suggestive
+  0.30 % reading (NW quadrant at t=138 s — the resolved-dendrite corner —
+  D = 1.90 over 0.82 dec) therefore cannot be promoted beyond "consistent
+  with the dense family".
+* **C. Kinetic mass–radius exponent** M ∝ Rg^D on the faithful mask across
+  growth (blur-tolerant integral quantities). Controls fail decisively:
+  sharp 0.56 % gives D_kin = 1.64 vs box-count 1.86, anchor 1.94 vs 1.84,
+  0.45 % 2.00 vs 1.93 — the kinetic estimator disagrees with box-counting
+  by ±0.1–0.2 even on sharp runs (growth is not cleanly self-similar; mask
+  coverage evolves through occluder crossings). Blur itself is NOT the
+  problem (0.56 % blurred to σ2.5 shifts D_kin by only −0.03), so 0.30 %'s
+  D_kin = 2.23 is estimator bias, not information.
+
+**Conclusion — the unrecoverability is now positively demonstrated, not just
+asserted:** the failure is intrinsic (total structure range < 0.6 decades at
+every moment of the run) and the estimator's saturation-at-2 below that
+threshold is measured on a run whose true D is known. Any "D ≈ 1.95–2.0"
+one could quote for 0.30 % is exactly what the estimator returns when it has
+too little window, whatever the truth is. The honest report remains:
+compact, D → 2, no exponent quoted; boundary D_b ≈ 1.3 ± 0.1 as the only
+extractable (distinct) scaling quantity.
+
 ## 4. Bottom line
 
 | conc | mass D (effective, box-counting) | window | status |

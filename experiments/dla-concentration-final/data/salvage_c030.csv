@@ -1,0 +1,8 @@
+route,tag,value,err,extra
+A,c0.30 D(t) median,2.0001,0.1407,n=29
+A,c0.15 control median,2.0862,0.1208,n=19
+C,c0.15,1.9445,0.0416,npts=36
+C,c0.56,1.6367,0.0275,npts=33
+C,c0.45,1.9970,0.0295,npts=24
+C,c0.30,2.2286,0.0379,npts=21
+C,c0.56 blurred to sigma2.5,1.6069,0.0153,npts=36
