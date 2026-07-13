@@ -24,6 +24,9 @@ Run:  python scripts/report_figures.py
 """
 
 import csv
+import os
+import shutil
+import subprocess
 from pathlib import Path
 
 import numpy as np
@@ -32,6 +35,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.colors import Normalize
+from matplotlib.gridspec import GridSpec
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent                      # experiments/dla-concentration-final
@@ -39,18 +43,77 @@ EXP = ROOT.parent                       # experiments/
 FIGS = ROOT / "figures"
 FIGS.mkdir(parents=True, exist_ok=True)
 
+# publication defaults: crisp type, thin spines, no figure titles (each figure
+# is captioned in the report as a figure+caption combo).
+plt.rcParams.update({
+    "figure.dpi": 300,
+    "savefig.dpi": 300,
+    "savefig.bbox": "tight",
+    "savefig.pad_inches": 0.15,
+    "font.size": 16,
+    "axes.titlesize": 16,
+    "axes.labelsize": 18,
+    "axes.labelpad": 9,
+    "legend.fontsize": 13.5,
+    "legend.framealpha": 0.92,
+    "xtick.labelsize": 15,
+    "ytick.labelsize": 15,
+    "xtick.major.pad": 6,
+    "ytick.major.pad": 6,
+    "axes.linewidth": 1.1,
+    "axes.xmargin": 0.06,
+    "axes.ymargin": 0.10,
+    "grid.linewidth": 0.6,
+    "grid.alpha": 0.35,
+    "lines.linewidth": 2.2,
+    "lines.markersize": 9,
+    "figure.constrained_layout.use": False,
+})
+
+# annotation (data-label) size, scaled with the rest
+LABEL_FS = 13
+
+
+def save(fig, stem):
+    """Write both a 300-dpi PNG (for embeds/review) and a vector PDF
+    (for the manuscript). No titles are set anywhere -- captions live in
+    the report."""
+    png = FIGS / f"{stem}.png"
+    fig.savefig(png)
+    fig.savefig(FIGS / f"{stem}.pdf")
+    plt.close(fig)
+    return png
+
 W4 = EXP / "week4-dla-concentration" / "version 2"
 W5 = EXP / "week5-dla-concentration" / "version 2"
 
-# one row per run, ascending concentration; source CSVs are per-week.
+# raw videos live OUTSIDE git; overridable via env. Only needed to (re)grab the
+# D-vs-conc snapshot crops -- every other figure is CSV-only.
+VDIR4 = Path(os.environ.get("WEEK4_VIDEO_DIR",
+             r"C:\dev\brownian-motion\experiments\week4-dla-no-shlomo"))
+VDIR5 = Path(os.environ.get("WEEK5_VIDEO_DIR",
+             r"C:\dev\brownian-motion\experiments\week5-dla-concentration\raw-videos"))
+FFMPEG = os.environ.get("FFMPEG", "ffmpeg")
+CROPS = FIGS / "crops"
+
+# one row per run, ascending concentration. `csv` = committed per-run radius
+# CSV; `video` = raw clip; `tmeas` = frame time the box-counting D was grounded
+# on (= t_measured_s in each fractalD_summary.csv, the fully-developed frame).
 RUNS = [
-    dict(conc=0.02, week=5, csv=W5 / "data" / "radius_run1_c0.02.csv"),
-    dict(conc=0.04, week=5, csv=W5 / "data" / "radius_run2_c0.04.csv"),
-    dict(conc=0.06, week=5, csv=W5 / "data" / "radius_run3_c0.06.csv"),
-    dict(conc=0.15, week=4, csv=W4 / "data" / "radius_run4_c0.15.csv"),
-    dict(conc=0.30, week=4, csv=W4 / "data" / "radius_run3_c0.30.csv"),
-    dict(conc=0.45, week=4, csv=W4 / "data" / "radius_run2_c0.45.csv"),
-    dict(conc=0.56, week=4, csv=W4 / "data" / "radius_run1_c0.56.csv"),
+    dict(conc=0.02, week=5, csv=W5 / "data" / "radius_run1_c0.02.csv",
+         video=VDIR5 / "run1_0.02con.mov", tmeas=403),
+    dict(conc=0.04, week=5, csv=W5 / "data" / "radius_run2_c0.04.csv",
+         video=VDIR5 / "run 2 conc 0.04.mov", tmeas=596),
+    dict(conc=0.06, week=5, csv=W5 / "data" / "radius_run3_c0.06.csv",
+         video=VDIR5 / "run3_0.06C.mov", tmeas=413),
+    dict(conc=0.15, week=4, csv=W4 / "data" / "radius_run4_c0.15.csv",
+         video=VDIR4 / "run4_0.15.mov", tmeas=212),
+    dict(conc=0.30, week=4, csv=W4 / "data" / "radius_run3_c0.30.csv",
+         video=VDIR4 / "run 3 0.3.mov", tmeas=138),
+    dict(conc=0.45, week=4, csv=W4 / "data" / "radius_run2_c0.45.csv",
+         video=VDIR4 / "run 2 0.45 concen.mov", tmeas=148),
+    dict(conc=0.56, week=4, csv=W4 / "data" / "radius_run1_c0.56.csv",
+         video=VDIR4 / "run 1 0.56 Concertation.mov", tmeas=198),
 ]
 
 # systematic floor on box-counting D (the per-frame std is not recoverable
@@ -158,10 +221,17 @@ CMAP = cm.viridis
 color = lambda c: CMAP(NORM(c))
 
 
+def dark(rgba, f=0.72):
+    """Darken a colour toward black (for borders/labels on white — the bright
+    viridis yellow at 0.56 % is illegible otherwise)."""
+    r, g, b, a = rgba
+    return (r * f, g * f, b * f, a)
+
+
 # --------------------------------------------------------------- figures ---
 
 def fig_fill_fraction(runs):
-    fig, ax = plt.subplots(figsize=(6.6, 4.6))
+    fig, ax = plt.subplots(figsize=(8.6, 6.2))
     concs, med, lo, hi = [], [], [], []
     for r in runs:
         m, l, h = fill_fraction(r)
@@ -170,45 +240,145 @@ def fig_fill_fraction(runs):
     yerr = np.vstack([med - np.array(lo), np.array(hi) - med])
     ax.errorbar(concs, med, yerr=yerr, fmt="o-", ms=6, capsize=4, lw=1.4,
                 color="C0", label="median over edge-free frames\n(band = 16-84 pct)")
+    for i, (c, m) in enumerate(zip(concs, med)):
+        dy = 14 if i % 2 == 0 else -22     # stagger to avoid label collisions
+        ax.annotate(f"{m:.2f}", (c, m), textcoords="offset points",
+                    xytext=(9, dy), fontsize=LABEL_FS, color="C0")
     ax.set_xlabel("CuSO$_4$ concentration [%]")
     ax.set_ylabel(r"occupancy  $\phi = M / \pi R^2$")
-    ax.set_title("Deposit occupancy of the enclosing disc vs concentration\n"
-                 "(sanity check: denser deposits at higher concentration)")
     ax.grid(alpha=0.3)
-    ax.legend(fontsize=9, loc="best")
-    fig.tight_layout()
-    out = FIGS / "fill_fraction_vs_conc.png"
-    fig.savefig(out, dpi=140); plt.close(fig)
+    ax.legend(loc="lower right")
+    out = save(fig, "fill_fraction_vs_conc")
     return out, list(zip(concs, med, lo, hi))
 
 
-def fig_D_vs_conc(runs, Dbox):
-    fig, ax = plt.subplots(figsize=(6.6, 4.6))
+def _plot_D(ax, runs, Dbox):
+    """Draw the D-vs-concentration scatter onto a given axis (shared by the
+    standalone figure and the with-crops composite)."""
     concs = np.array([r["conc"] for r in runs])
     D = np.array([Dbox[r["conc"]] for r in runs])
-    ax.errorbar(concs, D, yerr=D_SYS_FLOOR, fmt="o", ms=7, capsize=4, lw=1.4,
-                color="C0", label="box-counting D  ($\\pm$0.03 syst.)")
-    ax.plot(concs, D, "-", color="C0", alpha=0.4, lw=1.2)
-    ax.axhline(1.71, color="k", ls="--", lw=1.2, label="2D DLA theory: 1.71")
-    ax.axhline(2.0, color="0.5", ls=":", lw=1.0, label="compact (2D): 2.0")
+    ax.errorbar(concs, D, yerr=D_SYS_FLOOR, fmt="o", ms=9, capsize=4, lw=1.6,
+                color="C0", label="box-counting D")
+    ax.plot(concs, D, "-", color="C0", alpha=0.4, lw=1.4)
+    ax.axhline(1.71, color="k", ls="--", lw=1.4, label="2D DLA theory: 1.71")
     for i, (c, d) in enumerate(zip(concs, D)):
-        dy = 9 if i % 2 == 0 else -14      # stagger to avoid label collisions
+        dy = 14 if i % 2 == 0 else -22      # stagger to avoid label collisions
         ax.annotate(f"{d:.2f}", (c, d), textcoords="offset points",
-                    xytext=(7, dy), fontsize=8, color="C0")
+                    xytext=(9, dy), fontsize=LABEL_FS, color="C0")
     ax.set_xlabel("CuSO$_4$ concentration [%]")
     ax.set_ylabel("fractal dimension  D")
-    ax.set_title("Fractal dimension vs concentration (box-counting, both sessions)")
     ax.set_ylim(1.45, 2.05)
     ax.grid(alpha=0.3)
-    ax.legend(fontsize=9, loc="lower right")
-    fig.tight_layout()
-    out = FIGS / "D_vs_concentration.png"
-    fig.savefig(out, dpi=140); plt.close(fig)
+    ax.legend(loc="lower right")
+    return concs, D
+
+
+def fig_D_vs_conc(runs, Dbox):
+    fig, ax = plt.subplots(figsize=(8.6, 6.2))
+    concs, D = _plot_D(ax, runs, Dbox)
+    out = save(fig, "D_vs_concentration")
     return out, list(zip(concs, D))
 
 
+# ------------------------------------------------ snapshot crops (needs video)
+
+def _geom_at(run):
+    """(cx, cy, R_px, px_per_mm) of the enclosing circle at the run's grounded
+    frame time, read straight from the committed radius CSV."""
+    ppm, rows = None, []
+    for line in open(run["csv"]):
+        if line.startswith("#"):
+            if "px_per_mm" in line:
+                ppm = float(line.split("=")[1].split("+/-")[0])
+            continue
+        rows.append(line)
+    r = list(csv.DictReader(rows))
+    t = np.array([float(x["t_s"]) for x in r])
+    j = int(np.argmin(np.abs(t - run["tmeas"])))
+    g = lambda k: float(r[j][k])
+    return g("circ_cx_px"), g("circ_cy_px"), g("circ_R_px"), ppm
+
+
+def grab_crop(run, pad=1.15):
+    """ffmpeg-extract the grounded frame and crop a square (side = 2*pad*R)
+    centred on the deposit. Returns dict(png, side_mm, ppm) or None if the
+    video is unavailable. Crop geometry comes from committed CSV data."""
+    if not run["video"].exists():
+        return None
+    CROPS.mkdir(parents=True, exist_ok=True)
+    cx, cy, R, ppm = _geom_at(run)
+    tmp = CROPS / f"_full_c{run['conc']:.2f}.png"
+    cmd = [FFMPEG, "-nostdin", "-loglevel", "error", "-y",
+           "-ss", str(run["tmeas"]), "-i", str(run["video"]),
+           "-frames:v", "1", str(tmp)]
+    subprocess.run(cmd, check=True)
+    img = plt.imread(tmp)                       # HxWx(3/4), float 0..1
+    H, W = img.shape[:2]
+    half = int(round(pad * R))
+    x0, x1 = max(0, int(cx) - half), min(W, int(cx) + half)
+    y0, y1 = max(0, int(cy) - half), min(H, int(cy) + half)
+    crop = img[y0:y1, x0:x1, :3]
+    png = CROPS / f"crop_c{run['conc']:.2f}.png"
+    plt.imsave(png, crop)
+    tmp.unlink(missing_ok=True)
+    return dict(png=png, side_mm=(x1 - x0) / ppm, ppm=ppm)
+
+
+def fig_D_with_crops(runs, Dbox):
+    """Composite: the D-vs-conc plot on top, then the 7 grounded-frame crops
+    in a 4-over-3 grid, each captioned with its concentration and D."""
+    # ensure crops exist (grab from video if present, else reuse saved PNGs)
+    crops = {}
+    for r in runs:
+        got = grab_crop(r)
+        if got is None:
+            png = CROPS / f"crop_c{r['conc']:.2f}.png"
+            got = dict(png=png, side_mm=None, ppm=None) if png.exists() else None
+        crops[r["conc"]] = got
+    missing = [r["conc"] for r in runs if crops[r["conc"]] is None]
+    if missing:
+        print(f"[crops] no video/PNG for conc {missing} -- skipping composite")
+        return None
+
+    fig = plt.figure(figsize=(15, 15))
+    gs = GridSpec(3, 12, figure=fig, height_ratios=[1.35, 1, 1],
+                  hspace=0.32, wspace=0.35)
+    ax_plot = fig.add_subplot(gs[0, :])
+    _plot_D(ax_plot, runs, Dbox)
+
+    order = sorted(runs, key=lambda r: r["conc"])
+    D = {r["conc"]: Dbox[r["conc"]] for r in runs}
+    # row 1: first 4 (each spans 3 of 12 cols); row 2: last 3 (each spans 4)
+    slots = ([ (1, slice(3 * i, 3 * i + 3)) for i in range(4) ] +
+             [ (2, slice(4 * i, 4 * i + 4)) for i in range(3) ])
+    for run, (row, cols) in zip(order, slots):
+        c = run["conc"]
+        ax = fig.add_subplot(gs[row, cols])
+        info = crops[c]
+        img = plt.imread(info["png"])
+        smm = info["side_mm"]
+        if smm:                                  # real-units axes + 1 mm bar
+            ax.imshow(img, extent=[0, smm, 0, smm])
+            x0 = smm * 0.08
+            ax.plot([x0, x0 + 1.0], [smm * 0.08, smm * 0.08], "-", color="w",
+                    lw=3, solid_capstyle="butt")
+            ax.plot([x0, x0 + 1.0], [smm * 0.08, smm * 0.08], "-", color="k",
+                    lw=1.2, solid_capstyle="butt")
+            ax.text(x0 + 0.5, smm * 0.11, "1 mm", color="w", ha="center",
+                    va="bottom", fontsize=10, fontweight="bold")
+        else:
+            ax.imshow(img)
+        ax.set_xticks([]); ax.set_yticks([])
+        edge = dark(color(c))
+        for s in ax.spines.values():
+            s.set_edgecolor(edge); s.set_linewidth(3)
+        ax.set_title(f"{c:.2f} %   D = {D[c]:.2f}", fontsize=14,
+                     color=edge, fontweight="bold", pad=5)
+    return save(fig, "D_vs_concentration_with_crops")
+
+
 def fig_growth_rate(runs):
-    fig, ax = plt.subplots(figsize=(6.6, 4.6))
+    fig, ax = plt.subplots(figsize=(8.6, 6.2))
     concs, rate, err = [], [], []
     for r in runs:
         g, e = growth_rate_umps(r)
@@ -216,21 +386,22 @@ def fig_growth_rate(runs):
     concs = np.array(concs)
     ax.errorbar(concs, rate, yerr=err, fmt="o-", ms=6, capsize=4, lw=1.4,
                 color="C3", label="late-time linear front (fit $\\pm$1$\\sigma$)")
+    for i, (c, g) in enumerate(zip(concs, rate)):
+        dy = 14 if i % 2 == 0 else -22     # stagger to avoid label collisions
+        ax.annotate(f"{g:.1f}", (c, g), textcoords="offset points",
+                    xytext=(9, dy), fontsize=LABEL_FS, color="C3")
     ax.set_xlabel("CuSO$_4$ concentration [%]")
     ax.set_ylabel("mean growth rate  dR/dt [µm/s]")
-    ax.set_title("Envelope growth rate vs concentration")
     ax.grid(alpha=0.3)
-    ax.legend(fontsize=9, loc="best")
-    fig.tight_layout()
-    out = FIGS / "growth_rate_vs_conc.png"
-    fig.savefig(out, dpi=140); plt.close(fig)
+    ax.legend(loc="lower right")
+    out = save(fig, "growth_rate_vs_conc")
     return out, list(zip(concs, rate, err))
 
 
 def fig_R_dRdt_grid(runs):
     """One clean panel per concentration: R(t) [mm] on the left axis,
     dR/dt [um/s] on the right, plus a combined R(t) overlay in the 8th slot."""
-    fig, axes = plt.subplots(4, 2, figsize=(13, 15))
+    fig, axes = plt.subplots(4, 2, figsize=(17, 20))
     axes = axes.ravel()
     for ax, r in zip(axes, runs):
         m = edge_free(r)
@@ -245,7 +416,9 @@ def fig_R_dRdt_grid(runs):
         ax.set_xlabel("time [s]")
         ax.set_ylabel("enclosing R [mm]", color=c)
         ax.tick_params(axis="y", labelcolor=c)
-        ax.set_title(f"{r['conc']:.2f} %  (week {r['week']})", fontweight="bold")
+        # panel identifier (data label, not a title) in the top-right corner
+        ax.text(0.97, 0.06, f"{r['conc']:.2f} %", transform=ax.transAxes,
+                ha="right", va="bottom", fontweight="bold", fontsize=17, color=c)
         ax.grid(alpha=0.25)
         axd = ax.twinx()
         axd.plot(t, dR, color="C1", lw=1.1, alpha=0.85, label="dR/dt")
@@ -255,7 +428,7 @@ def fig_R_dRdt_grid(runs):
         # single combined legend per panel
         h1, l1 = ax.get_legend_handles_labels()
         h2, l2 = axd.get_legend_handles_labels()
-        ax.legend(h1 + h2, l1 + l2, fontsize=8, loc="upper left", framealpha=0.9)
+        ax.legend(h1 + h2, l1 + l2, fontsize=12, loc="upper left", framealpha=0.9)
 
     # 8th slot: all runs' R(t) overlaid, coloured by concentration
     ax = axes[7]
@@ -264,16 +437,13 @@ def fig_R_dRdt_grid(runs):
         t = r["t"][m]; R = smooth(r["Rc"][m] / r["ppm"], 9)
         ax.plot(t, R, color=color(r["conc"]), lw=1.8, label=f"{r['conc']:.2f} %")
     ax.set_xlabel("time [s]"); ax.set_ylabel("enclosing R [mm]")
-    ax.set_title("all concentrations — R(t) overlay", fontweight="bold")
+    ax.text(0.97, 0.06, "all runs", transform=ax.transAxes, ha="right",
+            va="bottom", fontweight="bold", fontsize=17, color=color(0.30))
     ax.grid(alpha=0.25)
-    ax.legend(fontsize=8, title="CuSO$_4$", ncol=2, loc="upper left")
+    ax.legend(fontsize=12.5, title="CuSO$_4$", title_fontsize=13, ncol=2, loc="upper left")
 
-    fig.suptitle("Enclosing-circle radius and growth rate per concentration "
-                 "(edge-free frames)", fontsize=14, y=0.995)
-    fig.tight_layout(rect=(0, 0, 1, 0.99))
-    out = FIGS / "R_and_dRdt_grid.png"
-    fig.savefig(out, dpi=130); plt.close(fig)
-    return out
+    fig.tight_layout()
+    return save(fig, "R_and_dRdt_grid")
 
 
 # ------------------------------------------------------------------ main ---
@@ -286,6 +456,7 @@ def main():
     f2, Dvals = fig_D_vs_conc(runs, Dbox)
     f3, rates = fig_growth_rate(runs)
     f4 = fig_R_dRdt_grid(runs)
+    f5 = fig_D_with_crops(runs, Dbox)
 
     print("\n=== fill fraction phi = M/(pi R^2) (median, 16pct, 84pct) ===")
     for c, m, lo, hi in fill:
@@ -300,8 +471,9 @@ def main():
         print(f"  {c:.2f}% : {g:.1f} +/- {e:.1f}")
 
     print("\nfigures ->")
-    for f in (f1, f2, f3, f4):
-        print(f"  {f}")
+    for f in (f1, f2, f3, f4, f5):
+        if f:
+            print(f"  {f}")
 
 
 if __name__ == "__main__":

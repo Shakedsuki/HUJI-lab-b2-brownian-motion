@@ -29,6 +29,13 @@ python scripts/report_figures.py      # writes all four figures to figures/
 4. **`R_and_dRdt_grid.png`** — one clean panel per concentration: enclosing R(t)
    [mm] with its dR/dt [µm/s] on a twin axis, plus an all-runs R(t) overlay in
    the 8th slot. Polished replacement for the 7-panel working draft.
+5. **`D_vs_concentration_with_crops.png`** — the D-vs-concentration plot with a
+   **4-over-3 gallery of the grounded video frames** below it: for each run, the
+   frame at its `t_measured_s` (the fully-developed frame the box-counting D was
+   grounded on), cropped to a square of side 2·1.15·R centred on the enclosing
+   circle, with a 1 mm scale bar and a border matching the point's colour. The
+   sparse D≈1.6 cluster (0.02 %) vs the dense D≈1.9 morphologies (≥0.04 %) is
+   directly visible. Crops saved in `figures/crops/`.
 
 ## Method decisions (read before quoting numbers)
 
@@ -82,3 +89,17 @@ limited, so the fit is artificially tight) — treat them as a lower bound.
 - **0.56 % is the weakest run** (lamp off→on at t≈360 s, defocused early); its
   low-side points in both the D and growth-rate figures are consistent with
   that, not necessarily a real down-turn at high concentration.
+- **The snapshot crops show the raw frame, not the segmentation.** The green
+  glow and grey electrode/wire visible in each crop are *excluded* from the
+  box-count by the occluder mask — D is grounded on the black deposit only. The
+  crops are for morphology context; they are not the binary the fit ran on.
+
+## Video dependency (only figure 5)
+
+Figures 1–4 are CSV-only and regenerate anywhere. **Figure 5's crops read pixels
+from the raw videos, which are outside git** (`week4-dla-no-shlomo/`,
+`week5-dla-concentration/raw-videos/` — override with `WEEK4_VIDEO_DIR` /
+`WEEK5_VIDEO_DIR`). The grabbed crops in `figures/crops/` and the composite PNG
+are committed as artifacts, so the figure survives without the videos; only
+re-grabbing needs them (and `ffmpeg`). Frame times and clip names are pinned in
+the `RUNS` table in `scripts/report_figures.py`.
