@@ -445,7 +445,13 @@ def fig_growth_rate(runs):
         dy = 14 if i % 2 == 0 else -22     # stagger to avoid label collisions
         ax.annotate(f"{g:.1f}", (c, g), textcoords="offset points",
                     xytext=(9, dy), fontsize=LABEL_FS, color="C3")
-    ax.set_xlabel("CuSO$_4$ concentration [%]")
+    # log x with a tick at every measured concentration: the concentrations
+    # are log-spaced, so linear ticks leave 0.02/0.04/0.06 unreadable
+    ax.set_xscale("log")
+    ax.set_xticks(concs)
+    ax.set_xticklabels([f"{c:.2f}" for c in concs], rotation=30, ha="right")
+    ax.xaxis.set_minor_locator(plt.NullLocator())
+    ax.set_xlabel("CuSO$_4$ concentration [%]  (log scale)")
     ax.set_ylabel("mean growth rate  dR/dt [µm/s]")
     ax.grid(alpha=0.3)
     ax.legend(loc="lower right")
