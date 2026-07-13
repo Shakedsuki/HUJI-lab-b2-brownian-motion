@@ -90,6 +90,50 @@ what must not be over-claimed.
 - Cosmetic caveat: viridis makes 0.02/0.04/0.06 nearly indistinguishable in
   the overlay; the per-panel tags disambiguate.
 
+## 4a. Anatomy of the dR/dt features (per-panel read, R_and_dRdt_grid)
+
+Every sharp feature in the derivative traces back to one of three causes:
+
+1. **The identical flat-tops at exactly ~90 µm/s** (0.15/0.45/0.56 early
+   frames) are the reporting **continuity cap** (VCAP = 3 × the fastest
+   measured front, 30 µm/s): when segmentation first admits the young
+   deposit as one batch (dense runs darken a sizeable disc at once, and the
+   week-4 wire glare delays admission), the reported R must ramp from ~0 to
+   millimetres at the maximum allowed slew rate. The giveaway that this is
+   an artifact: the plateau height is numerically identical across runs.
+2. **The sharp drop at the ramp's end** (and the brief R plateau right
+   after, e.g. 0.45 % at t ≈ 40–55 s) is the reported R catching up to the
+   true envelope and then waiting for it — a hand-off from cap-limited to
+   physics-limited reporting, not a growth stall.
+3. **Mid-run spikes over a low baseline** (all runs, clearest at
+   0.02/0.04 %) are extremal statistics plus batch admissions: the
+   enclosing radius moves only when the single outermost tip advances, so
+   R(t) is a staircase and its derivative is intrinsically bursty;
+   occasional segmentation admissions of a whole lobe (threshold crossing,
+   glare clearing) add isolated spikes. The 4.5 s smoothing window shapes
+   steps into bumps. dR/dt ≥ 0 always because the reported R is monotone by
+   construction.
+
+Sparse runs show no initial cap plateau because their enclosing radius
+genuinely starts near zero and grows gradually — nothing to catch up to.
+"R (raw)" (grey) is barely visible because it differs from the smoothed
+curve only at staircase corners.
+
+**Quantified ramp-leak check (2026-07-13):** refitting the growth rates
+with cap-limited frames excluded moves 0.45 % from 32.0 → 30.3 µm/s (~5 %,
+the largest shift — its ramp reaches into the fit window R ≥ 0.35 Rmax),
+0.02 % from 14.2 → 13.5, and all others by ≤ 0.2 µm/s. Within the stated
+systematics; quote 0.45 % as ~30–32 µm/s if pressed.
+
+**Do the radii match the expected concentration dependence?** Compare
+slopes and same-time radii, never final values: final R is set by run
+duration (0.04 % ran 600 s, hence the largest final R at the slowest
+front). At fixed t = 150 s the radii order as 4.3 / 4.4 / 5.2 / 5.5 / 7.0 /
+6.6 mm for 0.02→0.56 % — monotone in concentration except the 0.45/0.56
+inversion, which is inside run-to-run variability and carries the 0.45 %
+lamp-heating confound. This matches the growth-rate figure and the
+migration-limited expectation (weak, sub-linear speed increase).
+
 ## Bottom line vs predictions
 
 The predicted picture — open DLA-like fractal at the dilute end, dense
