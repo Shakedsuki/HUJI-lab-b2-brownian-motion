@@ -126,3 +126,9 @@ These slot naturally into the concentration series: 0.02 % → 1.69 (open DLA),
 0.04–0.56 % → 1.86–1.95 (compact, finite-size readings of D → 2). The
 "defocused" label survives only for 0.30 %; 0.56 % was never defocused and
 0.45 %'s mild blur is fully handled by the validated window rule + RL.
+
+Physical interpretation — why these values are sound and why they exceed the
+ideal 2D-DLA 1.71 (screening-length collapse, electromigration, convection,
+the 0.02 % self-control) — is logged in
+`NOTES_fractal_dimension_concentration.md` §1a, next to the rest of the
+report-Discussion physics.

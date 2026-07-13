@@ -17,6 +17,8 @@ window-stability sweep (D stable to ±0.05 as cutoffs vary):
 | 0.04 % | **1.91 ± 0.05** | dense / compact |
 | 0.06 % | **1.87 ± 0.04** | dense / compact (cleanest plateau) |
 | 0.15 % | **1.87 ± 0.06** | dense / compact |
+| 0.45 % | **1.93 ± 0.07** | dense / compact (recovered, see §1a) |
+| 0.56 % | **1.86 ± 0.06** | dense / compact (recovered, see §1a) |
 
 The **defocused** runs (0.30 / 0.45 / 0.56 %) were re-audited (see
 `NOTES_defocused_runs_recovery.md`): 0.56 % turned out to be *sharper than the
@@ -29,6 +31,55 @@ distinct quantity).
 These values agree with the original pipeline (0.02→1.61, dense→~1.89) to within
 ±0.05, so the interior-hole-fill artefact was real but small; it did **not**
 manufacture the high dimensions.
+
+## 1a. Physical soundness of the recovered 0.45 / 0.56 % values — and why they exceed the DLA 1.71
+
+(Assessment logged 2026-07-13, after the recovery audit in
+`NOTES_defocused_runs_recovery.md`.)
+
+The values are physically sound, and exceeding 1.71 is the *expected*
+signature that at these concentrations the growth is not diffusion-limited
+aggregation at all. Witten–Sander's 1.71 belongs to a restrictive regime:
+vanishingly dilute species, transport purely by diffusion, quasi-static
+growth. The fractality of DLA comes from Laplacian **screening** (tips grow,
+fjords starve). At 0.45–0.56 % CuSO₄ at 12 V that screening is destroyed:
+
+1. **Screening-length collapse.** A DLA-like regime only exists between the
+   branch width and the diffusion length ℓ ≈ D_ion/v_front. High
+   concentration → plentiful ion supply, thin depletion layer, fast front →
+   ℓ shrinks toward the branch scale. Below ℓ the interfacial flux is
+   effectively uniform, neighbouring branches no longer starve each other,
+   the front advances as a smooth envelope, and the object fills space —
+   the dense-branching morphology, true D → 2 (Ben-Jacob 1986); ~1.9 is its
+   finite-size reading.
+2. **Electromigration.** At 12 V ion drift competes with diffusion;
+   drift-dominated (quasi-ballistic) delivery also kills the screening
+   instability. (Density *trend* remains concentration-driven per
+   Sawada/Grier — migration explains non-diffusive transport, it is not a
+   "voltage → dense" claim, which for Cu runs the other way, Kumar 2018.)
+3. **Convection.** Stirring homogenises the concentration field. The 0.45 %
+   run was lamp-heated throughout, guaranteeing thermal convection; its
+   D_eff being the highest (1.93, brushing the ceiling) is consistent with
+   that — but with ±0.07 overlapping 0.56 %'s 1.86, do NOT rank the two.
+4. **Projection caveat (measurement-side).** The mask is a 2D projection of
+   a finite-thickness deposit; projection can only fill gaps → a mild
+   upward bias on top of the real physics.
+
+**Consistency arguments:**
+- 0.45 → 1.93 and 0.56 → 1.86 sit inside the dense bucket (0.04–0.15 % →
+  1.87–1.91): the plateau extends across the whole dense range, as the
+  D = 2 ceiling predicts. No new physics needed.
+- **The series contains its own control:** the one genuinely
+  diffusion-limited run (0.02 %) gives 1.69, matching Matsushita's 1.66 and
+  ideal DLA 1.71. The method reproduces the DLA limit exactly where the
+  physics is DLA — the strongest evidence that ~1.9 elsewhere is physical.
+- With ~1 decade of window, 1.9 is indistinguishable from 2.0
+  (Malcai/Avnir), so both runs are quoted as "compact, effectively
+  space-filling, D → 2", not as fractals of dimension 1.86/1.93.
+- Texture note: 0.56 % has notably finer branches (w ≈ 0.12 mm vs
+  0.2–0.66 mm for 0.30–0.45 %), i.e. slightly more open structure inside
+  the fit window — plausibly why it reads a touch lower. Interpret as
+  texture within the compact family, not a step back toward the DLA branch.
 
 ## 2. Why the numbers make physical sense (morphology diagram)
 
