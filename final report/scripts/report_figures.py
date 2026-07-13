@@ -442,7 +442,8 @@ def fig_R_dRdt_grid(runs):
         Rs = smooth(R, 9)
         # derivative of the smoothed radius, in um/s
         dR = np.gradient(Rs, t) * 1000.0
-        c = color(r["conc"])
+        c = dark(color(r["conc"]))     # darkened: raw viridis yellow (0.56 %)
+                                       # is barely visible on white
         ax.plot(t, R, color="0.75", lw=0.8, label="R (raw)")
         ax.plot(t, Rs, color=c, lw=2.0, label="R (smoothed)")
         ax.set_xlabel("time [s]")
@@ -467,7 +468,8 @@ def fig_R_dRdt_grid(runs):
     for r in runs:
         m = edge_free(r)
         t = r["t"][m]; R = smooth(r["Rc"][m] / r["ppm"], 9)
-        ax.plot(t, R, color=color(r["conc"]), lw=2.4, label=f"{r['conc']:.2f} %")
+        ax.plot(t, R, color=dark(color(r["conc"])), lw=2.4,
+                label=f"{r['conc']:.2f} %")
     ax.set_xlabel("time [s]"); ax.set_ylabel("enclosing R [mm]")
     ax.text(0.97, 0.02, "all runs", transform=ax.transAxes, ha="right",
             va="bottom", fontweight="bold", fontsize=19, color="0.25")
