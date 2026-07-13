@@ -129,7 +129,7 @@ RUNS = [
 
 EXCLUDED_CONC = 0.30    # annotated on the D figure so the gap is explained
 LAMP_CONCS = tuple(r["conc"] for r in RUNS if r.get("lamp"))
-LAMP_LABEL = "heat-lamp on during run (convection)"
+LAMP_LABEL = "heat-lamp on during run"
 
 
 def lamp_star(ax, x, y, dx=-13, dy=2):
@@ -297,7 +297,7 @@ def fig_fill_fraction(runs):
     concs = np.array(concs); med = np.array(med)
     yerr = np.vstack([med - np.array(lo), np.array(hi) - med])
     ax.errorbar(concs, med, yerr=yerr, fmt="o-", ms=6, capsize=4, lw=1.4,
-                color="C0", label="median over edge-free frames\n(band = 16-84 pct)")
+                color="C0", label="Median")
     for i, (c, m) in enumerate(zip(concs, med)):
         dy = 14 if i % 2 == 0 else -22     # stagger to avoid label collisions
         ax.annotate(f"{m:.2f}", (c, m), textcoords="offset points",
@@ -315,19 +315,32 @@ def fig_fill_fraction(runs):
     return out, list(zip(concs, med, lo, hi))
 
 
+# 0.30 % is excluded from the reliable-D fit (defocused, <0.6 decades of
+# scaling range; see module docstring). It still has 5 box-counting estimates
+# on record -- same estimator as every other point, just individually
+# untrustworthy -- from single-frame, deblurred, and time-ensemble attempts
+# (fractalD_defocused.csv, fractalD_deblur.csv, salvage_c030.csv route A).
+# The mass-radius salvage route (route C) is NOT included: that estimator was
+# dropped project-wide, so mixing it in here would compare apples to oranges.
+# Their mean +/- sample std is plotted as an explicitly-flagged X, not a
+# measurement -- it locates the excluded slot without pretending it's data.
+EXCLUDED_D_ESTIMATES = [1.9831, 1.9869, 1.9638, 1.9009, 2.0001]
+EXCLUDED_D_MEAN = float(np.mean(EXCLUDED_D_ESTIMATES))
+EXCLUDED_D_STD = float(np.std(EXCLUDED_D_ESTIMATES, ddof=1))
+
+
 def _plot_D(ax, reliable):
     """Draw the reliable D-vs-concentration scatter (effective box-counting
-    dimension, window-stability verified). The excluded 0.30 % slot is
-    annotated so the gap is explained. Shared by the standalone figure and
-    the with-crops composite."""
+    dimension, window-stability verified), plus the excluded 0.30 % slot
+    marked with an X (mean of its unreliable box-counting estimates, not a
+    measurement). Shared by the standalone figure and the with-crops
+    composite."""
     concs = sorted(reliable)
     D = [reliable[c][0] for c in concs]
     U = [reliable[c][1] for c in concs]
     ax.errorbar(concs, D, yerr=U, fmt="o", ms=9, capsize=4, lw=1.6,
-                color="C0", label="effective box-counting D")
+                color="C0", label="box-counting D")
     ax.plot(concs, D, "-", color="C0", alpha=0.4, lw=1.4)
-    ax.axhline(2.0, color="gray", ls=":", lw=1.4,
-               label="space-filling limit: D = 2")
     ax.axhline(1.71, color="k", ls="--", lw=1.4, label="2D DLA theory: 1.71")
     for i, (c, d) in enumerate(zip(concs, D)):
         # stagger: odd points labelled left-below, even right-above (the 0.04
@@ -335,16 +348,16 @@ def _plot_D(ax, reliable):
         dx, dy = (9, 14) if i % 2 == 0 else (-48, -22)
         ax.annotate(f"{d:.2f}", (c, d), textcoords="offset points",
                     xytext=(dx, dy), fontsize=LABEL_FS, color="C0")
-    # excluded 0.30 % run: defocused video, <0.6 decades of scaling range
-    ax.text(EXCLUDED_CONC, 1.63, "0.30 % excluded\n(defocused)",
-            ha="center", va="center", color="0.45", fontsize=11.5,
-            style="italic")
+    # excluded 0.30 % run: no line to its neighbours -- it is not part of
+    # the fitted trend, just located on the axis.
+    ax.errorbar([EXCLUDED_CONC], [EXCLUDED_D_MEAN], yerr=[EXCLUDED_D_STD],
+                fmt="x", ms=13, mew=2.5, capsize=4, lw=1.6, color="0.45")
     for c in LAMP_CONCS:
         if c in reliable:
             lamp_star(ax, c, reliable[c][0])
     ax.plot([], [], ls="none", marker="$*$", ms=13, color="k",
             label=LAMP_LABEL)
-    conc_log_axis(ax, concs)
+    conc_log_axis(ax, sorted(concs + [EXCLUDED_CONC]))
     ax.set_ylabel("effective fractal dimension  D")
     ax.set_ylim(1.45, 2.07)
     ax.grid(alpha=0.3)
@@ -419,21 +432,27 @@ def fig_D_with_crops(runs, reliable):
         print(f"[crops] no video/PNG for conc {missing} -- skipping composite")
         return None
 
-    fig = plt.figure(figsize=(15, 15))
-    gs = GridSpec(3, 12, figure=fig, height_ratios=[1.35, 1, 1],
-                  hspace=0.32, wspace=0.35)
-    ax_plot = fig.add_subplot(gs[0, :])
+    fig = plt.figure(figsize=(15, 15.6))
+    # two independently-positioned GridSpecs: the top plot's rotated tick
+    # labels + xlabel need real room below it, decoupled from the crop
+    # grid's own row spacing (a single shared hspace let the D-vs-conc
+    # x-axis text collide with the crop row underneath it).
+    gs_plot = GridSpec(1, 1, figure=fig, top=0.98, bottom=0.68,
+                        left=0.07, right=0.99)
+    gs_crops = GridSpec(2, 12, figure=fig, top=0.60, bottom=0.02,
+                         hspace=0.32, wspace=0.35, left=0.01, right=0.99)
+    ax_plot = fig.add_subplot(gs_plot[0, 0])
     _plot_D(ax_plot, reliable)
 
     order = sorted(runs, key=lambda r: r["conc"])
     # split the crops over two rows on the 12-column grid (6 runs -> 3 + 3)
     top = (len(order) + 1) // 2
     bot = len(order) - top
-    slots = ([(1, slice((12 // top) * i, (12 // top) * (i + 1))) for i in range(top)] +
-             [(2, slice((12 // bot) * i, (12 // bot) * (i + 1))) for i in range(bot)])
+    slots = ([(0, slice((12 // top) * i, (12 // top) * (i + 1))) for i in range(top)] +
+             [(1, slice((12 // bot) * i, (12 // bot) * (i + 1))) for i in range(bot)])
     for run, (row, cols) in zip(order, slots):
         c = run["conc"]
-        ax = fig.add_subplot(gs[row, cols])
+        ax = fig.add_subplot(gs_crops[row, cols])
         info = crops[c]
         img = plt.imread(info["png"])
         smm = info["side_mm"]
