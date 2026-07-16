@@ -37,7 +37,14 @@ python scripts/report_figures.py      # writes all four figures to figures/
    [mm] over the **full run**, so the late-time plateau is visible. Solid up to
    first frame contact; dashed after (deposit partly out of frame → the plateau
    level is a lower bound). The dR/dt twin axis and the all-runs overlay were
-   dropped (collaborator review: too crowded).
+   dropped (collaborator review: too crowded). **Three axis variants are
+   committed — pick ONE for the report:**
+   - `R_vs_t_grid.png` — each panel on its own axes (curves fill the panels).
+   - `R_vs_t_grid_sharedaxes.png` — identical s/mm limits on all six panels;
+     slopes directly comparable across concentrations (recommended).
+   - `R_vs_t_grid_normalized.png` — R/R_end vs t/t_end unit box; shapes
+     comparable, but R_end is the frame-limited final value, not a physical
+     scale, so quantitative slope comparison is lost.
 5. **`D_vs_concentration_with_crops.png`** — the reliable D-vs-concentration plot
    with a **3-over-3 gallery of the grounded video frames** below it (frame at
    each run's `t_measured_s`, cropped to a square of side 2·1.15·R, 1 mm scale

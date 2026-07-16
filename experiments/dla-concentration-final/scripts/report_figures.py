@@ -327,12 +327,16 @@ def _plot_D(ax, reliable):
                 color="C0", label="box-counting D")
     ax.plot(concs, D, "-", color="C0", alpha=0.4, lw=1.4)
     ax.axhline(1.71, color="k", ls="--", lw=1.4, label="2D DLA theory: 1.71")
-    for i, (c, d) in enumerate(zip(concs, D)):
-        # stagger: odd points labelled left-below, even right-above (the 0.04
-        # and 0.06 points are close enough that same-side labels collide)
-        dx, dy = (9, 14) if i % 2 == 0 else (-48, -22)
+    # per-point label placement, every label tight against its marker
+    # (collaborator request): top-right by default; 0.04 goes LEFT of its
+    # point (its top-right is occupied by the adjacent 0.06 label) and 0.56
+    # likewise (it sits at the right edge of the axes).
+    LBL = {0.04: (-12, 0, "right", "center"), 0.56: (-12, 0, "right", "center")}
+    for c, d in zip(concs, D):
+        dx, dy, ha, va = LBL.get(c, (9, 14, "left", "baseline"))
         ax.annotate(f"{d:.2f}", (c, d), textcoords="offset points",
-                    xytext=(dx, dy), fontsize=LABEL_FS, color="C0")
+                    xytext=(dx, dy), fontsize=LABEL_FS, color="C0",
+                    ha=ha, va=va)
     # excluded 0.30 % run: no line to its neighbours -- it is not part of
     # the fitted trend, just located on the axis.
     ax.errorbar([EXCLUDED_CONC], [EXCLUDED_D_MEAN], yerr=[EXCLUDED_D_STD],
@@ -500,30 +504,45 @@ def fig_growth_rate(runs):
     return out, list(zip(concs, rate, err))
 
 
-def fig_R_grid(runs):
+def _r_series(r):
+    """(t, smoothed R [mm], last-edge-free index) for the FULL run, past the
+    detection transient. UNCAPPED envelope: the capped series' fake 90 um/s
+    ramp + hand-off drop never enter the figure. Truncating at frame contact
+    hid the late-time plateau and left every curve looking linear, so the
+    whole run is kept; the caller draws frames after first frame contact
+    dashed (enclosing R is a lower bound once the deposit is partly out of
+    frame)."""
+    m = (r["M"] > 0) & detection_settled(r)
+    t = r["t"][m]
+    Rs = smooth(r["Rraw"][m] / r["ppm"], 9)          # mm
+    free = r["edge"][m] == 0
+    j = int(np.where(free)[0][-1]) if free.any() else len(t) - 1
+    return t, Rs, j
+
+
+def fig_R_grid(runs, mode="per-run"):
     """3x2 grid of per-concentration R(t) panels -- radius only (the dR/dt
     twin axis and the all-runs overlay column were dropped by agreement:
-    the composite was too crowded).
+    the composite was too crowded). Solid = in frame, dashed = after first
+    frame contact (see _r_series).
 
-    The FULL run is shown, not just the edge-free segment: the late-time
-    plateau (growth stalling as the deposit spans the cell) is the point of
-    the figure -- truncating at frame contact left every curve looking
-    linear. Frames after the deposit first touches the frame border are
-    drawn dashed: from there the enclosing radius is measured against a
-    partially out-of-frame deposit, so the plateau level is a lower bound."""
+    Three variants are committed so the Results author can pick one:
+      mode="per-run"     -> R_vs_t_grid            each panel on its own axes
+      mode="shared"      -> R_vs_t_grid_sharedaxes identical [s]/[mm] limits
+      mode="normalized"  -> R_vs_t_grid_normalized R/R_end vs t/t_end (unit
+                            box; note R_end is the frame-limited final value,
+                            not a physical scale)"""
+    series = {r["conc"]: _r_series(r) for r in runs}
+    tmax = max(t[-1] for t, _, _ in series.values())
+    rmax = max(R.max() for _, R, _ in series.values())
     nrows = (len(runs) + 1) // 2            # per-run panels in 2 columns
     fig = plt.figure(figsize=(16, 5.0 * nrows))
     gs = GridSpec(nrows, 2, figure=fig, hspace=0.30, wspace=0.24)
-    axes = [fig.add_subplot(gs[i // 2, i % 2]) for i in range(len(runs))]
-    for k, (ax, r) in enumerate(zip(axes, runs)):
-        # UNCAPPED envelope, past the detection transient: the capped series'
-        # fake 90 um/s ramp + hand-off drop never enter the figure
-        m = (r["M"] > 0) & detection_settled(r)
-        t = r["t"][m]
-        Rs = smooth(r["Rraw"][m] / r["ppm"], 9)      # mm
-        free = r["edge"][m] == 0
-        # last edge-free index: split solid (trusted) / dashed (frame-limited)
-        j = int(np.where(free)[0][-1]) if free.any() else len(t) - 1
+    for k, r in enumerate(runs):
+        ax = fig.add_subplot(gs[k // 2, k % 2])
+        t, Rs, j = series[r["conc"]]
+        if mode == "normalized":
+            t, Rs = t / t[-1], Rs / Rs[-1]
         c = dark(color(r["conc"]))     # darkened: raw viridis yellow (0.56 %)
                                        # is barely visible on white
         # (the unsmoothed series differs from the smoothed one only at
@@ -531,8 +550,23 @@ def fig_R_grid(runs):
         ax.plot(t[:j + 1], Rs[:j + 1], color=c, lw=2.0, label="in frame")
         ax.plot(t[j:], Rs[j:], color=c, lw=2.0, ls=(0, (4, 2)), alpha=0.8,
                 label="frame contact")
-        ax.set_xlabel("time [s]")
-        ax.set_ylabel("enclosing R [mm]")
+        if mode == "shared":
+            ax.set_xlim(0, tmax * 1.03)
+            ax.set_ylim(0, rmax * 1.06)
+        if mode == "normalized":
+            ax.set_xlim(0, 1.03)
+            ax.set_ylim(0, 1.06)
+            ax.set_xlabel("t / t$_{end}$")
+            ax.set_ylabel("R / R$_{end}$")
+            torig, Rorig, _ = series[r["conc"]]
+            ax.text(0.97, 0.17,
+                    f"t$_{{end}}$ = {torig[-1]:.0f} s\n"
+                    f"R$_{{end}}$ = {Rorig[-1]:.1f} mm",
+                    transform=ax.transAxes, ha="right", va="bottom",
+                    fontsize=11.5, color="0.35")
+        else:
+            ax.set_xlabel("time [s]")
+            ax.set_ylabel("enclosing R [mm]")
         # panel identifier (data label, not a title) in the corner;
         # asterisk = heat-lamp-affected run (see growth-rate figure legend)
         tag = f"{r['conc']:.2f} %" + ("*" if r.get("lamp") else "")
@@ -541,7 +575,9 @@ def fig_R_grid(runs):
         ax.grid(alpha=0.25)
         if k == 0:      # line-style key once, first panel (colours vary only)
             ax.legend(fontsize=12, loc="upper left", framealpha=0.9)
-    return save(fig, "R_vs_t_grid")
+    stem = {"per-run": "R_vs_t_grid", "shared": "R_vs_t_grid_sharedaxes",
+            "normalized": "R_vs_t_grid_normalized"}[mode]
+    return save(fig, stem)
 
 
 # ------------------------------------------------------------------ main ---
@@ -554,6 +590,8 @@ def main():
     f2, Dvals = fig_D_vs_conc(reliable)
     f3, rates = fig_growth_rate(runs)
     f4 = fig_R_grid(runs)
+    f4b = fig_R_grid(runs, mode="shared")
+    f4c = fig_R_grid(runs, mode="normalized")
     f5 = fig_D_with_crops(runs, reliable)
 
     print("\n=== fill fraction phi = M/(pi R^2) (median, 16pct, 84pct) ===")
@@ -569,7 +607,7 @@ def main():
         print(f"  {c:.2f}% : {g:.1f} +/- {e:.1f}")
 
     print("\nfigures ->")
-    for f in (f1, f2, f3, f4, f5):
+    for f in (f1, f2, f3, f4, f4b, f4c, f5):
         if f:
             print(f"  {f}")
 
