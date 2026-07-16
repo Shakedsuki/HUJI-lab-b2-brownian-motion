@@ -78,6 +78,15 @@ what must not be over-claimed.
 
 ## 4. R_and_dRdt_grid — linear fronts are real; early-time features are not
 
+> **Update 2026-07-16:** figure simplified per collaborator (Nir) review and
+> renamed **`R_vs_t_grid`**: the dR/dt twin axes and the all-runs overlay
+> panel are gone (too crowded), and each panel now shows the **full run**
+> instead of stopping at frame contact, so the late-time plateau is visible
+> (solid = in-frame, dashed = after first frame contact; the dashed plateau
+> level is a lower bound since the deposit is partly out of frame). The
+> dR/dt-artifact anatomy below is kept for the record — those features no
+> longer appear in any figure.
+
 - **Real physics:** R(t) is close to linear after the transient in every
   run — a constant front speed, as expected for migration-controlled dense
   growth (same Chazalviel/Fleury picture as above). The overlay's slope

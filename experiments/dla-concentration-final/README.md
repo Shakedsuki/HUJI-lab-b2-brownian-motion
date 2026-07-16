@@ -33,9 +33,11 @@ python scripts/report_figures.py      # writes all four figures to figures/
    (see note below and `NOTES_fractal_dimension_concentration.md`).
 3. **`growth_rate_vs_conc.png`** — mean late-time linear front speed dR/dt vs
    concentration.
-4. **`R_and_dRdt_grid.png`** — one clean panel per concentration: enclosing R(t)
-   [mm] with its dR/dt [µm/s] on a twin axis, plus an all-runs R(t) overlay in
-   the last slot.
+4. **`R_vs_t_grid.png`** — one clean panel per concentration: enclosing R(t)
+   [mm] over the **full run**, so the late-time plateau is visible. Solid up to
+   first frame contact; dashed after (deposit partly out of frame → the plateau
+   level is a lower bound). The dR/dt twin axis and the all-runs overlay were
+   dropped (collaborator review: too crowded).
 5. **`D_vs_concentration_with_crops.png`** — the reliable D-vs-concentration plot
    with a **3-over-3 gallery of the grounded video frames** below it (frame at
    each run's `t_measured_s`, cropped to a square of side 2·1.15·R, 1 mm scale

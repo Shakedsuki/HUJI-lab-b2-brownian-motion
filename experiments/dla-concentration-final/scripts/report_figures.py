@@ -23,16 +23,15 @@ Deliverables (agreed with the report split, Nir = Results):
   2. D_vs_concentration.png     -- fractal dimension vs concentration, BOTH
      weeks, BOX-COUNTING ONLY (mass-radius estimator dropped by agreement).
   3. growth_rate_vs_conc.png    -- mean late-time front speed vs concentration.
-  4. R_and_dRdt_grid.png        -- per-concentration R(t) with its dR/dt, one
-     clean panel per run + a combined overlay (polished replacement for the
-     7-panel draft).
+  4. R_vs_t_grid.png            -- per-concentration R(t), one clean panel
+     per run over the FULL run (plateau visible; dR/dt twin axis and the
+     all-runs overlay dropped -- too crowded).
 
 Run:  python scripts/report_figures.py
 """
 
 import csv
 import os
-import shutil
 import subprocess
 from pathlib import Path
 
@@ -139,15 +138,13 @@ def lamp_star(ax, x, y, dx=-13, dy=2):
                 fontweight="bold")
 
 
-def conc_log_axis(ax, concs):
-    """Log x with a labelled tick at every measured concentration: the
-    concentrations are log-spaced, so linear ticks leave 0.02/0.04/0.06
-    unreadable and unmapped."""
-    ax.set_xscale("log")
-    ax.set_xticks(list(concs))
-    ax.set_xticklabels([f"{c:.2f}" for c in concs], rotation=30, ha="right")
-    ax.xaxis.set_minor_locator(plt.NullLocator())
-    ax.set_xlabel("CuSO$_4$ concentration [%]  (log scale)")
+def conc_axis(ax, concs):
+    """Linear concentration axis (collaborator request: with only six fairly
+    spread points a log axis is unwarranted). Default numeric ticks -- a
+    labelled tick at every measured value would collide at 0.02/0.04/0.06;
+    the per-point data labels carry the exact values instead."""
+    ax.set_xlim(-0.02, max(concs) * 1.08)
+    ax.set_xlabel("CuSO$_4$ concentration [%]")
 
 
 # --------------------------------------------------------------- loaders ---
@@ -214,18 +211,6 @@ def detection_settled(run, window_s=60.0, tol_px=2.0):
     lag = (run["Rraw"] - run["Rc"] > tol_px) & (run["t"] < window_s)
     idx = np.where(lag)[0]
     return run["t"] > (run["t"][idx[-1]] if len(idx) else -np.inf)
-
-
-def mask_catchup(dR, R_mm, t, ppm, step_px=4.0, half=5):
-    """NaN-out the derivative around detection catch-up events: single-sample
-    envelope jumps far beyond pixel quantisation (> step_px) are segmentation
-    admitting already-grown structure, not a growth speed. The smoothing
-    window spreads such a step over ~9 samples, so mask +/-`half` around it."""
-    jump = np.abs(np.diff(R_mm)) * ppm > step_px
-    out = dR.copy()
-    for i in np.where(jump)[0]:
-        out[max(0, i - half):i + half + 2] = np.nan
-    return out
 
 
 def growth_rate_umps(run):
@@ -307,7 +292,7 @@ def fig_fill_fraction(runs):
             lamp_star(ax, c, m)
     ax.plot([], [], ls="none", marker="$*$", ms=13, color="k",
             label=LAMP_LABEL)
-    conc_log_axis(ax, concs)
+    conc_axis(ax, concs)
     ax.set_ylabel(r"occupancy  $\phi = M / \pi R^2$")
     ax.grid(alpha=0.3)
     ax.legend(loc="lower right")
@@ -357,7 +342,7 @@ def _plot_D(ax, reliable):
             lamp_star(ax, c, reliable[c][0])
     ax.plot([], [], ls="none", marker="$*$", ms=13, color="k",
             label=LAMP_LABEL)
-    conc_log_axis(ax, sorted(concs + [EXCLUDED_CONC]))
+    conc_axis(ax, sorted(concs + [EXCLUDED_CONC]))
     ax.set_ylabel("effective fractal dimension  D")
     ax.set_ylim(1.45, 2.07)
     ax.grid(alpha=0.3)
@@ -507,7 +492,7 @@ def fig_growth_rate(runs):
             lamp_star(ax, r["conc"], g)
     ax.plot([], [], ls="none", marker="$*$", ms=13, color="k",
             label=LAMP_LABEL)
-    conc_log_axis(ax, concs)
+    conc_axis(ax, concs)
     ax.set_ylabel("mean growth rate  dR/dt [µm/s]")
     ax.grid(alpha=0.3)
     ax.legend(loc="lower right")
@@ -515,74 +500,48 @@ def fig_growth_rate(runs):
     return out, list(zip(concs, rate, err))
 
 
-def fig_R_dRdt_grid(runs):
-    """Two-part layout: a 3x2 block of per-concentration panels (R(t) [mm] on
-    the left axis, dR/dt [um/s] on the right) and, to its right, the combined
-    R(t) overlay as a single full-height panel."""
+def fig_R_grid(runs):
+    """3x2 grid of per-concentration R(t) panels -- radius only (the dR/dt
+    twin axis and the all-runs overlay column were dropped by agreement:
+    the composite was too crowded).
+
+    The FULL run is shown, not just the edge-free segment: the late-time
+    plateau (growth stalling as the deposit spans the cell) is the point of
+    the figure -- truncating at frame contact left every curve looking
+    linear. Frames after the deposit first touches the frame border are
+    drawn dashed: from there the enclosing radius is measured against a
+    partially out-of-frame deposit, so the plateau level is a lower bound."""
     nrows = (len(runs) + 1) // 2            # per-run panels in 2 columns
-    fig = plt.figure(figsize=(25, 5.4 * nrows))
-    gs = GridSpec(nrows, 3, figure=fig, width_ratios=[1, 1, 1.15],
-                  hspace=0.30, wspace=0.42)
+    fig = plt.figure(figsize=(16, 5.0 * nrows))
+    gs = GridSpec(nrows, 2, figure=fig, hspace=0.30, wspace=0.24)
     axes = [fig.add_subplot(gs[i // 2, i % 2]) for i in range(len(runs))]
-    for ax, r in zip(axes, runs):
+    for k, (ax, r) in enumerate(zip(axes, runs)):
         # UNCAPPED envelope, past the detection transient: the capped series'
         # fake 90 um/s ramp + hand-off drop never enter the figure
-        m = edge_free(r) & detection_settled(r)
+        m = (r["M"] > 0) & detection_settled(r)
         t = r["t"][m]
-        R = r["Rraw"][m] / r["ppm"]                  # mm
-        Rs = smooth(R, 9)
-        # derivative of the smoothed radius, in um/s; detection catch-up
-        # events (super-physical envelope jumps) are masked out
-        dR = mask_catchup(np.gradient(Rs, t) * 1000.0, R, t, r["ppm"])
+        Rs = smooth(r["Rraw"][m] / r["ppm"], 9)      # mm
+        free = r["edge"][m] == 0
+        # last edge-free index: split solid (trusted) / dashed (frame-limited)
+        j = int(np.where(free)[0][-1]) if free.any() else len(t) - 1
         c = dark(color(r["conc"]))     # darkened: raw viridis yellow (0.56 %)
                                        # is barely visible on white
         # (the unsmoothed series differs from the smoothed one only at
         # staircase corners -- invisible under it, so it is not drawn)
-        ax.plot(t, Rs, color=c, lw=2.0, label="R (smoothed)")
+        ax.plot(t[:j + 1], Rs[:j + 1], color=c, lw=2.0, label="in frame")
+        ax.plot(t[j:], Rs[j:], color=c, lw=2.0, ls=(0, (4, 2)), alpha=0.8,
+                label="frame contact")
         ax.set_xlabel("time [s]")
-        ax.set_ylabel("enclosing R [mm]", color=c)
-        ax.tick_params(axis="y", labelcolor=c)
-        # panel identifier (data label, not a title) in the top-right corner;
+        ax.set_ylabel("enclosing R [mm]")
+        # panel identifier (data label, not a title) in the corner;
         # asterisk = heat-lamp-affected run (see growth-rate figure legend)
         tag = f"{r['conc']:.2f} %" + ("*" if r.get("lamp") else "")
         ax.text(0.97, 0.06, tag, transform=ax.transAxes,
                 ha="right", va="bottom", fontweight="bold", fontsize=17, color=c)
         ax.grid(alpha=0.25)
-        axd = ax.twinx()
-        axd.plot(t, dR, color="C1", lw=1.1, alpha=0.85, label="dR/dt")
-        axd.set_ylabel("dR/dt [µm/s]", color="C1")
-        axd.tick_params(axis="y", labelcolor="C1")
-        axd.set_ylim(bottom=0)
-        # single combined legend per panel
-        h1, l1 = ax.get_legend_handles_labels()
-        h2, l2 = axd.get_legend_handles_labels()
-        ax.legend(h1 + h2, l1 + l2, fontsize=12, loc="upper left", framealpha=0.9)
-
-    # right column, full height: all runs' R(t) overlaid, coloured by conc
-    ax = fig.add_subplot(gs[:, 2])
-    # per-run placement of the final-R tip label, chosen so no label sits on
-    # a neighbouring curve: (dx, dy) in points + horizontal alignment
-    TIP = {0.02: (7, -3, "left"), 0.04: (2, 12, "center"),
-           0.06: (7, -3, "left"), 0.15: (7, 8, "left"),
-           0.45: (-7, 2, "right"), 0.56: (7, 2, "left")}
-    for r in runs:
-        m = edge_free(r) & detection_settled(r)
-        t = r["t"][m]; R = smooth(r["Rraw"][m] / r["ppm"], 9)
-        c = dark(color(r["conc"]))
-        lab = f"{r['conc']:.2f} %" + ("*" if r.get("lamp") else "")
-        ax.plot(t, R, color=c, lw=2.4, label=lab)
-        dx, dy, ha = TIP[r["conc"]]
-        star = "*" if r.get("lamp") else ""
-        ax.annotate(f"{R[-1]:.1f} mm{star}", (t[-1], R[-1]),
-                    textcoords="offset points", xytext=(dx, dy), ha=ha,
-                    va="center", fontsize=13.5, color=c, fontweight="bold")
-    ax.set_xlabel("time [s]"); ax.set_ylabel("enclosing R [mm]")
-    ax.text(0.97, 0.02, "all runs", transform=ax.transAxes, ha="right",
-            va="bottom", fontweight="bold", fontsize=19, color="0.25")
-    ax.grid(alpha=0.25)
-    ax.legend(fontsize=14, title="CuSO$_4$", title_fontsize=15, ncol=1,
-              loc="upper left")
-    return save(fig, "R_and_dRdt_grid")
+        if k == 0:      # line-style key once, first panel (colours vary only)
+            ax.legend(fontsize=12, loc="upper left", framealpha=0.9)
+    return save(fig, "R_vs_t_grid")
 
 
 # ------------------------------------------------------------------ main ---
@@ -594,7 +553,7 @@ def main():
     f1, fill = fig_fill_fraction(runs)
     f2, Dvals = fig_D_vs_conc(reliable)
     f3, rates = fig_growth_rate(runs)
-    f4 = fig_R_dRdt_grid(runs)
+    f4 = fig_R_grid(runs)
     f5 = fig_D_with_crops(runs, reliable)
 
     print("\n=== fill fraction phi = M/(pi R^2) (median, 16pct, 84pct) ===")
