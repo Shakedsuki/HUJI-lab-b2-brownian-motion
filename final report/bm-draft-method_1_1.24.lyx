@@ -1,0 +1,980 @@
+#LyX 2.5 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin C:/Users/Shake/Downloads/
+\textclass heb-article
+\begin_preamble
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{calc}
+\usetikzlibrary{decorations.pathreplacing}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children no
+\language hebrew
+\language_package default
+\inputencoding auto-legacy
+\fontencoding auto
+\font_roman "default" "David"
+\font_sans "default" "David"
+\font_typewriter "default" "David"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format pdf4
+\output_sync 1
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\headheight 0.8cm
+\headsep 0.8cm
+\footskip 1.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Section
+שיטה מהלך הניסוי
+\end_layout
+
+\begin_layout Standard
+בהרחבה זו חקרנו את תופעת ה-
+\begin_inset Formula $\text{DLA}$
+\end_inset
+
+ באמצעות אלקטרודפוזיציה של נחושת מתמיסת 
+\begin_inset Formula $\text{CuSo}_{4}$
+\end_inset
+
+.
+\begin_inset Newline newline
+\end_inset
+
+מערכת הניסוי,
+ המתוארת באיור
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+1
+\numeric off
+,
+ היתה מורכבת מצלחת פטרי מזכוכית (קוטר 
+\begin_inset Formula $100\text{ mm}$
+\end_inset
+
+) אשר היתה מונחת אופקית ומצולמת מלמעלה.
+ בתוך צלחת הפטרי הונחה טבעת נחושת (קוטר פנימי 
+\begin_inset Formula $70\text{ mm}$
+\end_inset
+
+;
+ קוטר חיצוני 
+\begin_inset Formula $80\text{ mm}$
+\end_inset
+
+) אשר שימשה כאנודה 
+\begin_inset Formula $\left(+\right)$
+\end_inset
+
+,
+ והקצה החשוף של חוט נחושת דק הונח במרכזן ושימש כקתודה 
+\begin_inset Formula $\left(-\right)$
+\end_inset
+
+.
+ שכבת אלקטרוליט דקה נוצרה על ידי יציקה של מים מזוקקים,
+ ולאחר מכן הוזרקה בפיפטה כמות קטנה של תמיסת ה-
+\begin_inset Formula $\text{CuSo}_{4}$
+\end_inset
+
+ סמוך למרכז הטבעת,
+ וללא ערבוב.
+ 
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename Electrodeposition cell schematic.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+שדגדשג
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+הצילום בוצע במצלמת 
+\begin_inset Formula $\text{Nikon D7200}$
+\end_inset
+
+ המצוידת בעדשת מאקרו 
+\begin_inset Formula $\text{Sigma 150 mm f/2.8}$
+\end_inset
+
+.
+ המצלמה היתה מותקנת על זרוע וכוונה אנכית כלפי מטה לתמיסה במבט 
+\begin_inset Formula $\text{top-down}$
+\end_inset
+
+ (ראו איור
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+1
+\numeric off
+ב).
+ כבל 
+\begin_inset Formula $\text{UC-E17}$
+\end_inset
+
+ חיבר בין המצלמה למחשב שהריץ את תוכנת 
+\begin_inset Formula $\text{digiCamControl}$
+\end_inset
+
+ ששימשה להסרטת המדידות.
+ כל סרטון צולם ברזולוציה של 
+\begin_inset Formula $1280\times720$
+\end_inset
+
+ פיקסלים ובקצב של 
+\begin_inset Formula $60\text{fps}$
+\end_inset
+
+,
+ ולצורכי כיול מידות הונח ברקע נייר מילמיטר.
+\begin_inset Newline newline
+\end_inset
+
+על מנת לשפר את איכות הצילום בתאורה נמוכה נעשה שימוש בשני גופי תאורה שונים:
+ (
+\numeric on
+1
+\numeric off
+) מנורת 
+\begin_inset Formula $\text{UV}$
+\end_inset
+
+ 
+\begin_inset Quotes erd
+\end_inset
+
+קרה
+\begin_inset Quotes erd
+\end_inset
+
+ אשר הופעלה לאורך כל המדידות בשבועות
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+5-4
+\numeric off
+ ו- (
+\numeric on
+2
+\numeric off
+) מנורת להט 
+\begin_inset Quotes eld
+\end_inset
+
+חמה
+\begin_inset Quotes erd
+\end_inset
+
+ אשר הופעלה רק בחלק מהמדידות של שבוע
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+4
+\numeric off
+ 
+\begin_inset Formula $\left(0.30\%,0.45\%,0.56\%\right)$
+\end_inset
+
+.
+ בדיעבד התגלה כי מנורת הלהט ה
+\begin_inset Quotes erd
+\end_inset
+
+חמה
+\begin_inset Quotes erd
+\end_inset
+
+ - אשר גרמה לחימום מקומי של מערכת הניסוי - היתה השפעה על הובלת יוני ה- 
+\begin_inset Formula $\text{Cu}^{2+}$
+\end_inset
+
+ בתמיסה וייתכן שהטתה את אופי בניית הפרקטלים (ראו דיון בנושא).
+ לאחר הצבת המערכת והתאורה,
+ המתח סופק על ידי ספק כוח 
+\begin_inset Formula $\text{Tektronix PWS2721}$
+\end_inset
+
+ במצב מתח קבוע.
+ לאורך כל המדידות 
+\begin_inset Formula $\left(n=7\right)$
+\end_inset
+
+ קיבענו את המתח ל-
+\begin_inset Formula $12V$
+\end_inset
+
+,
+ ובין כל מדידה שינינו את ריכוז התמיסה:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="4">
+<features evenRowsColor="default" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+תאורה חמה
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+תאורה קרה
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ריכוז תמיסה
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+שבוע
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.02\%$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\numeric on
+5
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.04\%$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.06\%$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.15\%$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\numeric on
+4
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.30\%$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.45\%^{*}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.56\%^{**}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+את מדידת ה- 
+\begin_inset Formula $0.30\%$
+\end_inset
+
+ החרגנו בסופו של דבר מניתוח הנתונים עקב פוקוס לקוי,
+ כך שנותרנו עם 
+\begin_inset Formula $n=6$
+\end_inset
+
+ מדידות בסך הכל.
+\end_layout
+
+\begin_layout Standard
+לאחר מכן,
+ עיבוד הסרטונים נעשה באמצעות 
+\begin_inset Formula $\text{python}$
+\end_inset
+
+.
+ מכל סרטון חולצו פריימים בקצב של 
+\begin_inset Formula $2\text{fps}$
+\end_inset
+
+ והכיול בין פיקסלים למילימטרים בוצע בנפרד עבור כל מדידה באמצעות נייר המילימטר שהונח ברקע,
+ כך שהתקבל כיול של 
+\begin_inset Formula $35.6\text{px/mm}$
+\end_inset
+
+ למדידות של שבוע
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+4
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\numeric off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ו-
+\begin_inset Formula $50\text{px/mm}$
+\end_inset
+
+ למדידות של שבוע
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+5
+\numeric off
+.
+ לאחר הפעלת המתח,
+ כדי לבודד את הצביר הגדל מתוך שני הפריימים שחולצו בכל שניה חולצו מספר מדדים:
+ הרדיוס של המעגל החוסם את צביר נחושת כתלות בזמן 
+\begin_inset Formula $R\left(t\right)$
+\end_inset
+
+ (כלומר עד כמה 
+\begin_inset Quotes eld
+\end_inset
+
+רחוק
+\begin_inset Quotes erd
+\end_inset
+
+ התפשט הצביר),
+ הנגזרת שלו כתלות בזמן 
+\begin_inset Formula $\frac{dR}{dt}\equiv\dot{R}\left(t\right)$
+\end_inset
+
+ המתארת את מהירות חזית הגדילה של הצביר (הגבול החיצוני שמתקדם) והממד הפרקטלי 
+\begin_inset Formula $D$
+\end_inset
+
+ אשר חושב באמצעות שיטת ה-
+\begin_inset Formula $\text{box-counting}$
+\end_inset
+
+ שהוזכרה ברקע התיאורטי.
+ 
+\end_layout
+
+\begin_layout Standard
+לאי-הוודאות בממד הפרקטלי 
+\begin_inset Formula $D$
+\end_inset
+
+ נאמדה מהפיזור בין הפריימים,
+ הספים והאומדנים השונים בהם עשינו שימוש במהלך עיבוד הסרטונים,
+ בתוספת שגיאה שיטתית הנובעת מבחירת הסף.
+ ה-
+\begin_inset Formula $\text{errorbars}$
+\end_inset
+
+ של מהירות החזית משקפים את שגיאת ההתאמה בלבד ומהווים חסם תחתון לאי-הוודאות האמיתית.
+\end_layout
+
+\end_body
+\end_document

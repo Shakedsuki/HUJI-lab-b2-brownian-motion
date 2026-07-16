@@ -1,0 +1,1390 @@
+#LyX 2.5 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin C:/Users/Shake/Downloads/
+\textclass heb-article
+\begin_preamble
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{calc}
+\usetikzlibrary{decorations.pathreplacing}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children no
+\language hebrew
+\language_package default
+\inputencoding auto-legacy
+\fontencoding auto
+\font_roman "default" "David"
+\font_sans "default" "David"
+\font_typewriter "default" "David"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format pdf4
+\output_sync 1
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\headheight 0.8cm
+\headsep 0.8cm
+\footskip 1.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Section
+מבוא ורקע תיאורטי
+\end_layout
+
+\begin_layout Standard
+תנועה בראונית היא דוגמה להליכה אקראית:
+ חלקיק הנע בצעדים קטנים,
+ בלתי-תלויים ואקראיים,
+ מתפשט כך שממוצע ריבוע ההעתק שלו 
+\begin_inset Formula $\left(\text{MSD}\right)$
+\end_inset
+
+ גדל ליניארית בזמן 
+\begin_inset Formula 
+\begin{equation}
+\left\langle \Delta r^{2}\right\rangle =2d\mathcal{D}t
+\end{equation}
+
+\end_inset
+
+כאשר 
+\begin_inset Formula $d$
+\end_inset
+
+ ממד המרחב ו-
+\begin_inset Formula $\mathcal{D}$
+\end_inset
+
+ מקדם הדיפוזיה (להבדיל מהממד הפרקטלי 
+\begin_inset Formula $D$
+\end_inset
+
+ שיוגדר בהמשך).
+ יון נחושת בתמיסה נע באותו האופן בדיוק,
+ ותנועה אקראית זו היא המנגנון העומד מאחורי הגדילה הפרקטלית הנחקרת בדו
+\begin_inset Quotes erd
+\end_inset
+
+ח זה.
+\end_layout
+
+\begin_layout Standard
+מודל ה-
+\begin_inset Formula $\text{DLA}$
+\end_inset
+
+ 
+\begin_inset Formula $\left(\text{diffusion-limited aggregation}\right)$
+\end_inset
+
+ מתאר חלקיקים כאלה,
+ המשוחררים הרחק מנקודת התחלה קבועה (
+\begin_inset Formula $\text{seed}$
+\end_inset
+
+),
+ נעים בדיפוזיה,
+ ועם המגע הראשון בצביר (
+\begin_inset Formula $\text{cluster}$
+\end_inset
+
+) הגדל נצמדים אליו באופן בלתי-הפיך.
+ חלקיק המגיע מרחוק צפוי לפגוע בקצה בולט בטרם יחדור אל החלל שבין הענפים,
+ כך שהקצוות ממסכים 
+\begin_inset Formula $\left(\text{screening}\right)$
+\end_inset
+
+ את פנים המבנה:
+ כל בליטה גדלה מהר מסביבתה ו
+\begin_inset Quotes erd
+\end_inset
+
+מעצימה
+\begin_inset Quotes erd
+\end_inset
+
+ את עצמה,
+ ונבנה מבנה מסועף ודומה לעצמו (
+\begin_inset Formula $\text{self-similar}$
+\end_inset
+
+).
+ באלקטרודפוזיציה של נחושת מתקיים אותו מנגנון:
+ יון ה-
+\begin_inset Formula $\text{Cu}^{2+}$
+\end_inset
+
+ (אטום נחושת שאיבד שני אלקטרונים) הוא החלקיק המבצע את ההליכה האקראית,
+ קצה חוט הקתודה הוא ה-
+\begin_inset Formula $\text{seed}$
+\end_inset
+
+,
+ והתגובה 
+\begin_inset Formula 
+\begin{equation}
+\text{Cu}^{2+}+2e^{-}\rightarrow\text{Cu}^{0}
+\end{equation}
+
+\end_inset
+
+ על פני המשקע היא צעד ההיצמדות הבלתי-הפיך.
+ חזית הגדילה בולעת כל יון המגיע אליה,
+ ולכן ריכוז היונים 
+\begin_inset Formula $c\left(r,t\right)$
+\end_inset
+
+ מתאפס בחזית ושומר על ערכו המלא הרחק ממנה;
+ השדה מתעדכן מהר ביחס להתקדמות החזית,
+ ולכן בכל רגע מקיים בקירוב את משוואת לפלס 
+\begin_inset Formula $\nabla^{2}c\approx0$
+\end_inset
+
+.
+ קצב הגדילה המקומי מתכונתי לגרדיאנט הריכוז,
+ וכמו ששדה חשמלי מתרכז בקצה חד של מוליך - כך גם הגרדיאנט מרבי בקצוות הבולטים של הצביר,
+ ושם הגדילה המהירה ביותר.
+\end_layout
+
+\begin_layout Standard
+המבנה המסועף המתקבל מאופיין בממד הפרקטלי 
+\begin_inset Formula $D$
+\end_inset
+
+,
+ המוגדר מן האופן שבו המסה 
+\begin_inset Formula $M$
+\end_inset
+
+ גדלה עם קנה המידה 
+\begin_inset Formula $R$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+M\propto R^{D}
+\end{equation}
+
+\end_inset
+
+כך שעבור 
+\begin_inset Formula $D=1$
+\end_inset
+
+ מתקבל ישר,
+ עבור 
+\begin_inset Formula $D=2$
+\end_inset
+
+ מבנה הממלא את המישור (כגון דסקה;
+ ראו איור 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:fractal-dim"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+),
+ ובתחום 
+\begin_inset Formula $1<D<2$
+\end_inset
+
+ מבנה מסועף המשאיר את רוב המישור ריק;
+ עבור 
+\begin_inset Formula $\text{DLA}$
+\end_inset
+
+ דו-ממדי הערך התאורטי הוא לערך 
+\begin_inset Formula $D\approx1.71$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename fractal_dimension_concept.png
+	lyxscale 20
+	width 70col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:fractal-dim"
+
+\end_inset
+
+ ממד פרקטלים והסבר על איך ספירת קופסאות עובדת.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+את 
+\begin_inset Formula $D$
+\end_inset
+
+ מדדנו בשיטת ה-
+\begin_inset Formula $\text{box-counting}$
+\end_inset
+
+ (
+\begin_inset Quotes eld
+\end_inset
+
+ספירת קופסאות
+\begin_inset Quotes erd
+\end_inset
+
+):
+ מחלקים את המישור לתיבות בעלות צלע 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ וסופרים את מספר התיבות 
+\begin_inset Formula $N\left(\varepsilon\right)$
+\end_inset
+
+ המכילות חלק מהמשקע.
+ מספר התיבות הדרוש לכיסוי עצם גדל כמו החזקה של הממד שלו - כלומר קו ממלא 
+\begin_inset Formula $N\propto\varepsilon^{-1}$
+\end_inset
+
+ תיבות,
+ משטח מלא 
+\begin_inset Formula $N\propto\varepsilon^{-2}$
+\end_inset
+
+...
+ ובהכללה נקבל שפרקטל מקיים 
+\begin_inset Formula $N\left(\varepsilon\right)\propto\varepsilon^{-D}$
+\end_inset
+
+ גם עבור 
+\begin_inset Formula $D$
+\end_inset
+
+ לא שלם (
+\begin_inset Formula $D$
+\end_inset
+
+ חולץ כשיפוע בגרף לוג-לוג של 
+\begin_inset Formula $N\left(\varepsilon\right)$
+\end_inset
+
+ כתלות ב-
+\begin_inset Formula $1/\varepsilon$
+\end_inset
+
+).
+ נדגיש כי הממד המתקבל הינו ממד פרקטלי 
+\begin_inset Quotes eld
+\end_inset
+
+אפקטיבי
+\begin_inset Quotes erd
+\end_inset
+
+ בלבד:
+ חוק החזקה מתקיים רק בחלון קני-מידה סופי,
+ בין רוחב הענף הבודד ובין גודל הצביר,
+ וחלון צר או ענפים עבים מטים את הממד המדוד כלפי מעלה (ראו תוצאות).
+\end_layout
+
+\begin_layout Standard
+ריכוז התמיסה קובע את זמינות היונים המזינים את החזית,
+ ודרכו את אופי הגדילה.
+ בריכוז נמוך ההובלה דיפוזיבית בעיקרה והמיסוך שולט - התנאים הקרובים ביותר ל-
+\begin_inset Formula $\text{DLA}$
+\end_inset
+
+ אידיאלי.
+ עם עליית הריכוז המיסוך בין ענפים שכנים נחלש,
+ ומנגנוני הובלה נוספים כגון נדידה (
+\begin_inset Formula $\text{migration}$
+\end_inset
+
+) בשדה החשמלי והסעה (
+\begin_inset Formula $\text{convection}$
+\end_inset
+
+) - מתחרים בדיפוזיה וממלאים את החלל בין הענפים (
+\begin_inset Quotes eld
+\end_inset
+
+מפרצים
+\begin_inset Quotes erd
+\end_inset
+
+);
+ מתקבל מבנה צפוף וקומפקטי שממדו האפקטיבי שואף לממד המישור,
+ 
+\begin_inset Formula $D\rightarrow2$
+\end_inset
+
+,
+ ולצדו חזית גדילה מהירה יותר.
+ לכן המדידה בריכוז הנמוך ביותר היא המבחן ההוגן ביותר לערך התאורטי 
+\begin_inset Formula $1.71$
+\end_inset
+
+,
+ וחריגה מעליו מתפצלת לשני מקורות:
+ האחד מקור פיזיקלי,
+ כגון אותם מנגנוני הובלה שהוזכרו לעיל הדוחקים את המערכת מהתחום מוגבל-הדיפוזיה;
+ והשני מקור מדידתי,
+ לרבות חלון קנה-מידה סופי.
+\end_layout
+
+\begin_layout Standard
+בהתאם לכך נמדדו לאורך ציר הריכוז ארבעה גדלים:
+ (
+\numeric on
+
+\begin_inset Formula $1$
+\end_inset
+
+
+\numeric off
+) הממד הפרקטלי 
+\begin_inset Formula $D$
+\end_inset
+
+;
+ (
+\numeric on
+
+\begin_inset Formula $2$
+\end_inset
+
+
+\numeric off
+) רדיוס המעגל החוסם את הצביר,
+\begin_inset Formula $R\left(t\right)$
+\end_inset
+
+,
+ שצורתו מבחינה בין גדילה מוגבלת-דיפוזיה 
+\begin_inset Formula $\left(R\propto\sqrt{t}\right)$
+\end_inset
+
+ לחזית המתקדמת במהירות קבועה;
+ (
+\series bold
+\numeric on
+3
+\series default
+\numeric off
+) מהירות החזית 
+\begin_inset Formula $\frac{dR}{dt}$
+\end_inset
+
+;
+ ו-(
+\numeric on
+
+\begin_inset Formula $4$
+\end_inset
+
+
+\numeric off
+) היחס 
+\begin_inset Formula $\phi=M/\pi R^{2}$
+\end_inset
+
+ בין שטח המשקע לשטח המעגל החוסם,
+ המסייע לנו כבדיקת שפיות בלבד.
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+מהלך הניסוי
+\end_layout
+
+\begin_layout Standard
+בהרחבה זו חקרנו את תופעת ה-
+\begin_inset Formula $\text{DLA}$
+\end_inset
+
+ באמצעות אלקטרודפוזיציה של נחושת מתמיסת 
+\begin_inset Formula $\text{CuSO}_{4}$
+\end_inset
+
+.
+\begin_inset Newline newline
+\end_inset
+
+מערכת הניסוי,
+ המתוארת באיור
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+1
+\numeric off
+,
+ היתה מורכבת מצלחת פטרי מזכוכית (קוטר 
+\begin_inset Formula $100\text{ mm}$
+\end_inset
+
+) אשר היתה מונחת אופקית ומצולמת מלמעלה.
+ בתוך צלחת הפטרי הונחה טבעת נחושת (קוטר פנימי 
+\begin_inset Formula $70\text{ mm}$
+\end_inset
+
+;
+ קוטר חיצוני 
+\begin_inset Formula $80\text{ mm}$
+\end_inset
+
+) אשר שימשה כאנודה 
+\begin_inset Formula $\left(+\right)$
+\end_inset
+
+,
+ והקצה החשוף של חוט נחושת דק הונח במרכזן ושימש כקתודה 
+\begin_inset Formula $\left(-\right)$
+\end_inset
+
+.
+ שכבת אלקטרוליט דקה נוצרה על ידי יציקה של מים מזוקקים,
+ ולאחר מכן הוזרקה בפיפטה כמות קטנה של תמיסת ה-
+\begin_inset Formula $\text{CuSO}_{4}$
+\end_inset
+
+ סמוך למרכז הטבעת,
+ וללא ערבוב.
+ 
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename Electrodeposition cell schematic.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+כאן אתה מוזמן להכניס את מה שכתבתי מתחת
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+הצילום בוצע במצלמת 
+\begin_inset Formula $\text{Nikon D7200}$
+\end_inset
+
+ המצוידת בעדשת מאקרו 
+\begin_inset Formula $\text{Sigma 150 mm f/2.8}$
+\end_inset
+
+.
+ המצלמה היתה מותקנת על זרוע וכוונה אנכית כלפי מטה לתמיסה במבט 
+\begin_inset Formula $\text{top-down}$
+\end_inset
+
+ (ראו איור
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+1
+\numeric off
+ב).
+ כבל 
+\begin_inset Formula $\text{UC-E17}$
+\end_inset
+
+ חיבר בין המצלמה למחשב שהריץ את תוכנת 
+\begin_inset Formula $\text{digiCamControl}$
+\end_inset
+
+ ששימשה להסרטת המדידות.
+ כל סרטון צולם ברזולוציה של 
+\begin_inset Formula $1280\times720$
+\end_inset
+
+ פיקסלים ובקצב של 
+\begin_inset Formula $60\text{fps}$
+\end_inset
+
+,
+ ולצורכי כיול מידות הונח ברקע נייר מילימטרי.
+\begin_inset Newline newline
+\end_inset
+
+על מנת לשפר את איכות הצילום בתאורה נמוכה נעשה שימוש בשני גופי תאורה שונים:
+ (
+\numeric on
+1
+\numeric off
+) מנורת 
+\begin_inset Formula $\text{UV}$
+\end_inset
+
+ 
+\begin_inset Quotes erd
+\end_inset
+
+קרה
+\begin_inset Quotes erd
+\end_inset
+
+ אשר הופעלה לאורך כל המדידות בשבועות
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+5-4
+\numeric off
+ ו- (
+\numeric on
+2
+\numeric off
+) מנורת להט 
+\begin_inset Quotes eld
+\end_inset
+
+חמה
+\begin_inset Quotes erd
+\end_inset
+
+ אשר הופעלה רק בחלק מהמדידות של שבוע
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+4
+\numeric off
+ 
+\begin_inset Formula $\left(0.30\%,0.45\%,0.56\%\right)$
+\end_inset
+
+.
+ בדיעבד התגלה כי מנורת הלהט ה
+\begin_inset Quotes erd
+\end_inset
+
+חמה
+\begin_inset Quotes erd
+\end_inset
+
+ - אשר גרמה לחימום מקומי של מערכת הניסוי - השפיעה על הובלת יוני ה- 
+\begin_inset Formula $\text{Cu}^{2+}$
+\end_inset
+
+ בתמיסה וייתכן שהטתה את אופי בניית הפרקטלים (ראו דיון בנושא).
+ לאחר הצבת המערכת והתאורה,
+ המתח סופק על ידי ספק כוח 
+\begin_inset Formula $\text{Tektronix PWS2721}$
+\end_inset
+
+ במצב מתח קבוע.
+ לאורך כל המדידות 
+\begin_inset Formula $\left(n=7\right)$
+\end_inset
+
+ קיבענו את המתח ל-
+\begin_inset Formula $12V$
+\end_inset
+
+,
+ ובין כל מדידה שינינו את ריכוז התמיסה:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="4">
+<features evenRowsColor="default" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+תאורה חמה
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+תאורה קרה
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ריכוז תמיסה
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+שבוע
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.02\%$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\numeric on
+5
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.04\%$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.06\%$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.15\%$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\numeric on
+4
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.30\%$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.45\%^{*}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.56\%^{**}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+את מדידת ה- 
+\begin_inset Formula $0.30\%$
+\end_inset
+
+ החרגנו בסופו של דבר מניתוח הנתונים עקב פוקוס לקוי,
+ כך שנותרנו עם 
+\begin_inset Formula $n=6$
+\end_inset
+
+ מדידות בסך הכל.
+\end_layout
+
+\begin_layout Standard
+לאחר מכן,
+ עיבוד הסרטונים נעשה באמצעות 
+\begin_inset Formula $\text{python}$
+\end_inset
+
+.
+ מכל סרטון חולצו פריימים בקצב של 
+\begin_inset Formula $2\text{fps}$
+\end_inset
+
+ והכיול בין פיקסלים למילימטרים בוצע בנפרד עבור כל מדידה באמצעות הנייר המילימטרי שהונח ברקע,
+ כך שהתקבל כיול של 
+\begin_inset Formula $35.6\text{px/mm}$
+\end_inset
+
+ למדידות של שבוע
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+4
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\numeric off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ו-
+\begin_inset Formula $50\text{px/mm}$
+\end_inset
+
+ למדידות של שבוע
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\numeric on
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+5
+\numeric off
+.
+ לאחר הפעלת המתח,
+ בודד הצביר הגדל בכל אחד מהפריימים שחולצו,
+ ומתוכו נמדדו מספר גדלים:
+ הרדיוס של המעגל החוסם את צביר נחושת כתלות בזמן 
+\begin_inset Formula $R\left(t\right)$
+\end_inset
+
+ (כלומר עד כמה 
+\begin_inset Quotes eld
+\end_inset
+
+רחוק
+\begin_inset Quotes erd
+\end_inset
+
+ התפשט הצביר),
+ הנגזרת שלו כתלות בזמן 
+\begin_inset Formula $\frac{dR}{dt}\equiv\dot{R}\left(t\right)$
+\end_inset
+
+ המתארת את מהירות חזית הגדילה של הצביר (הגבול החיצוני שמתקדם) והממד הפרקטלי 
+\begin_inset Formula $D$
+\end_inset
+
+ אשר חושב באמצעות שיטת ה-
+\begin_inset Formula $\text{box-counting}$
+\end_inset
+
+ שהוזכרה ברקע התיאורטי.
+ בנוסף חולץ מכל פריים היחס 
+\begin_inset Formula $\phi=M/\pi R^{2}$
+\end_inset
+
+ בין שטח המשקע לשטח המעגל החוסם,
+ המשמש כבדיקת עקביות לממד הפרקטלי.
+ 
+\end_layout
+
+\begin_layout Standard
+אי-הוודאות בממד הפרקטלי 
+\begin_inset Formula $D$
+\end_inset
+
+ נאמדה מהפיזור בין הפריימים,
+ הספים והאומדנים השונים בהם עשינו שימוש במהלך עיבוד הסרטונים,
+ בתוספת שגיאה שיטתית הנובעת מבחירת הסף.
+ ה-
+\begin_inset Formula $\text{errorbars}$
+\end_inset
+
+ של מהירות החזית משקפים את שגיאת ההתאמה בלבד ומהווים חסם תחתון לאי-הוודאות האמיתית.
+\end_layout
+
+\end_body
+\end_document
