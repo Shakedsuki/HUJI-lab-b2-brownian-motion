@@ -1,12 +1,34 @@
-#LyX 2.4 created this file. For more info see https://www.lyx.org/
-\lyxformat 620
+#LyX 2.5 created this file. For more info see https://www.lyx.org/
+\lyxformat 643
 \begin_document
 \begin_header
 \save_transient_properties true
-\origin unavailable
+\origin "C:/dev/brownian-motion/final report/"
 \textclass article
 \begin_preamble
 \usepackage{pdfpages}
+\usepackage{caption}
+\usepackage{xcolor}
+% hebrew babel overrides caption formatting, so style via a \@makecaption wrapper
+\makeatletter
+\AtBeginDocument{%
+\let\brownian@orig@makecaption\@makecaption
+\long\def\@makecaption#1#2{{\small\brownian@orig@makecaption{#1}{#2}}%
+\vskip4pt{\color{black!35}\hrule height 0.6pt}\vskip2pt}%
+}
+\makeatother
+\usepackage{setspace}
+\setstretch{1.15}
+\usepackage{microtype}
+\usepackage{dblfloatfix}
+\usepackage[section]{placeins}
+\setlength{\columnsep}{0.55cm}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\dbltopfraction}{0.9}
+\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.75}
+\renewcommand{\dblfloatpagefraction}{0.75}
 \raggedbottom
 \end_preamble
 \use_default_options true
@@ -58,11 +80,19 @@
 \use_indices false
 \paperorientation portrait
 \suppress_date false
-\justification true
-\use_refstyle 1
+\justification default
+\crossref_package refstyle
 \use_formatted_ref 0
 \use_minted 0
 \use_lineno 0
+\backgroundcolor none
+\fontcolor none
+\notefontcolor lightgray
+\boxbgcolor red
+\table_border_color default
+\table_odd_row_color default
+\table_even_row_color default
+\table_alt_row_colors_start 1
 \index Index
 \shortcut idx
 \color #008080
@@ -73,8 +103,8 @@
 \bottommargin 2cm
 \secnumdepth 3
 \tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
+\paragraph_separation skip
+\defskip smallskip
 \is_math_indent 0
 \math_numbering_side default
 \quotes_style plain
@@ -92,6 +122,7 @@
 \html_be_strict false
 \docbook_table_output 0
 \docbook_mathml_prefix 1
+\docbook_mathml_version 0
 \html_math_img_scale 1.1
 \end_header
 
@@ -102,7 +133,6 @@
 status open
 
 \begin_layout Plain Layout
-
 
 \backslash
 twocolumn[   
@@ -120,7 +150,6 @@ begin{@twocolumnfalse}
 status open
 
 \begin_layout Plain Layout
-
  
 \backslash
 vskip -3em
@@ -196,7 +225,7 @@ DLA
 \end_layout
 
 \begin_layout Abstract
-תנועה בראונית ומודל ה-
+מודל ה-
 \begin_inset Formula $\text{DLA}$
 \end_inset
 
@@ -204,8 +233,16 @@ DLA
 \begin_inset Formula $\left(\text{Diffusion-Limited Aggregation}\right)$
 \end_inset
 
- מתארים היווצרות של מבנים פרקטליים בתהליכים מוגבלי-דיפוזיה.
- בניסוי זה נחקר כיצד ריכוז תמיסת נחושת גופרתית משפיע על תכונות המבנה של צבירים הגדלים בתהליך אלקטרודפוזיציה.
+ מתאר היווצרות מבנים פרקטליים מסועפים מחלקיקים המבצעים תנועה בראונית ונצמדים באופן בלתי-הפיך לצביר (
+\begin_inset Formula $\text{cluster}$
+\end_inset
+
+) ההולך וגדל.
+ בהרחבה זו חקרנו כיצד ריכוז תמיסת נחושת גופרתית 
+\begin_inset Formula $\text{CuSO}_{4}$
+\end_inset
+
+ משפיע על תכונות המבנה של צבירים הגדלים בתהליך אלקטרודפוזיציה.
  המערכת כללה אנודה וקתודה בצלחת פטרי עם התמיסה שצולמה במבט עילי,
  תחת מתח קבוע של 
 \begin_inset Formula $12V$
@@ -240,20 +277,47 @@ DLA
 \end_inset
 
 .
- מניתוח התוצאות עולה כי קצב הגדילה וצפיפות הצביר עולים באופן מונוטוני עם העלייה בריכוז התמיסה.
- עם זאת,
- הממד הפרקטלי נותר יציב יחסית וקרוב לערך התיאורטי המצופה ממודל 
+ מניתוח התוצאות עולה כי קצב הגדילה עולה עם ריכוז התמיסה,
+ וצפיפות הצביר מגיעה לרוויה כבר בערכים הגבוהים מהריכוז ההתחלתי של 
+\begin_inset Formula $0.02\%$
+\end_inset
+
+;
+ היות וריכוז זה קיים את התנאים הקרובים ביותר ל-
 \begin_inset Formula $\text{DLA}$
 \end_inset
 
- דו-ממדי (
+ אידיאלי התקבל ממד פרקטלי של 
+\begin_inset Formula $1.69\pm0.05$
+\end_inset
+
+,
+ בהתאמה לערך התיאורטי 
 \begin_inset Formula $D\approx1.71$
 \end_inset
 
-).
- ממצאים אלו מצביעים על כך שלמרות שעלייה בריכוז מגדילה את דחיסות הצביר,
- מנגנון הגידול הפרקטלי הבסיסי של המודל נשמר.
- אך ייתכן כי נדרש לשפר את הרזולוציה והיציבות המכנית של מערכת המדידה כדי לבסס את המסקנות לגבי הממד הפרקטלי.
+ עבור 
+\begin_inset Formula $\text{DLA}$
+\end_inset
+
+ דו-ממדי;
+ בריכוזים גבוהים יותר הממד עולה ומתייצב סביב 
+\begin_inset Formula $1.9$
+\end_inset
+
+,
+ באופן עקבי עם המעבר מהתחום מוגבל-הדיפוזיה למבנה 
+\begin_inset Quotes qld
+\end_inset
+
+קומפקטי
+\begin_inset Quotes qrd
+\end_inset
+
+ שממדו מתקרב לממד המישור.
+ עם זאת,
+ מגבלות הרזולוציה והיציבות המכנית של מערכת הצילום בהרחבה זו מציבות חסם על דיוק הממד הנמדד,
+ אך אינן משנות את התמונה האיכותנית של תלות מבנה הצביר בריכוז.
 \end_layout
 
 \begin_layout Standard
@@ -262,7 +326,8 @@ status open
 
 \begin_layout Plain Layout
 
-
+\backslash
+vspace{0.8em}
 \backslash
 end{@twocolumnfalse} ]
 \end_layout
@@ -300,13 +365,9 @@ end{@twocolumnfalse} ]
 \begin_inset Formula $\mathcal{D}$
 \end_inset
 
- מקדם הדיפוזיה (להבדיל מהממד הפרקטלי 
-\begin_inset Formula $D$
-\end_inset
-
- שיוגדר בהמשך).
- יון נחושת בתמיסה נע באותו האופן בדיוק,
- ותנועה אקראית זו היא המנגנון העומד מאחורי הגדילה הפרקטלית שנחקרה בניסוי זה.
+ מקדם הדיפוזיה.
+ יוני הנחושת בתמיסה נעים באותו אופן,
+ ותנועה זו היא המנגנון שמאחורי הגדילה הפרקטלית שנחקרה בניסוי.
 \end_layout
 
 \begin_layout Standard
@@ -318,34 +379,35 @@ end{@twocolumnfalse} ]
 \begin_inset Formula $\left(\text{Diffusion-Limited Aggregation}\right)$
 \end_inset
 
- מתאר חלקיקים כאלה,
- המשוחררים הרחק מנקודת התחלה קבועה (
+ מתאר חלקיקים כאלה - המשוחררים הרחק מנקודת התחלה ידועה מראש (
 \begin_inset Formula $\text{seed}$
 \end_inset
 
-),
- נעים בדיפוזיה,
- ועם המגע הראשון בצביר (
-\begin_inset Formula $\text{Cluster}$
+) - הנעים בדיפוזיה,
+ ועם המגע הראשון בצביר נצמדים אליו באופן בלתי-הפיך.
+ מכאן שחלקיק המגיע מרחוק צפוי לפגוע בקצה 
+\begin_inset Quotes qld
 \end_inset
 
-) הגדל נצמדים אליו באופן בלתי-הפיך.
- חלקיק המגיע מרחוק צפוי לפגוע בקצה בולט בטרם יחדור אל החלל שבין הענפים,
- כך שהקצוות ממסכים 
-\begin_inset Formula $\left(\text{screening}\right)$
+ענף
+\begin_inset Quotes qrd
 \end_inset
 
- את פנים המבנה:
+ בולט בטרם יחדור אל החלל שבין הענפים ומתקבל שקצוותיהם ממסכים (
+\begin_inset Formula $\text{screening}$
+\end_inset
+
+) את פנים המבנה:
  כל בליטה גדלה מהר מסביבתה ו
-\begin_inset Quotes erd
+\begin_inset Quotes qrd
 \end_inset
 
 מעצימה
-\begin_inset Quotes erd
+\begin_inset Quotes qrd
 \end_inset
 
  את עצמה,
- ונבנה מבנה מסועף ודומה לעצמו (
+ ומתקבל מבנה מסועף ודומה-לעצמו (
 \begin_inset Formula $\text{self-similar}$
 \end_inset
 
@@ -355,12 +417,8 @@ end{@twocolumnfalse} ]
 \begin_inset Formula $\text{Cu}^{2+}$
 \end_inset
 
- הוא החלקיק המבצע את ההליכה האקראית,
- קצה חוט הקתודה הוא ה-
-\begin_inset Formula $\text{seed}$
-\end_inset
-
-,
+ הוא אותו הולך אקראי,
+ קצה חוט הקתודה הוא נקודת ההתחלה,
  והתגובה 
 \begin_inset Formula 
 \begin{equation}
@@ -369,29 +427,11 @@ end{@twocolumnfalse} ]
 
 \end_inset
 
- על פני המשקע היא צעד ההיצמדות הבלתי-הפיך.
- חזית הגדילה בולעת כל יון המגיע אליה,
- ולכן ריכוז היונים 
-\begin_inset Formula $c\left(r,t\right)$
-\end_inset
-
- מתאפס בחזית ושומר על ערכו המלא הרחק ממנה.
- השדה מתעדכן מהר ביחס להתקדמות החזית,
- ולכן בכל רגע מקיים בקירוב את משוואת לפלס 
-\begin_inset Formula 
-\begin{equation}
-\nabla^{2}c\approx0
-\end{equation}
-
-\end_inset
-
-קצב הגדילה המקומי מתכונתי לגרדיאנט הריכוז,
- וכמו ששדה חשמלי מתרכז בקצה חד של מוליך - כך גם הגרדיאנט מרבי בקצוות הבולטים של הצביר,
- ושם הגדילה המהירה ביותר.
+על פני המשקע היא אותו צעד ההיצמדות הבלתי-הפיך.
 \end_layout
 
 \begin_layout Standard
-המבנה המסועף המתקבל מאופיין בממד הפרקטלי 
+המבנה המסועף מאופיין בממד הפרקטלי 
 \begin_inset Formula $D$
 \end_inset
 
@@ -412,62 +452,84 @@ M\propto R^{D}
 
 \end_inset
 
-כך שעבור 
+נוכל לראות בחלקו העליון של איור 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:concept"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ לדוגמה שעבור 
 \begin_inset Formula $D=1$
 \end_inset
 
- מתקבל ישר,
+ מתקבל קו,
  עבור 
 \begin_inset Formula $D=2$
 \end_inset
 
- מבנה הממלא את המישור (כגון דסקה;
- ראו איור
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\nospellcheck off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
- 
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\numeric on
-\nospellcheck default
-\bar default
-\strikeout default
-\xout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-1
-\numeric off
-),
+ מבנה הממלא את המישור (דיסקה),
  ובתחום 
 \begin_inset Formula $1<D<2$
 \end_inset
 
- מבנה מסועף המשאיר את רוב המישור ריק;
- עבור 
+ מבנה מסועף (פרקטל) המשאיר את רוב המישור ריק (ל-
 \begin_inset Formula $\text{DLA}$
 \end_inset
 
- דו-ממדי הערך התאורטי הוא לערך 
+ דו-ממדי הערך התיאורטי הוא 
 \begin_inset Formula $D\approx1.71$
 \end_inset
 
-.
+).
+ את 
+\begin_inset Formula $D$
+\end_inset
+
+ מדדנו בשיטת ספירת הקופסאות (
+\begin_inset Formula $\text{box-counting}$
+\end_inset
+
+):
+ מכסים את התמונה בתיבות בעלות צלע 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+,
+ סופרים את מספר התיבות 
+\begin_inset Formula $N\left(\varepsilon\right)$
+\end_inset
+
+ המכילות חלק מהמשקע,
+ ופרקטל מקיים 
+\begin_inset Formula 
+\begin{equation}
+N\left(\varepsilon\right)\propto\varepsilon^{-D}
+\end{equation}
+
+\end_inset
+
+כך ש-
+\begin_inset Formula $D$
+\end_inset
+
+ מחולץ כשיפוע בגרף לוג-לוג (ראו חלקו התחתון של איור 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:concept"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+).
+ 
 \end_layout
 
 \begin_layout Standard
@@ -481,9 +543,9 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figures/D_vs_concentration.png
+	filename figures/fractal_dimension_concept.png
 	lyxscale 20
-	width 70col%
+	width 95col%
 
 \end_inset
 
@@ -494,47 +556,34 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-ממד פרקטלים והסבר על איך ספירת קופסאות עובדת.
-\end_layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:concept"
 
 \end_inset
 
-
-\end_layout
-
+המחשת הממד הפרקטלי ושיטת ספירת הקופסאות.
+ למעלה:
+ קו ישר (
+\begin_inset Formula $D=1$
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-את 
-\begin_inset Formula $D$
-\end_inset
-
- מדדנו בשיטת ה-
-\begin_inset Formula $\text{box-counting}$
+),
+ צביר 
+\begin_inset Formula $\text{DLA}$
 \end_inset
 
  (
-\begin_inset Quotes eld
+\begin_inset Formula $1<D<2$
 \end_inset
 
-ספירת קופסאות
-\begin_inset Quotes erd
+) ודסקה מלאה (
+\begin_inset Formula $D=2$
 \end_inset
 
-):
- מחלקים את המישור לתיבות בעלות צלע 
-\begin_inset Formula $\varepsilon$
-\end_inset
-
- וסופרים את מספר התיבות 
-\begin_inset Formula $N\left(\varepsilon\right)$
-\end_inset
-
- המכילות חלק מהמשקע.
- מספר התיבות הדרוש לכיסוי עצם גדל כמו החזקה של הממד שלו - כלומר קו ממלא 
+) על גבי סריג התיבות.
+ מספר התיבות הדרוש לכיסוי עצם גדל כחזקת הממד שלו:
+ קו ממלא 
 \begin_inset Formula $N\propto\varepsilon^{-1}$
 \end_inset
 
@@ -544,55 +593,43 @@ status open
 \end_inset
 
 ,
- ובהכללה נקבל שפרקטל מקיים 
-\begin_inset Formula 
-\begin{equation}
-N\left(\varepsilon\right)\propto\varepsilon^{-D}
-\end{equation}
-
-\end_inset
-
- גם עבור 
-\begin_inset Formula $D$
-\end_inset
-
- לא שלם (
-\begin_inset Formula $D$
-\end_inset
-
- חולץ כשיפוע בגרף לוג-לוג של 
+ ופרקטל - חזקה לא שלמה שביניהן.
+ למטה:
+ 
 \begin_inset Formula $N\left(\varepsilon\right)$
 \end_inset
 
- כתלות ב-
-\begin_inset Formula $1/\varepsilon$
+ בסקלה לוג-לוג עבור שלושת העצמים;
+ הממד מחולץ כשיפוע הישר.
+\end_layout
+
 \end_inset
 
-).
- נדגיש כי הממד המתקבל הינו ממד פרקטלי 
-\begin_inset Quotes eld
+
+\end_layout
+
 \end_inset
 
-אפקטיבי
-\begin_inset Quotes erd
-\end_inset
 
- בלבד:
- חוק החזקה מתקיים רק בחלון קני-מידה סופי,
- בין רוחב הענף הבודד ובין גודל הצביר,
- וחלון צר או ענפים עבים מטים את הממד המדוד כלפי מעלה (ראו תוצאות).
 \end_layout
 
 \begin_layout Standard
-ריכוז התמיסה קובע את זמינות היונים המזינים את החזית,
- ודרכו את אופי הגדילה.
- בריכוז נמוך ההובלה דיפוזיבית בעיקרה והמיסוך שולט - התנאים הקרובים ביותר ל-
+ריכוז התמיסה קובע את זמינות היונים - אשר בתורם 
+\begin_inset Quotes qld
+\end_inset
+
+מזינים
+\begin_inset Quotes qrd
+\end_inset
+
+ את החזית ודרכה את אופי הגדילה של הצביר.
+ בריכוז נמוך ההובלה דיפוזיבית בעיקרה וישנה מידה רבה של מיסוך (התנאים הקרובים ביותר ל-
 \begin_inset Formula $\text{DLA}$
 \end_inset
 
- אידיאלי.
- עם עליית הריכוז המיסוך בין ענפים שכנים נחלש,
- ומנגנוני הובלה נוספים כגון נדידה (
+ אידיאלי).
+ עם עליית הריכוז נחלש המיסוך בין ענפים שכנים,
+ ומתחילים להופיע מנגנוני הובלה נוספים - נדידה (
 \begin_inset Formula $\text{migration}$
 \end_inset
 
@@ -600,67 +637,70 @@ N\left(\varepsilon\right)\propto\varepsilon^{-D}
 \begin_inset Formula $\text{convection}$
 \end_inset
 
-) - מתחרים בדיפוזיה וממלאים את החלל בין הענפים (
-\begin_inset Quotes eld
-\end_inset
-
-מפרצים
-\begin_inset Quotes erd
-\end_inset
-
-);
- מתקבל מבנה צפוף וקומפקטי שממדו האפקטיבי שואף לממד המישור,
+) המתחרים בדיפוזיה וממלאים את החלל שבין הענפים;
+ מתקבל מבנה צפוף שממדו האפקטיבי שואף לממד המישור,
  
 \begin_inset Formula $D\rightarrow2$
 \end_inset
 
 ,
- ולצדו חזית גדילה מהירה יותר.
- לכן המדידה בריכוז הנמוך ביותר היא המבחן ההוגן ביותר לערך התאורטי 
+ ולצדו חזית גדילה מהירה.
+ מכך שהמדידה בריכוז הנמוך ביותר 
+\begin_inset Formula $\left(0.02\%\right)$
+\end_inset
+
+ היא המבחן ההוגן ביותר לערך התיאורטי 
 \begin_inset Formula $1.71$
 \end_inset
 
-,
- וחריגה מעליו מתפצלת לשני מקורות:
- האחד מקור פיזיקלי,
- כגון אותם מנגנוני הובלה שהוזכרו לעיל הדוחקים את המערכת מהתחום מוגבל-הדיפוזיה;
- והשני מקור מדידתי,
- לרבות חלון קנה-מידה סופי.
-\end_layout
+ של 
+\begin_inset Formula $\text{DLA}$
+\end_inset
 
-\begin_layout Standard
-לאורך ניסוי זה נבחנו כיצד משתנים פרמטרים של הצביר כתלות בריכוז התמיסה שהוא נוצר ממנה.
- כיוון שניתן לקרב את צורת הצביר לדסקה,
- הפרמטר הבסיסי הוא רדיוס המעגל החוסם את הצביר 
+ דו-ממדי.
+ בניסוי נמדדו,
+ כתלות בריכוז התמיסה:
+ רדיוס המעגל החוסם את הצביר 
 \begin_inset Formula $R\left(t\right)$
 \end_inset
 
-.
- לאחר מכן ניתן לבחון את קצב גדילת הצביר,
- שהוא ממוצע על 
-\begin_inset Formula $\frac{dR}{dt}$
+,
+ קצב הגדילה הממוצע 
+\begin_inset Formula $\left\langle \frac{dR}{dt}\right\rangle $
 \end_inset
 
-.
- בנוסף,
- נבחן היחס 
+,
+ צפיפות הצביר 
 \begin_inset Formula $\phi=M/\pi R^{2}$
 \end_inset
 
- ,
- כאשר 
+ (כאשר 
 \begin_inset Formula $M$
 \end_inset
 
- הוא השטח של הגביש,
- ונקרא לו צפיפות הגביש.
- לסיום,
- נבחן את ממד הפרקטליות של הצביר שמסומן ב
+ שטח המשקע),
+ והממד הפרקטלי 
 \begin_inset Formula $D$
 \end_inset
 
 .
- 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+twocolumn[
+\backslash
+begin{@twocolumnfalse}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -668,144 +708,134 @@ N\left(\varepsilon\right)\propto\varepsilon^{-D}
 \end_layout
 
 \begin_layout Standard
-בהרחבה זו חקרנו את תופעת ה-
-\begin_inset Formula $\text{DLA}$
-\end_inset
-
- באמצעות אלקטרודפוזיציה של נחושת מתמיסת 
-\begin_inset Formula $\text{CuSO}_{4}$
-\end_inset
-
-.
-\begin_inset Float figure
-placement H
-alignment document
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename Electrodeposition cell schematic.pdf
-	scale 60
+	width 95text%
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Caption Standard
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
 
 \begin_layout Plain Layout
+
+\backslash
+captionof{figure}{
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:apparatus"
+
+\end_inset
+
+
+\series bold
 מבנה המערכת של הניסוי.
- מצד שמאל ניתן לראות מבט צידי של המערכת הכוללת,
- ומצד ימין מבט עילי על הצלחת עצמה,
- שהיא נקודת המבט של המצלמה.
- המערכת מכילה מצלמה המצלמת את צלחת הפטרי,
- בתוכה טבעת נחושת וחוט נחושת המשמשות כאנודה וקתודה בהתאמה,
- והן מחוברת לספק מתח.
- הצלחת מכילה גם תמיסה נחושת גופריתית,
- וכאשר מופעל המתח מתחיל להיווצר צביר סביב הקתודה.
-\end_layout
 
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Float figure
-placement H
-alignment document
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename raw2.png
-	lyxscale 10
-	scale 20
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename raw1.png
-	lyxscale 10
-	scale 20
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-פריימים מסרטונים של דגימות בריכוזים שונים,
- שבהן תמיסת הריכוזים שונה (בעליון 
-\begin_inset Formula $0.04\%$
-\end_inset
-
- ובתחתון 
-\begin_inset Formula $0.06\%$
-\end_inset
-
-).
- ניתן לראות כי אופי הצבירים שונה בין הדגימות,
- וכי בעליון הענפים דחוסים יותר ובתחתון הם פחות דחוסים.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-מערכת הניסוי,
- המתוארת באיור
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\nospellcheck off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
- 
-\family default
 \series default
-\shape default
-\size default
-\emph default
-\numeric on
-\nospellcheck default
-\bar default
-\strikeout default
-\xout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-2
-\numeric off
+ 
+\series bold
+
+\begin_inset Formula $\text{(a)}$
+\end_inset
+
+
+\series default
+ מבט צידי של המערכת,
+ הכוללת את גוף התאורה ה
+\begin_inset Quotes qrd
+\end_inset
+
+קרה
+\begin_inset Quotes qrd
+\end_inset
+
+ (מסומנת באות 
+\begin_inset Formula $\text{C}$
+\end_inset
+
+
+\series bold
+) 
+\series default
+וגוף התאורה ה
+\begin_inset Quotes qrd
+\end_inset
+
+חמה
+\begin_inset Quotes qrd
+\end_inset
+
+ (מסומנת באות 
+\begin_inset Formula $\text{H}$
+\end_inset
+
+) בהם נעשה שימוש בחלק מהמדידות.
+
+\series bold
+ 
+\begin_inset Formula $\text{(b)}$
+\end_inset
+
+
+\series default
+ מבט עילי על הצלחת עצמה (נקודת המבט של המצלמה).
+ מצלמה הסריטה את צלחת הפטרי,
+ אשר בתוכה הונחה טבעת נחושת וחוט נחושת המשמשים כאנודה וקתודה בהתאמה,
+ והם מחוברים לספק מתח.
+ לצלחת הפטרי נוצקה שילוב של תמיסת נחושת גופרתית ומים מזוקקים,
+ וכאשר מופעל המתח התחיל להיווצר צביר סביב הקתודה.
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+vspace{0.8em}
+\backslash
+end{@twocolumnfalse}]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+מערכת הניסוי,
+ המתוארת באיור 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:apparatus"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
 ,
  היתה מורכבת מצלחת פטרי מזכוכית (קוטר 
 \begin_inset Formula $100\text{ mm}$
@@ -841,35 +871,6 @@ status open
 \end_layout
 
 \begin_layout Standard
-בניסוי זה חקרנו את תופעת ה-
-\begin_inset Formula $\text{DLA}$
-\end_inset
-
- באמצעות אלקטרודפוזיציה של נחושת מתמיסת 
-\begin_inset Formula $\text{CuSO}_{4}$
-\end_inset
-
-.
- מערכת הניסוי (ראו איור 1) הורכבה מצלחת פטרי מזכוכית בקוטר 
-\begin_inset Formula $100\text{ mm}$
-\end_inset
-
- שהונחה אופקית וצולמה מלמעלה.
- בתוך צלחת הפטרי הונחה טבעת נחושת (קוטר פנימי 
-\begin_inset Formula $70\text{ mm}$
-\end_inset
-
-;
- קוטר חיצוני 
-\begin_inset Formula $80\text{ mm}$
-\end_inset
-
-) אשר שימשה כאנודה (+),
- והקצה החשוף של חוט נחושת דק הונח במרכז המערכת ושימש כקתודה (-).
- התמיסה הוזרקה למרכז הצלחת באמצעות פיפטור.
-\end_layout
-
-\begin_layout Standard
 הצילום בוצע במצלמת 
 \begin_inset Formula $\text{Nikon D7200}$
 \end_inset
@@ -883,38 +884,18 @@ status open
 \begin_inset Formula $\text{top-down}$
 \end_inset
 
- (ראו איור
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\nospellcheck off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
- 
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\numeric on
-\nospellcheck default
-\bar default
-\strikeout default
-\xout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-2
-\numeric off
-ב).
+ (ראו איור 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:apparatus"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+).
  כבל 
 \begin_inset Formula $\text{UC-E17}$
 \end_inset
@@ -937,75 +918,6 @@ status open
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-placement h
-alignment document
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename pic1.png
-	lyxscale 10
-	scale 20
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename pic2.png
-	lyxscale 10
-	scale 20
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename pic3.png
-	lyxscale 10
-	scale 20
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-שלושה פריימים מעיבוד הנתונים של הניסוי בריכוז 
-\begin_inset Formula $0.06\%$
-\end_inset
-
-.
- הפריימים נלקחו ממקומות שונים בסרטון,
- ובכל אחד ניתן לראות את הצביר ואת העיגול החוסם אותו באדום.
- בשלושת התמונות ניתן לראות כי הצביר בגודל שונה,
- ולכן לעיגול החוסם אותו יש רדיוס שונה.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 על מנת לשפר את איכות הצילום בתאורה נמוכה נעשה שימוש בשני גופי תאורה שונים:
  (
 \numeric on
@@ -1016,7 +928,7 @@ status open
 \end_inset
 
  
-\begin_inset Quotes erd
+\begin_inset Quotes eld
 \end_inset
 
 קרה
@@ -1041,7 +953,7 @@ status open
 
 ).
  בדיעבד התגלה כי מנורת הלהט ה
-\begin_inset Quotes erd
+\begin_inset Quotes eld
 \end_inset
 
 חמה
@@ -1052,7 +964,7 @@ status open
 \begin_inset Formula $\text{Cu}^{2+}$
 \end_inset
 
- בתמיסה וייתכן שהטתה את אופי בניית הפרקטלים (ראו פרק הדיון).
+ בתמיסה וייתכן שהטתה את אופי בניית הפרקטלים (ראו דיון בנושא).
  לאחר הצבת המערכת והתאורה,
  סופק מתח על ידי ספק כוח 
 \begin_inset Formula $\text{Tektronix PWS2721}$
@@ -1073,8 +985,7 @@ status open
 \end_inset
 
 ,
- כאשר האחוז מה מסת הנחושת הגופריתית מתוך מסת התמיסה הכוללת,
- הכוללת גם את מסת המים.
+ כאשר האחוז הוא יחס מסת הנחושת הגופרתית למסת התמיסה הכוללת (מים ומלח).
  את מדידת ה- 
 \begin_inset Formula $0.30\%$
 \end_inset
@@ -1085,37 +996,17 @@ status open
 \end_inset
 
  מדידות בסך הכל.
- דוגמה לפריימים מהסרטונים ניתן לראות באיור
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\nospellcheck off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
- 
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\numeric on
-\nospellcheck default
-\bar default
-\strikeout default
-\xout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-3
-\numeric off
+ דוגמה לפריימים מהסרטונים ניתן לראות באיור 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:raw"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
 .
 \end_layout
 
@@ -1167,8 +1058,7 @@ status open
 \end_inset
 
  בסדרת השנייה).
- לאחר הפעלת המתח,
- בכל פריים בודד הצביר הגדל,
+ לאחר הפעלת המתח זוהה בכל פריים הצביר הגדל,
  ומתוכו נמדדו מספר גדלים:
  הרדיוס של המעגל החוסם את צביר נחושת כתלות בזמן 
 \begin_inset Formula $R\left(t\right)$
@@ -1188,70 +1078,24 @@ status open
 \begin_inset Formula $\text{box-counting}$
 \end_inset
 
-,והיחס 
+,
+ והיחס 
 \begin_inset Formula $\phi=M/\pi R^{2}$
 \end_inset
 
  בין שטח המשקע לשטח המעגל החוסם.
- באיור
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\nospellcheck off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
- 
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\numeric on
-\nospellcheck default
-\bar default
-\strikeout default
-\xout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-4
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\numeric off
-\nospellcheck off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
- 
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\nospellcheck default
-\bar default
-\strikeout default
-\xout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-ניתן לראות דוגמה לחילוץ המעגל החוסם את הצביר לאורך גדילתו.
+ באיור 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:tracking"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ ניתן לראות דוגמה לחילוץ המעגל החוסם את הצביר לאורך גדילתו.
 \end_layout
 
 \begin_layout Standard
@@ -1268,13 +1112,262 @@ status open
  של מהירות החזית משקפים את שגיאת ההתאמה בלבד ומהווים חסם תחתון לאי-הוודאות האמיתית.
 \end_layout
 
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+twocolumn[
+\backslash
+begin{@twocolumnfalse}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 תוצאות
 \end_layout
 
 \begin_layout Standard
-בחלק זה יוצגו תוצאות המדידות,
- תוך התמקדות בבחינת תלות הפרמטרים השונים של הצביר בריכוז התמיסה.
+\align center
+\begin_inset Graphics
+	filename figures/R_vs_t_with_tracking.png
+	lyxscale 20
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+captionof{figure}{
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:rt"
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:tracking"
+
+\end_inset
+
+
+\series bold
+מדידת רדיוס המעגל החוסם את הצביר
+\series default
+.
+ 
+\begin_inset Formula $\text{\textbf{(a)-(c)}}$
+\end_inset
+
+ פריימים משלושה זמנים בריצת ה-
+\begin_inset Formula $0.06\%$
+\end_inset
+
+,
+ ועליהם המעגל החוסם באדום;
+ הפריים ב-
+\begin_inset Formula $\left(c\right)$
+\end_inset
+
+ הוא האחרון שבו הצביר אינו נוגע בשולי התמונה.
+ 
+\begin_inset Formula $\textbf{(d)-(i)}$
+\end_inset
+
+ רדיוס המעגל החוסם כתלות בזמן עבור ששת הריכוזים.
+ קו מלא - עד למגע הראשון של הצביר בשולי הפריים;
+ קו מקווקו - לאחריו,
+ אז הרדיוס המדוד מהווה חסם תחתון בלבד.
+ הפאנל של ריכוז ה-
+\begin_inset Formula $0.06\%$
+\end_inset
+
+ (
+\begin_inset Formula $f$
+\end_inset
+
+) מוקף באדום,
+ ועליו מסומנים זמני הפריימים 
+\begin_inset Formula $\text{(a)-(c)}$
+\end_inset
+
+.
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+vspace{0.8em}
+\backslash
+end{@twocolumnfalse}]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+בחלק זה נציג את תוצאות המדידות,
+ תוך התמקדות בבחינת תלות הפרמטרים השונים של הצביר בריכוז התמיסה:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement p
+alignment document
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/raw_frames_gallery.png
+	lyxscale 30
+	width 72text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:raw"
+
+\end_inset
+
+
+\series bold
+שינוי במורפולוגיית הצבירים מפרקטליים דלילים למבנה צפוף וקומפקטי.
+
+\series default
+ 
+\series bold
+
+\begin_inset Formula $\text{(a)-(f)}$
+\end_inset
+
+
+\series default
+,
+ פריימים מייצגים של צבירי הנחושת לקראת סיום הגדילה,
+ בריכוזי 
+\begin_inset Formula $\text{CuSO}_{4}$
+\end_inset
+
+ (אחוז מסה) של 
+\begin_inset Formula $0.02\%\,(a)$
+\end_inset
+
+,
+ 
+\begin_inset Formula $0.04\%\,(b)$
+\end_inset
+
+,
+ 
+\begin_inset Formula $0.06\%\,(c)$
+\end_inset
+
+,
+ 
+\begin_inset Formula $0.15\%\,(d)$
+\end_inset
+
+,
+ 
+\begin_inset Formula $0.45\%\,(e)$
+\end_inset
+
+ ו-
+\begin_inset Formula $0.56\%\,(f)$
+\end_inset
+
+;
+ בריכוזים הנמוכים (
+\begin_inset Formula $\text{a-c}$
+\end_inset
+
+) ההובלה דיפוזיבית בעיקרה והמיסוך שולט,
+ ומתקבלים מבנים מסועפים ודקים האופייניים ל-
+\begin_inset Formula $\text{DLA}$
+\end_inset
+
+.
+ עם עליית הריכוז מצטרפים מנגנוני הובלה נוספים - נדידה בשדה החשמלי והסעה - הממלאים את החלל שבין הענפים,
+ והמבנה נעשה צפוף (
+\begin_inset Formula $d$
+\end_inset
+
+) ולבסוף קומפקטי וכהה (
+\begin_inset Formula $e,f$
+\end_inset
+
+).
+ האזור הבהיר במרכז כל פאנל הוא חוט הקתודה והשתקפות התאורה,
+ והרשת ברקע היא נייר המילימטרי ששימש לכיול.
+ המסגרות האדומות מסמנות אזורים המוצגים בהגדלה של 
+\begin_inset Formula $2.9\times$
+\end_inset
+
+ בפינה הימנית-התחתונה של כל פאנל:
+ ההגדלות חושפות את מורפולוגיית (צורת-) הקצוות - ענפים דקים בתחום ה-
+\begin_inset Formula $\text{DLA}$
+\end_inset
+
+ הולכים ומתעבים בהדרגה עם הריכוז,
+ ומתקבלים קצוות רחבים וקהים בעלי קנה אורך אופייני גדול יותר.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1286,35 +1379,57 @@ status open
 
 ,
  כתלות בזמן,
- כפי שמוצג באיור 5.
+ כפי שמוצג באיור 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:rt"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+.
  מהתוצאות ניכר כי הרדיוסים גדלים לאורך הזמן,
  אך בקצבים משתנים.
  על מנת לכמת פערים אלו,
- נבחן קצב הגדילה הממוצע,
+ בחנו בנוסף את קצב הגדילה הממוצע,
  
 \begin_inset Formula $\left\langle \frac{dR}{dt}\right\rangle $
 \end_inset
 
 ,
- כתלות בריכוז התמיסה (איור 6).
- מהגרף עולה כי קצב הגדילה אכן תלוי בריכוז התמיסה,
- ועולה באופן מונוטוני.
+ כתלות בריכוז התמיסה (איור 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:growth"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+).
+ מהגרף עולה כי קצב הגדילה נמצא בקורלציה גבוהה עם ריכוז התמיסה,
+ ועולה עם הריכוז.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
-placement h
-alignment center
-wide false
+placement t
+alignment document
+wide true
 sideways false
 status open
 
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figures/R_and_dRdt_grid.png
-	lyxscale 10
-	width 100col%
+	filename figures/quant_vs_conc_row.png
+	lyxscale 20
+	width 100text%
 
 \end_inset
 
@@ -1325,35 +1440,90 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-רדיוס המעגל החוסם החוסם את הצביר כתלות בזמן עבור הריכוזים
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\nospellcheck off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:growth"
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:phi"
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:D"
+
+\end_inset
+
+מדדי הצביר כתלות בריכוז התמיסה.
  
-\family default
+\series bold
+
+\begin_inset Formula $\text{(a)}$
+\end_inset
+
+
 \series default
-\shape default
-\size default
-\emph default
-\nospellcheck default
-\bar default
-\strikeout default
-\xout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-השונים.
+ קצב הגדילה הממוצע של חזית הצביר;
+ המגמה עולה מ-
+\begin_inset Formula $\approx12\,\mu\text{m/s}$
+\end_inset
+
+ ל-
+\begin_inset Formula $\approx30\,\mu\text{m/s}$
+\end_inset
+
+,
+ והנקודה הראשונה (
+\begin_inset Formula $0.02\%$
+\end_inset
+
+) חורגת מהמגמה (ראו דיון).
+ 
+\begin_inset Formula $\text{\textbf{(b)}}$
+\end_inset
+
+ צפיפות הצביר 
+\begin_inset Formula $\phi=M/\pi R^{2}$
+\end_inset
+
+:
+ בריכוז הנמוך ביותר הצביר דליל (
+\begin_inset Formula $\phi\approx0.16$
+\end_inset
+
+),
+ ומעליו הצפיפות מגיעה לרוויה סביב 
+\begin_inset Formula $\phi\approx0.6$
+\end_inset
+
+.
+ 
+\begin_inset Formula $\text{\textbf{(c)}}$
+\end_inset
+
+ הממד הפרקטלי האפקטיבי:
+ בריכוז הנמוך ביותר 
+\begin_inset Formula $D=1.69\pm0.05$
+\end_inset
+
+,
+ בהתאמה לערך התיאורטי 
+\begin_inset Formula $D\approx1.71$
+\end_inset
+
+ (קו מקווקו);
+ בריכוזים הגבוהים יותר הממד עולה ומתייצב סביב 
+\begin_inset Formula $1.9$
+\end_inset
+
+.
+ כוכבית (*) מציינת מדידות שבוצעו תחת מנורת הלהט המחממת.
 \end_layout
 
 \end_inset
@@ -1367,178 +1537,98 @@ status open
 \end_layout
 
 \begin_layout Standard
-לאחר מכן,
- נבחנה צפיפות הגביש,
- 
+צפיפות הצביר 
 \begin_inset Formula $\phi$
 \end_inset
 
+ (איור 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:phi"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) מבחינה בין הריכוז הנמוך ביותר,
+ שבו הצביר דליל (
+\begin_inset Formula $\phi\approx0.16$
+\end_inset
+
+),
+ ובין כל הריכוזים הגבוהים יותר,
+ שבהם הצפיפות מגיעה לרוויה סביב 
+\begin_inset Formula $\phi\approx0.6$
+\end_inset
+
+ כמעט ללא תלות נוספת בריכוז.
+ כלומר,
+ המעבר ממבנה פתוח ומסועף למבנה צפוף מתרחש כבר בין 
+\begin_inset Formula $0.02\%$
+\end_inset
+
+ ל-
+\begin_inset Formula $0.04\%$
+\end_inset
+
 ,
- לפי המדד שהוגדר במבוא (איור 7).
- בדומה לקצב הגדילה,
- ניתן לראות כי צפיפות הגביש גדלה גם היא יחד עם הריכוז.
+ כפי שנראה גם בהשוואת הפריימים באיור 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:raw"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+.
  
 \end_layout
 
 \begin_layout Standard
-לסיום,
- בחנו את הממד הפרקטלי של הגביש,
- 
+לבסוף נמדד הממד הפרקטלי 
 \begin_inset Formula $D$
 \end_inset
 
+ בשיטת ספירת הקופסאות (איור 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:D"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+).
+ בריכוז הנמוך ביותר התקבל 
+\begin_inset Formula $D=1.69\pm0.05$
+\end_inset
+
 ,
- מתוך מטרה להשוותו לממד הסטנדרטי המוכר בספרות ,
- העומד על כ-1.71 עבור 
+ בהתאמה לערך התיאורטי 
+\begin_inset Formula $D\approx1.71$
+\end_inset
+
+ של 
 \begin_inset Formula $\text{DLA}$
 \end_inset
 
  דו-ממדי.
- מאיור 8 עולה כי אכן התקבלו תוצאות הקרובות לערך המשוער,
- אולם ניכר כי הממד הפרקטלי נראה יחסית קבוע ואינו מפגין תלות משמעותית בריכוז הדגימה.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-placement document
-alignment center
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename figures/growth_rate_vs_conc.png
-	lyxscale 20
-	width 100col%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-בגרף מוצג קצב הגדילה הממוצע של הצביר 
-\begin_inset Formula $\left\langle \frac{dR}{dt}\right\rangle $
-\end_inset
-
- כתלות בריכוז התמיסה.
- ניתן לראות מגמה עולה,
- כלומר ככל שריכוז הנחושת הגופריתית גדול יותר,
- כך קצב גדילת הצביר גדול יותר.
- הסבר לכך הוא שאם הריכוז גבוה יותר,
- אז הסיכוי שבתהליך הדיפוזיה חלקיקים יתווספו לצביר גדול יותר.
- בפרט הנקודה הראשונה לא מתאימה למגמה,
- פער זה מוסבר בדיון.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Float figure
-placement H
-alignment center
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename figures/fill_fraction_vs_conc.png
-	lyxscale 20
-	width 100col%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-בגרף מוצגת צפיפות הצביר 
-\begin_inset Formula $\phi$
-\end_inset
-
- כתלות בריכוז התמיסה.
- ניתן לראות מגמה עולה,
- כלומר ככל שריכוז הנחושת הגופריתית גדול יותר,
- כך צפיפות הצביר גדולה יותר.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-placement H
-alignment center
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename figures/D_vs_concentration.png
-	lyxscale 20
-	width 100col%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-בגרף מוצג המימד הפרקטלי של הצביר 
-\begin_inset Formula $D$
-\end_inset
-
- כתלות בריכוז התמיסה.
- ניתן לראות כי ערכו יחסית קבוע בין הדגימות,
- וקרוב לערך הספרותי של 
-\begin_inset Formula $1.71$
-\end_inset
-
-.
- אך הנקודה הראשונה קיבלה ערך רחוק יותר של 
-\begin_inset Formula $1.69\pm0.05$
+ בכל הריכוזים הגבוהים יותר הממד עולה ומתייצב בתחום 
+\begin_inset Formula $D=1.86-1.93$
 \end_inset
 
 ,
- וסיבה לכך מוסברת בדיון.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+ קרוב לממד המישור אך אינו מגיע אליו - בעקביות עם הרוויה שנצפתה בצפיפות:
+ הצביר עובר ממבנה פרקטלי דליל למבנה צפוף וקומפקטי,
+ שממדו האפקטיבי שואף לממד המישור.
+ 
 \end_layout
 
 \begin_layout Section
@@ -1546,94 +1636,158 @@ status open
 \end_layout
 
 \begin_layout Standard
-מתוצאות הניסוי עולה כי ריכוז התמיסה אכן משפיע הצביר ותהליף היווצרותו,
- אך לא על כל הפרמטרים שלו.
+בניסוי נבחנה השפעת ריכוז תמיסת ה-
+\begin_inset Formula $\text{CuSO}_{4}$
+\end_inset
+
+ על מאפייני צביר הנחושת הנוצר באלקטרודפוזיציה תחת מתח קבוע.
+ נמצא כי קצב הגדילה הממוצע עולה עם הריכוז,
+ וצפיפות הצביר מגיעה לרוויה כבר מעל הריכוז הנמוך ביותר (איורים 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:growth"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ ו-
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:phi"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+).
+ ריכוז גבוה מגדיל את זמינות היונים בחזית הגדילה ומחליש את המיסוך בין ענפים שכנים,
+ כך שיונים מספיקים לחדור אל ה
+\begin_inset Quotes qrd
+\end_inset
+
+מפרצים
+\begin_inset Quotes qrd
+\end_inset
+
+ בטרם ייתנגשו בקצוות הבולטים,
+ והצביר גדל מהר יותר ונעשה דחוס יותר,
+ בהתאם לתמונה שהוצגה במבוא.
 \end_layout
 
 \begin_layout Standard
-מניתוח התוצאות נמצא כי הריכוז משפיע על קצב גדילת הצביר ועל הצפיפות שלו,
- אך לא על הממד הפרקטלי שלו.
-\end_layout
+הממד הפרקטלי (איור 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:D"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
 
-\begin_layout Standard
-פער בניסוי היה הרזולוציה והפוקוס של המצלמה.
- עקב חוסר ביציבות מענית של המערכת ורעידות של השולחן עליו התבצע הניסוי,
- לא הצלחנו להיות בפוקוס מדוייק על הצביר.
- בנוסף,
- הרזולוציה של הצילום לא הייתה מספיק גדולה ביחס לפרטים בצביר.
- שני פערים אלה לא גרמו לשגיאה גדולה ברדיוס העיגול החוסם,
- אך ייתכן שהשפיעו מאוד על הממד הפרקטלי הנמדד.
- ייתכן שהממד הפרטקלי כן משתנה באופן מסווים לפי הריכוז של התמיסה,
- אך לא הצלחנו לראות זאת.
-\end_layout
+\end_inset
 
-\begin_layout Standard
-פער נוסף הוא הדגימה בריכוז הנמוך ביותר.
- בדגימה זאת ייתכן כי כבל הנחושת (הקתודה) הונח באופן מאוד עקום,
- מה שהוביל להיווצרות צביר לא סימטרי ובפרט שונה דרסטית מהצבירים בריכוזים האחרים.
- ניתן לראות זאת באיור
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\nospellcheck off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
- 
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\numeric on
-\nospellcheck default
-\bar default
-\strikeout default
-\xout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-7
-\numeric off
+) משלים תמונה זו.
+ בריכוז הנמוך ביותר התקבל 
+\begin_inset Formula $D=1.69\pm0.05$
+\end_inset
+
 ,
- בכך שהצפיפות שלו משמעותית נמוכה יותר.
+ בהתאמה לערך התיאורטי 
+\begin_inset Formula $D\approx1.71$
+\end_inset
+
+ של 
+\begin_inset Formula $\text{DLA}$
+\end_inset
+
+ דו-ממדי - כצפוי,
+ שכן ריכוז נמוך הוא הקרוב ביותר לתנאי המודל,
+ שבהם ההובלה דיפוזיבית בלבד.
+ בריכוזים הגבוהים יותר הממד עולה ומתייצב סביב 
+\begin_inset Formula $1.9$
+\end_inset
+
+:
+ המיסוך נחלש,
+ ומנגנוני הובלה נוספים - נדידה בשדה החשמלי והסעה - ממלאים את החלל שבין הענפים,
+ כך שהמבנה מתקרב לממלא-מישור (
+\begin_inset Formula $D\rightarrow2$
+\end_inset
+
+).
+ מכאן 
+\series bold
+שהריכוז אינו קובע רק את קצב הגדילה,
+ אלא גם את אופי הגדילה עצמו
+\series default
+.
 \end_layout
 
 \begin_layout Standard
+לצד זאת יש למנות כמה מגבלות.
+ ראשית,
+ רעידות של משטח העבודה וחוסר יציבות מכנית של זרוע המצלמה פגעו בפוקוס (מדידת ה-
+\begin_inset Formula $0.30\%$
+\end_inset
 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\nospellcheck off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
-כדי לקדם את המחקר ניתן לנקוט במספר צעדים:
+ אף הוחרגה מהניתוח עקב פוקוס לקוי),
+ והרזולוציה הייתה גבולית ביחס לרוחב הענפים הדקים.
+ שיטת ספירת הקופסאות רגישה לעובי הענף הנראה בתמונה,
+ ולכן פגמים אלו מטים את הממד המדוד כלפי מעלה;
+ שנית,
+ מנורת הלהט שהופעלה בריכוזים הגבוהים (
+\begin_inset Formula $0.30\%-0.56\%$
+\end_inset
+
+) חיממה את התמיסה באופן מקומי,
+ וסביר שגרמה להסעה תרמית ולהאצה בהובלת היונים.
+ אפקט זה פועל באותו הכיוון של העלייה בריכוז,
+ ולכן לא ניתן להפריד בין תרומתו לתרומת הריכוז במדידות אלו.
+ ייתכן כי גם הירידה הקלה בקצב הגדילה שנמדדה בריכוז 
+\begin_inset Formula $0.56\%$
+\end_inset
+
+ קשורה לחימום זה.
+ שלישית,
+ בדגימת הריכוז הנמוך ביותר הקתודה הונחה בצורה עקומה (קצה הקתודה לא הונח באופן אורתוגונלי למשטח) אשר ככל הנראה הובילה להטייה בכיוון גדילת הצביר ולצורה לא-סימטרית;
+ הדבר ניכר בצפיפות הנמוכה במיוחד (איור 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:phi"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) ובחריגת הנקודה הראשונה מהמגמה בקצב הגדילה (איור 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:growth"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Standard
-ליצור מערכת יציבה יותר עם מצלמה שיכולה לצלם פרטים קטנים יותר.
-\end_layout
-
-\begin_layout Standard
-לבחון כמות גדולה יותר של ריכוזים.
-\end_layout
-
-\begin_layout Standard
-לבחון כיצד שינוי במתח מהשפיע על הפרמטרים.
+בהמשך המחקר ניתן לחזק את המסקנות בכמה דרכים:
+ הצבת המערכת על משטח מבודד-רעידות ושימוש במצלמה ברזולוציה גבוהה יותר בכדי לצמצם את ההטיה בממד;
+ דגימה צפופה יותר של ריכוזים בתחום הנמוך,
+ שבו מתרחש המעבר מגדילה מוגבלת-דיפוזיה לגדילה קומפקטית;
+ שימוש בתאורה אחידה שאינה מחממת את המערכת;
+ ובחינת התלות במתח ההפעלה,
+ הקובע את חלקה של הנדידה בהובלת היונים.
 \end_layout
 
 \end_body
